@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "g++ - Build and debug active file",
+            "type": "cppdbg", // 调试器的类型，表示使用 C/C++ 调试器。
+            "request": "launch", // 调试器的请求类型，表示启动调试。
+            "program": "${fileDirname}/${fileBasenameNoExtension}", // 要执行调试的程序路径。
+            "args": [ // 调试时传递给程序的参数，这里是空数组，表示没有额外的调试参数。
+                "${WACO_HOME}/dataset/test_matrix.csr",
+                "${WACO_HOME}/WACO/training_data_generator/config/test_matrix.txt",
+            ], 
+            "stopAtEntry": false, // 调试器启动后是否在程序入口处停止。
+            "cwd": "${fileDirname}", // 调试器的当前工作目录。
+            "environment": [ // 调试时使用的环境变量。
+                // {
+                //     //  "MY_CUSTOM_PATH": "/path/to/my/custom/directory"
+                // }
+            ], 
+            "externalConsole": false, // : 是否使用外部控制台窗口进行调试。
+            "MIMode": "gdb", // 使用的调试器接口模式，这里是使用 GDB 调试器。
+            "setupCommands": [ // : 额外的设置命令，这里是启用 GDB 的漂亮打印功能。
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "c_cpp_build_active_file", // 在开始调试前要运行的任务。这里指定了编译任务的名称。
+            "miDebuggerPath": "/usr/bin/gdb" // GDB 调试器的路径。
+        }
+    ]
+}

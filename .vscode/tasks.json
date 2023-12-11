@@ -1,0 +1,41 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "c_cpp_build_active_file",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-std=c++17",
+				"-O3",
+				"-march=native", // 指示编译器生成与本地 CPU 架构匹配的代码。
+				"-fopenmp",
+                "-DICC",
+                "-DNUMCORE=64",
+                "-I",
+				"${fileDirname}/include",
+				"-fdiagnostics-color=always", // 使用彩色显示争端信息
+				"-g", // 添加调试信息
+				"${file}",
+				// "$(find ${workspaceFolder} -name '*.cc' -o -name '*.c' -o -name '*.cpp')", // 当前工作文件夹下所有的cpp文件进行编译的路径。
+				"-o", // 指定输出文件
+				// ${fileDirname}: 表示当前文件所在的目录路径。
+				// ${fileBasenameNoExtension}: 表示当前文件的文件名，但不包括文件扩展名部分
+				"${fileDirname}/${fileBasenameNoExtension}",
+
+				"-lm",
+				"-ldl"
+			],
+			"options": {
+				// current working directory
+                "DNUMCORE" : "${NUMCORE}",
+				"cwd": "${fileDirname}" // 指定了当前工作目录为当前文件所在的目录。
+			},
+			"problemMatcher": [
+				"$gcc" // 用于识别问题输出的模式，这里使用了 $gcc 模式，用于匹配 GCC 编译器输出的错误信息。
+			],
+			"group": "build",
+			"detail": "compiler: /usr/bin/g++"
+		}
+	]
+}

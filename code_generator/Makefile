@@ -15,5 +15,12 @@ iccspmv :
 iccsddmm :	
 	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} -I"./include" sddmm.cc -o sddmm -lm -ldl
 
-gcc : gccspmm gccspmv gccsddmm
-icc : iccspmm iccspmv iccsddmm
+gcctest_kernel :	
+	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} -I"./include" test_kernel.cc -o test_kernel -lm -ldl
+icctest_kernel :	
+	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} -I"./include" test_kernel.cc -o test_kernel -lm -ldl
+
+# gcc : gccspmm gccspmv gccsddmm
+# icc : iccspmm iccspmv iccsddmm
+gcc : gccspmm gcctest_kernel
+icc : iccspmm icctest_kernel
