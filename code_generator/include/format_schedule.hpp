@@ -10,7 +10,10 @@ using namespace std;
 typedef enum
 {
 	COMPRESSED,
-	UNCOMPRESSED
+	UNCOMPRESSED,
+	UNCOMPRESSED_NU,
+	SINGLETON,
+	SINGLETON_NU
 } taco_mode_t;
 
 /**
@@ -364,6 +367,7 @@ public:
 				case UNCOMPRESSED:
 					pos_idx = pos_idx * TensorFormat[rank].dimension + rank_coord; // 累计的坐标偏移*当前稠密轴长 + 当前轴中偏移 
 					break;
+				case SINGLETON:
 				case COMPRESSED:
 					if (upper_coords != uniq_coords[rank]) // 当uniq_coords中还未存upper_coords时候，即初始化，做以下处理
 					{
@@ -382,6 +386,11 @@ public:
 					}
 					pos_idx = T_crd[rank].size() - 1; // 展开到当前维度后 累计的非零值位置
 					break;
+				case SINGLETON_NU:
+				case COMPRESSED_NU:
+					
+				default:
+					cout << "[ERROR] the mode " << TensorFormat[rank].mode << " of " << TensorFormat[rank].var << " is illegle" << endl;
 				}
 			}
 			// case VALUEARRAY:
