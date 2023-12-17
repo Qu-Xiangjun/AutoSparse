@@ -1,1 +1,0 @@
-The `lower` machinery turns index expressions (`expr`) into low-level C-like imperative IR (`ir`). The lowering concepts and algorithms are described in the paper [The Tensor Algebra Compiler](http://tensor-compiler.org/kjolstad-oopsla17-tensor-compiler.pdf).

@@ -1,3 +1,4 @@
 pretrained
-code_generator/taco/build
+taco/build
+.vscode/
 __pycache__/
