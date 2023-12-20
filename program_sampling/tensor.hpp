@@ -1,5 +1,5 @@
-#ifndef FORMAT_SCHEDULE_HPP
-#define FORMAT_SCHEDULE_HPP
+#ifndef TENSOR_HPP
+#define TENSOR_HPP
 
 #include <iostream>
 #include <sstream>
@@ -246,6 +246,7 @@ public:
             );
             exit(-1);
         }
+        
 
         vector<FormatInfo> reordered_format;
         for(string &var : reorder_vars)
