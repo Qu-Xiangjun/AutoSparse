@@ -8,20 +8,20 @@
 #include <parallel/algorithm>
 
 #include "utils.hpp"
-#include "time.h"
+#include "time.hpp"
 
 using namespace std;
 
 /* The axis property of every level in tensor.*/
 typedef enum { taco_mode_dense, taco_mode_sparse } taco_mode_t;
 
-typedef enum{
+typedef enum {
 	UNCOMPRESSED,
     COMPRESSED,
 	COMPRESSED_NU,
 	SINGLETON,
 	SINGLETON_NU
-} mode_t;
+} mode_type;
 
 /* Tensor expression struct in taco */
 typedef struct 
@@ -51,7 +51,7 @@ typedef struct
 {
 	string var;         // axis name
 	int    dimension;	// axis length
-	mode_t mode;	    // axis storage property
+	mode_type mode;	    // axis storage property
 	// Higher rank first store in a coo format temp buffer.
     // Such as: 2D matrix, row's startbit is 0, col's startbit = row's lenbit.
     // And the indices expressed by compressed array.
@@ -90,7 +90,7 @@ public:
         /* Initial format compressed bit info */
         int num_rank = format.size();
         format[num_rank - 1].startbit = 0; 
-        format[num_rank - 1].lenbit   = get_ceil_log2(format[num_rank - 1].dimension)
+        format[num_rank - 1].lenbit   = get_ceil_log2(format[num_rank - 1].dimension);
         for (int rank = num_rank - 2; rank ; rank--)
         {   // Higher rank first
             format[rank].startbit = format[rank + 1].startbit + format[rank + 1].lenbit;
@@ -124,6 +124,12 @@ public:
     vector<vector<int>> &get_pos()      { return T_pos; }
     vector<vector<int>> &get_crd()      { return T_crd; }
 
+    /* Fill the val with a scalar */
+    void fill_val(float scalar)
+    {
+        fill(T_val.begin(), T_val.end(), scalar);
+    }
+
     /*  Clear all the change by shedule and pack to format. */
     void reset() 
     {
@@ -131,7 +137,7 @@ public:
         T_pos.clear();
         T_crd.clear();
         if(!is_dense) T_crd.clear();
-        destroy_taco_tensor_t()
+        destroy_taco_tensor_t();
     }
 
     /* Check whether axis exist by search axis name. */
@@ -177,9 +183,9 @@ public:
         {
             if(var == format[rank].var) return rank;
         }
-        stringstring ss;
+        stringstream ss;
         ss << "[ERROR][Tensor] The axis name " << var << " don't exist";
-        throw std::exception(ss);
+        throw std::runtime_error(ss.str());
         exit(-1);
     }
 
@@ -204,17 +210,17 @@ public:
      */
     void split(string var, string outer_var, string inner_var, int factor)
     {
-        if(!is_power_of_2(spilt_size)) 
+        if(!is_power_of_2(factor)) 
         {
-            stringstring ss;
+            stringstream ss;
             ss << "[ERROR][Tensor] The split factor " << factor << " must be power for 2.";
-            throw std::exception(ss);
+            throw std::runtime_error(ss.str());
             exit(-1);
         }
         int rank = get_axis_format_info(var);
         FormatInfo outer_axis;
         outer_axis.var = outer_var;
-        outer_axis.dimension = min(spilt_size, format[rank].dimension);
+        outer_axis.dimension = min(factor, format[rank].dimension);
         outer_axis.mode = format[rank].mode;
         outer_axis.startbit = format[rank].startbit;
         outer_axis.lenbit = get_ceil_log2(outer_axis.dimension);
@@ -241,7 +247,7 @@ public:
     {
         if (reorder_vars.size() != format.size())
         {
-            throw std::exception(
+            throw std::runtime_error(
                 "[ERROR][Tensor] The reorder var vector must contain all the axes."
             );
             exit(-1);
@@ -263,14 +269,14 @@ public:
      * ----------
      * arg1 : var
      *   axis name.
-     * arg2 : mode mode_t
+     * arg2 : mode mode_type
      *   Changed mode.
      */
-    void mode(string var, mode_t mode)
+    void mode(string var, mode_type mode)
     {
         if(is_dense) 
         {
-            throw std::exception(
+            throw std::runtime_error(
                 "[ERROR][Tensor] Dense array don't support change axis mode."
             );
             exit(-1);
@@ -290,7 +296,7 @@ public:
     {
         if(T != NULL) destroy_taco_tensor_t();
         T = new taco_tensor_t;
-        num_rank = format.size();
+        int num_rank = format.size();
         T->order = num_rank;
         T->dimensions = new int32_t[num_rank];
         T->mode_types = new taco_mode_t[num_rank];
@@ -299,7 +305,7 @@ public:
         {
             T->dimensions[rank] = format[rank].dimension;
             T->mode_types[rank] = format[rank].mode == UNCOMPRESSED ? 
-                                    taco_mode_dense : taco_mode_sparse
+                                    taco_mode_dense : taco_mode_sparse;
             T->indices[rank] = new uint8_t*[2];
             switch (format[rank].mode)
             {
@@ -384,6 +390,7 @@ public:
                 int rank_coord = extract(coords, format[rank].startbit, format[rank].lenbit);
                 // current rank's coord with all the upper rank coords in compressed bin.
                 uint64_t upper_coords = extract_upper_coords(coords, format[rank].startbit);
+                switch (format[rank].mode)
                 {
 				case UNCOMPRESSED:
                     pos_idx = pos_idx * format[rank].dimension + coords;
@@ -489,9 +496,8 @@ public:
         }
         
         init_taco_tensor_t();
-
     }
 
-}
+};
 
-#endif // FORMAT_SCHEDULE_HPP
+#endif // TENSOR_HPP

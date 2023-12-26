@@ -6,24 +6,20 @@
 #include <chrono>
 #include <algorithm>
 #include <map>
-#include <immintrin.h>
 #include <vector>
 #include <fstream>
-#include <limits>
 #include <cmath>
-#include <iomanip>
-#include "format_schedule.hpp"
+
+#include "tensor.hpp"
 #include "execution_manager.hpp"
 #include "time.hpp"
+#include "utils.hpp"
+
 using namespace std;
 
 default_random_engine generator(chrono::system_clock::now().time_since_epoch().count());
 uniform_real_distribution<float> uniform(-1.0, 1.0);
 
-int roundup(int num, int multiple)
-{
-	return ((num + multiple - 1) / multiple) * multiple;
-}
 
 /**
  * argc = 3
@@ -114,13 +110,12 @@ int main(int argc, char *argv[])
 	cout << "Use " << NUMCORE << " Threads" << endl;
 
 	// 首先用固定值并行化 chunk = 48的干净csr进行执行
-	M.init_all();
-	M.parallelize("i", 48, 32); // 为什么不使用NUMCORE 而是48？
-	M.pack_all(); // 将所有张量存储从buffer pack到 存储中
-	M.compile();
+	M.reset_all();
+	M.parallelize("i"); // 为什么不使用NUMCORE 而是48？
+	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
-	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, true) << " ms" << endl;
+	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, verify, true) << " ms" << endl;
 
 	string arg(argv[2]);	// 调度文件地址
 	fstream arg_file(arg);
@@ -173,18 +168,18 @@ int main(int argc, char *argv[])
 
 		try
 		{
-			M.init_all();
+			M.reset_all();
 			if (isplit != 1) // 不为1则划分为两个轴了的
 			{
-				M.fsplit("A", "i", "i1", "i0", isplit);
+				M.fsplit("i", "i1", "i0", isplit);
 			}
 			if (ksplit != 1)
 			{
-				M.fsplit("A", "k", "k1", "k0", ksplit);
+				M.fsplit("k", "k1", "k0", ksplit);
 			}
 			if (jsplit != 1)
 			{
-				M.fsplit("A", "j", "j1", "j0", jsplit);
+				M.fsplit("j", "j1", "j0", jsplit);
 			}
 			M.lreorder(r);
 			M.freorder("A", rA); // 只需要对A矩阵进行存储重排序
@@ -192,26 +187,25 @@ int main(int argc, char *argv[])
 			// 设置稀疏矩阵的 轴的压缩或未压缩属性
 			if (isplit != 1) 
 			{
-				M.fmode("A", "i1", f[0] == 0 ? COMPRESSED : UNCOMPRESSED)
-					.fmode("A", "i0", f[1] == 0 ? COMPRESSED : UNCOMPRESSED)
-					.parallelize(pidx, pnum, pchunk);
+				M.fmode("A", "i1", f[0] == 0 ? COMPRESSED : UNCOMPRESSED);
+				M.fmode("A", "i0", f[1] == 0 ? COMPRESSED : UNCOMPRESSED);
+				M.parallelize(pidx);
 			}
 			else
 			{
-				M.fmode("A", "i", f[0] == 0 ? COMPRESSED : UNCOMPRESSED)
-					.parallelize("i", pnum, pchunk);
+				M.fmode("A", "i", f[0] == 0 ? COMPRESSED : UNCOMPRESSED);
+				M.parallelize("i");
 			}
 			if (ksplit != 1)
 			{
-				M.fmode("A", "k1", f[2] == 0 ? COMPRESSED : UNCOMPRESSED)
-					.fmode("A", "k0", f[3] == 0 ? COMPRESSED : UNCOMPRESSED);
+				M.fmode("A", "k1", f[2] == 0 ? COMPRESSED : UNCOMPRESSED);
+				M.fmode("A", "k0", f[3] == 0 ? COMPRESSED : UNCOMPRESSED);
 			}
 			else
 			{
 				M.fmode("A", "k", f[2] == 0 ? COMPRESSED : UNCOMPRESSED);
 			}
-			M.pack_all(); // 进入实际存储区域
-			string schedule_command = M.compile();	// 编译生成kernel
+			string schedule_command = M.compile(pnum, pchunk);	// 编译生成kernel
 			verify = true;
 			float avgtime = M.run(10, 50, verify); // 运行并返回时间，这里不需要验证
 			cout << "Testing Candidate SuperSchedules... " << schedule << " = " << avgtime << " ms" << "  correct:"<<verify<<endl;

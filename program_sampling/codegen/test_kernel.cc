@@ -3,7 +3,6 @@
  * Read matrix meta data from file.
  * Handle write schedule for loop and fromat.
  */
-
 #include <iostream>
 #include <string>
 #include <random>
@@ -12,21 +11,16 @@
 #include <chrono>
 #include <algorithm>
 #include <map>
-#include <immintrin.h>
 #include <vector>
 #include <fstream>
-#include <limits>
 #include <cmath>
-#include <iomanip>
-#include "format_schedule.hpp"
+
+#include "tensor.hpp"
 #include "execution_manager.hpp"
 #include "time.hpp"
-using namespace std;
+#include "utils.hpp"
 
-int roundup(int num, int multiple)
-{
-	return ((num + multiple - 1) / multiple) * multiple;
-}
+using namespace std;
 
 /**
  * argc = 2
@@ -113,23 +107,23 @@ int main(int argc, char *argv[])
 	TensorB.push_back({"k", num_row, UNCOMPRESSED});
 	TensorB.push_back({"j", num_col, COMPRESSED});
 	M.add_tensor("B", TensorB, coo, false);
-	M.init_all();
+	M.reset_all();
 
 	///////////////////////////////
 	// Excute Puring Correct Result
 	///////////////////////////////
-	M.parallelize("i", 48, 32); // 为什么不使用NUMCORE 而是48？
-	M.pack_all(); // 将所有张量存储从buffer pack到 存储中
-	// M.compile();
-	// stringstream fixedCSR;
+	M.parallelize("i"); // 为什么不使用NUMCORE 而是48？
+	M.compile(48, 32);
+	stringstream fixedCSR;
 	bool verify = false;
-	// fixedCSR << "FixedCSR : " << M.run(10, 50, verify, true) << " ms" << endl;
+	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, verify, true) << " ms" << endl;
 
 	////////////////////////////
 	// Add Test Schedule
 	////////////////////////////
-	M.init_all();
+	M.reset_all();
 	vector<string> rB;
+	rB.push_back("i");
 	rB.push_back("j");
 	rB.push_back("k");
 	M.lreorder(rB);
@@ -137,10 +131,9 @@ int main(int argc, char *argv[])
 	////////////////////////////
 	// Build and Excution
 	////////////////////////////
-	M.pack_all(); // 将所有张量存储从buffer pack到 存储中
-	M.compile();
+	M.compile(48, 32);
 	verify = true;
-	float avgtime = M.run(10, 50, verify); // 运行并返回时间，这里不需要验证
+	float avgtime = M.run(10, 50,verify, verify); // 运行并返回时间，这里不需要验证
 
 
 	// cout << fixedCSR.str() << endl;

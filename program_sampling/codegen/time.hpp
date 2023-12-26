@@ -8,6 +8,13 @@ using Clock = ::chrono::high_resolution_clock;
 /**
  * microsecond time diff. 
  * Input type can be time_point and duration in <chrono> lib
+ * 
+ * Parameters
+ * ----------
+ * arg1 : t2
+ *   End time.
+ * arg2 : t1
+ * 	 Start time.
  */
 float inline compute_clock_micro(chrono::steady_clock::time_point t2, chrono::steady_clock::time_point t1)
 {
@@ -22,6 +29,13 @@ float inline compute_clock_micro(chrono::system_clock::time_point t2, chrono::sy
 /**
  * millisecond time diff. 
  * Input type can be time_point and duration in <chrono> lib
+ * 
+ * Parameters
+ * ----------
+ * arg1 : t2
+ *   End time.
+ * arg2 : t1
+ * 	 Start time.
  */
 double inline compute_clock(chrono::steady_clock::time_point t2, chrono::steady_clock::time_point t1)
 {

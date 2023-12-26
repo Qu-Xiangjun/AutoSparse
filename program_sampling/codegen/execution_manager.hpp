@@ -10,6 +10,8 @@
 #include <chrono>
 #include <map>
 #include <algorithm>
+#include <iomanip>
+#include <dlfcn.h>
 
 #include "tensor.hpp"
 
@@ -31,12 +33,14 @@ void fwrite2file(float* val, int data_size, string title = "*******")
 	cout<< "[Debug] Debug data write successed." <<endl;
 }
 
-/* Safe func to excute shell command. */
-bool executeCommand(const char* cmd) {
-    FILE* pipe = popen(cmd, "r"); // Open a pipe to execute the command
+/* Safe func to execute shell command. */
+bool executeCommand(const string cmd) {
+    FILE* pipe = popen(cmd.c_str(), "r"); // Open a pipe to execute the command
     if (!pipe) 
     {
-		cerr << "[ERROR][ExecuteCommand] " << cmd << endl;
+        stringstream ss;
+        ss << "[ERROR][executeCommand] " << cmd << endl;
+		throw std::runtime_error(ss.str());
 	}
     char buffer[128];
     string result = "";
@@ -46,14 +50,14 @@ bool executeCommand(const char* cmd) {
             result += buffer;
     }
     pclose(pipe);
-	bool compile_success = 1; // Flag to indicate successful compilation.
+	bool excution_success = 1; // Flag to indicate successful compilation.
 
 	if (result.find("error") != string::npos || result.find("Error") != string::npos) 
     {
-        cerr << "[ERROR][ExecuteCommand] " << result << endl;
-		compile_success = 0; // Set flag to indicate compilation failure
+        cerr << "[ERROR][executeCommand] " << result << endl;
+		excution_success = 0; // Set flag to indicate compilation failure
     }
-    return compile_success;
+    return excution_success;
 }
 
 /* Define aliases for function Pointers. */
@@ -64,14 +68,22 @@ typedef int (*compute3)(taco_tensor_t *A, taco_tensor_t *B, taco_tensor_t *C,
 typedef int (*compute4)(taco_tensor_t *A, taco_tensor_t *B, taco_tensor_t *C, 
                         taco_tensor_t *D, taco_tensor_t *E);
 
+struct compute_func_t
+{
+    compute1 func1;
+    compute2 func2;
+    compute3 func3;
+    compute4 func4;
+};
 
-class ExcutionManager
+
+class ExecutionManager
 {
 public:
     Tensor *lh_tensor;                  // The tensor of equotion left handle.
     string lh_tensor_name;              // The tensor name of eqution left.
     map<string, Tensor *> rhs_tensor;   // The tensors of all equotion right handles.
-    void *compute_func;                 // The compute func pointer, which will reinterpret
+    compute_func_t compute_func;        // The compute func pointer, which will reinterpret
                                         // func pointer and pointe to dynamic lib func.
     vector<string> vars;                // All the axes name vector, which will apply lsplit,
                                         // lreorder, fsplit, freorder. And the vector indicate
@@ -110,9 +122,14 @@ public:
     /* Reset all the schedule and format optimization. */
     void reset_all()
     {
-        var = var_rst;
+        compute_func.func1 = nullptr;
+        compute_func.func2 = nullptr;
+        compute_func.func3 = nullptr;
+        compute_func.func4 = nullptr;
+
+        vars = vars_rst;
         freorder_vars.clear();
-        lsplit_record.clear()
+        lsplit_record.clear();
         parallel_vars.clear();
         unroll_vars.clear();
         precompute_vars.clear();
@@ -196,18 +213,12 @@ public:
     /* Print one tensor */
     string print_tensor(string tensor_name)
 	{
-		auto t = tensor_lhs.find(tensor_name);
-		if (t != tensor_lhs.end())
+        if(lh_tensor_name == tensor_name) 
+            return lh_tensor->print_format();
+		auto t = rhs_tensor.find(tensor_name);
+		if (t != rhs_tensor.end())
 		{
 			return t->second->print_format();
-		}
-		else
-		{
-			t = rhs_tensor.find(tensor_name);
-			if (t != rhs_tensor.end())
-			{
-				return t->second->print_format();
-			}
 		}
         throw std::runtime_error("[ERROR] Tensor not found: " + tensor_name);
 	}
@@ -257,7 +268,7 @@ public:
         else 
         {
             auto t = rhs_tensor.find(tensor_name);
-            if (t != rhs_tensor)
+            if (t != rhs_tensor.end())
             {
                 t->second->reorder(reordered_vars);
                 freorder_vars = reordered_vars;
@@ -268,7 +279,7 @@ public:
     }
 
     /* Change tensor's axis mode. */
-    void fmode(string tensor_name, string var, mode_t mode)
+    void fmode(string tensor_name, string var, mode_type mode)
     {
         if (lh_tensor_name == tensor_name) 
         {
@@ -278,7 +289,7 @@ public:
         else
         {
             auto t = rhs_tensor.find(tensor_name);
-            if (t != rhs_tensor)
+            if (t != rhs_tensor.end())
             {
                 t->second->mode(var, mode);
                 return ;
@@ -309,7 +320,7 @@ public:
     {
         if(reordered_vars.size() != vars.size())
         {
-            throw std::exception(
+            throw std::runtime_error(
                 "[ERROR][lreorder] The reorder var vector must contain all the axes."
             );
         }
@@ -324,18 +335,18 @@ public:
         vars = reordered_vars;
     }
 
-    /* Parallize a loop axis. */
-    void parallize(string var, string hardware)
+    /* parallelize a loop axis. */
+    void parallelize(string var, string hardware = "CPUThread")
     {
         auto it = find(vars.begin(), vars.end(), var);
         if (it == vars.end()) // The axis var don't exist.
         {
-            throw std::runtime_error("[ERROR][parallize] var not found: " + var);
+            throw std::runtime_error("[ERROR][parallelize] var not found: " + var);
         }
-        auto it = find(unroll_vars.begin(), unroll_vars.end(), var);
-        if (it != vars.end()) // Conflict.
+        auto it2 = unroll_vars.find(var);
+        if (it2 != unroll_vars.end()) // Conflict.
         {
-            throw std::runtime_error("[ERROR][parallize] var conflict with unroll: " + var);
+            throw std::runtime_error("[ERROR][parallelize] var conflict with unroll: " + var);
         }
         parallel_vars[var] = hardware;
     }
@@ -348,17 +359,17 @@ public:
         {
             throw std::runtime_error("[ERROR][unroll] var not found: " + var);
         }
-        auto it = find(parallel_vars.begin(), parallel_vars.end(), var);
-        if (it != vars.end()) // Conflict.
+        auto it2 = parallel_vars.find(var);
+        if (it2 != parallel_vars.end()) // Conflict.
         {
-            throw std::runtime_error("[ERROR][parallize] var conflict with parallel_vars: " + var);
+            throw std::runtime_error("[ERROR][unroll] var conflict with parallel_vars: " + var);
         }
         unroll_vars[var] = factor;
     }
     
     void vectorize(string var)
     {
-        parallize(var, "CPUVector");
+        parallelize(var, "CPUVector");
     }
 
     void precompute(string expr, string var)
@@ -390,7 +401,7 @@ public:
         /* left handle tensor */ 
         format += " -f=" + lh_tensor_name + ":";
         kernel += lh_tensor_name + "(";
-        precision += " -t=" + lh_tensor_name + ":float";
+        pricision += " -t=" + lh_tensor_name + ":float";
 
         vector<FormatInfo> lh_format = lh_tensor->get_format();
         string format_order = "";
@@ -431,7 +442,7 @@ public:
         {
             format += " -f=" + it.first + ":";
             kernel += it.first + "(";
-            precision += " -t=" + it.first + ":float";
+            pricision += " -t=" + it.first + ":float";
 
             vector<FormatInfo> rh_format = it.second->get_format();
             format_order = "";
@@ -465,11 +476,13 @@ public:
             }
             format_order.pop_back();
             format += format_order;
+			kernel += "*"; // TODO: 这里计算负只能是乘法了？
         }
 
-        kernel += "\""
+        kernel.pop_back(); // Discard extra '*'.
+        kernel += "\"";
         
-        return kernel + format + precision;
+        return kernel + format + pricision;
     }
 
     /**
@@ -498,9 +511,9 @@ public:
                 var_is_compressed[f.var] &= (f.mode == UNCOMPRESSED);
             }
         }
-        for (auto rh_tensor : rhs_tensor)
+        for (auto &rh_tensor : rhs_tensor)
         {
-            for (auto &f : rh_tensor->get_format())
+            for (auto &f : rh_tensor.second->get_format())
             {
                 // Whether first see the axis var.
                 if(var_is_compressed.find(f.var) == var_is_compressed.end())
@@ -524,9 +537,13 @@ public:
             string inner_var = lsplit_record[i].first[2];
             int factor = lsplit_record[i].second;
 
-            if(var_is_compressed[var])
+            if(var_is_compressed[var]) // Change the axis record.
             {
                 var_is_compressed[var] = false;
+                var_is_compressed[outer_var] = true;
+                var_is_compressed[inner_var] = true;
+                dimensions[outer_var] = roundup(dimensions[var], factor);
+                dimensions[inner_var] = factor;
             }
             is_lsplit[var] = i;
 
@@ -543,32 +560,303 @@ public:
                 schedules += " -s=\"bound(" + it.first + "," + it.first + "Bound,";
                 schedules += to_string(dimensions[it.first]) + ",MaxExact)\"";
             }
-            auto it = is_lsplit.find(it.first);
-            if (it != is_split.end()) // The var had been lsplit.
-            {
-                int index = distance(is_split.begin(), it);
-                string var = lsplit_record[index].first[0];
-                string outer_var = lsplit_record[index].first[1];
-                string inner_var = lsplit_record[index].first[2];
-                int factor = lsplit_record[index].second;
-                int outer_dimension = roundup(dimensions[var], factor);
-                schedules += " -s=\"bound(" + it.first + "," + it.first + "Bound,";
-                schedules += to_string(dimensions[it.first]) + ",MaxExact)\"";
-            }
+        }
+
+        // reorder
+        schedules += " -s=\"reorder(";
+        for (int i = 0; i < vars.size(); i++)
+        {
+            schedules += vars[i] + ",";
+        }
+        schedules.pop_back(); // Discard extra ','.
+        schedules += ")\"";
+
+        // precompute
+        for (auto &it : precompute_vars)
+        {
+            schedules += " -s=\"preocmpute(" + it.second + ",";
+            schedules += it.first + "," + it.first + ")\"";
+        }
+
+        // parallel
+        for (auto &it : parallel_vars)
+        {
+            string var = it.first;
+            bool is_reduction_var = !(lh_tensor->is_var_exist(var));
+            schedules += " -s=\"parallelize(" + var + ",";
+            schedules += it.second + ",";
+            schedules += (is_reduction_var ? "Atomics" : "NoRaces");
+            schedules += ")\"";
+        }
+
+        // unroll
+        for (auto &it : unroll_vars)
+        {
+            schedules += " -s\"unroll(" + it.first + "," + to_string(it.second) + ")\"";
         }
         
 
-
+        return schedules;
     }
 
-    string compile_success()
+    /**
+     * Gnerate lower compution kernel, and compile it.
+     * Prameters
+     * ---------
+     * arg1 : num_thread
+     *   Set omp num thread, which usually is number of core.
+     * arg2 : chunk_size
+     *   Set omp schedule's chunk size.
+     */
+    string compile(int num_thread, int chunk_size)
     {
+        omp_set_num_threads(num_thread);
+		omp_set_schedule(omp_sched_dynamic, chunk_size);
 
+        char *env_val = getenv("AUTOSPARSE_HOME");
+        if (env_val == NULL)
+        {
+            throw std::runtime_error(
+                "[ERROR][compile] Environment variable AUTOSPARSE_HOME not defined"
+            );
+        }
+
+        taco_command = string(env_val) + "/taco/build/bin/taco ";
+        taco_command += gen_command() + gen_schedule();
+        taco_command += " -write-compute=taco_kernel.c";
+
+        // Add the header to kernel.c
+        string header = "#include <stdint.h> \\n"
+						"typedef enum { taco_mode_dense, taco_mode_sparse } taco_mode_t;\\n"
+						"typedef struct {\\n"
+						"  int32_t      order;\\n"
+						"  int32_t*     dimensions;\\n"
+						"  int32_t      csize;\\n"
+						"  int32_t*     mode_ordering;\\n"
+						"  taco_mode_t* mode_types;\\n"
+						"  uint8_t***   indices;\\n"
+						"  uint8_t*     vals;\\n"
+						"  int32_t      vals_size;\\n"
+						"} taco_tensor_t;\\n";
+		string taco_header_command = "sed -i '1s/^/" + header + "/' taco_kernel.c";
+		executeCommand(taco_command);
+		executeCommand(taco_header_command);
+        if (rhs_tensor.size() == 3)
+		{
+			string patch_command = "python " + string(env_val); 
+            patch_command += "/program_sampling/codegen/sddmm_patch.py ./taco_kernel.c";
+			executeCommand(patch_command);
+		}
+
+        // Compile kernel.c
+        system("rm -f ./kernel.c");
+        string cc_command;
+		#ifdef ICC // `-DICC` in compile command
+		cc_command = "icc -march=native -mtune=native -O3 -ffast-math -qopenmp -fPIC -shared taco_kernel.c -o taco_kernel.so -lm";
+		#elif GCC  // `-DGCC` in compile command
+		cc_command = "gcc -march=native -mtune=native -O3 -fopenmp -ffast-math -fPIC -shared taco_kernel.c -o taco_kernel.so -lm";
+		#endif
+		compile_success = executeCommand(cc_command);
+
+        // Take a func pointer point to kernel compute function in kernel.c
+        if (!compile_success) return taco_command;
+        void *lib_handle = dlopen("./taco_kernel.c", RTLD_NOW | RTLD_LOCAL);
+        if (!lib_handle)
+        {
+            stringstream ss;
+            ss << "[ERROR][Compile] DLOPEN - " << dlerror() << endl;
+            throw std::runtime_error(ss.str());
+        }
+        switch (rhs_tensor.size())
+        {
+        case 1:
+            compute_func.func1 = (compute1)dlsym(lib_handle, "compute");
+            break;
+        case 2:
+            compute_func.func2 = (compute2)dlsym(lib_handle, "compute");
+            break;
+        case 3:
+            compute_func.func3 = (compute3)dlsym(lib_handle, "compute");
+            break;
+        case 4:
+            compute_func.func4 = (compute4)dlsym(lib_handle, "compute");
+            break;
+        default:
+            throw std::runtime_error(
+                "[ERROR][Compile] Don't support operator count."
+            );
+            break;
+        }
+
+        if (dlerror() != NULL)
+		{
+            stringstream ss;
+            ss << "[ERROR][Compile] " << dlerror() << endl;
+            throw std::runtime_error(ss.str());
+		}
+
+        dlclose(lib_handle);
+
+        return taco_command;
     }
 
-    string run()
+    /**
+     * Run the compution function and verify result.
+     * Parameters
+	 * ----------
+	 * arg1 : warm 
+	 *   Warming excution times.
+	 * arg2 : round 
+	 *   Test excution times.
+	 * arg3 : verify_res bool
+	 * 	 Verify the excution result.
+     * arg4 : verify bool
+	 * 	 Whether verify the excution result.
+	 * arg5 : store
+	 * 	 Whether store current excution result as correct result.
+	 * arg6 : avg_test
+     *   The test time select average or middle number.
+	 * Return
+	 * ------
+	 * ret : elapsed_time
+     *   Excution times (ms).
+     */
+    double run(
+        int warm, int round,bool &verify_res, bool verify = true, 
+        bool store = false, bool avg_test = true
+    )
     {
+        verify_res = false;
+        double elapsed_time = 0.;
 
+        if (!compile_success) 
+        {
+            return -1;
+        }
+
+        vector<taco_tensor_t *> T;
+        T.push_back(lh_tensor->T);
+        for (auto &it : rhs_tensor)
+        {
+            T.push_back(it.second->T);
+        }
+
+        // Warmup.
+        while (warm--)
+        {
+            switch (rhs_tensor.size())
+            {
+            case 1:
+                compute_func.func1(T[0], T[1]);
+                break;
+            case 2:
+                compute_func.func2(T[0], T[1], T[2]);
+                break;
+            case 3:
+                compute_func.func3(T[0], T[1], T[2], T[3]);
+                break;
+            case 4:
+                compute_func.func4(T[0], T[1], T[2], T[3], T[4]);
+                break;
+            default:
+                break;
+            }
+        }
+
+        // Test.
+        vector<double> elapsed;
+        while (round--)
+        {
+            auto start_time = Clock::now();
+            switch (rhs_tensor.size())
+            {
+            case 1:
+                start_time = Clock::now();
+                compute_func.func1(T[0], T[1]);
+                elapsed.push_back(compute_clock(Clock::now(), start_time));
+                break;
+            case 2:
+                start_time = Clock::now();
+                compute_func.func2(T[0], T[1], T[2]);
+                elapsed.push_back(compute_clock(Clock::now(), start_time));
+                break;
+            case 3:
+                start_time = Clock::now();
+                compute_func.func3(T[0], T[1], T[2], T[3]);
+                elapsed.push_back(compute_clock(Clock::now(), start_time));
+                break;
+            case 4:
+                start_time = Clock::now();
+                compute_func.func4(T[0], T[1], T[2], T[3], T[4]);
+                elapsed.push_back(compute_clock(Clock::now(), start_time));
+                break;
+            default:
+                break;
+            }
+        }
+        if (avg_test)
+        {
+            for(int tt = 0; tt < elapsed.size(); tt++)
+				elapsed_time += elapsed[tt];
+			elapsed_time /= elapsed.size();
+        }
+        else // Middle number of time.
+        {
+            sort(elapsed.begin(), elapsed.end());
+			elapsed_time = elapsed[elapsed.size() / 2];
+        }
+
+        // Verify and Store
+        if (!verify and !store) return elapsed_time;
+
+        lh_tensor->fill_val(0.);
+        switch (rhs_tensor.size())
+        {
+        case 1:
+            compute_func.func1(T[0], T[1]);
+            break;
+        case 2:
+            compute_func.func2(T[0], T[1], T[2]);
+            break;
+        case 3:
+            compute_func.func3(T[0], T[1], T[2], T[3]);
+            break;
+        case 4:
+            compute_func.func4(T[0], T[1], T[2], T[3], T[4]);
+            break;
+        default:
+            break;
+        }
+
+        if (verify)
+        {
+            vector<float> &res = lh_tensor->get_val();
+            bool flag = true;
+            for (int i = 0; i < res.size(); i++)
+            {
+                if (abs(corret_val[i] - res[i] > 0.01))
+                {
+                    flag = false;
+                    break;
+                }
+            }
+            verify = flag;
+        }
+
+        if (store)
+        {
+            corret_val.clear();
+            vector<float> &res = lh_tensor->get_val();
+            fwrite2file(res.data(), res.size(), "******* T0 *******");
+            corret_val.resize(res.size());
+            #pragma omp parallel for
+            for (int i = 0; i < res.size(); i++)
+				corret_val[i] = res[i];
+        }
+
+        return elapsed_time;
     }
 
-}
+};
+
+#endif
