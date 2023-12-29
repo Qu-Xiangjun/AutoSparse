@@ -125,15 +125,8 @@ string Module::compile() {
   }
   else {
     cc = util::getFromEnv(target.compiler_env, target.compiler);
-#ifdef TACO_DEBUG
-    // In debug mode, compile the generated code with debug symbols and a
-    // low optimization level.
-    string defaultFlags = "-g -O0 -std=c99";
-#else
-    // Otherwise, use the standard set of optimizing flags.
-    string defaultFlags = "-O3 -ffast-math -std=c99";
-#endif
-    cflags = util::getFromEnv("TACO_CFLAGS", defaultFlags) + " -shared -fPIC";
+    cflags = util::getFromEnv("TACO_CFLAGS",
+    "-O3 -ffast-math -std=c99") + " -shared -fPIC";
 #if USE_OPENMP
     cflags += " -fopenmp";
 #endif
@@ -151,10 +144,12 @@ string Module::compile() {
   // write out the shims
   writeShims(funcs, tmpdir, libname);
   
+
   // now compile it
   int err = system(cmd.data());
   taco_uassert(err == 0) << "Compilation command failed:\n" << cmd
     << "\nreturned " << err;
+  cout << cmd << endl;
 
   // use dlsym() to open the compiled library
   if (lib_handle) {

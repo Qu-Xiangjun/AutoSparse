@@ -1,6 +1,6 @@
 #include "taco/lower/mode_format_compressed.h"
 
-#include "taco/ir/ir_generators.h"
+#include "ir/ir_generators.h"
 #include "taco/ir/simplify.h"
 #include "taco/util/strings.h"
 
@@ -17,8 +17,8 @@ CompressedModeFormat::CompressedModeFormat(bool isFull, bool isOrdered,
                                            bool isUnique, bool isZeroless, 
                                            long long allocSize) :
     ModeFormatImpl("compressed", isFull, isOrdered, isUnique, false, true,
-                   isZeroless, false, false, true, false, false, true, true,  
-                   true, false), 
+                   isZeroless, false, true, false, false, true, true, true, 
+                   false), 
     allocSize(allocSize) {
 }
 
@@ -309,10 +309,6 @@ Expr CompressedModeFormat::getCoordCapacity(Mode mode) const {
   }
 
   return mode.getVar(varName);
-}
-
-Expr CompressedModeFormat::getWidth(Mode mode) const {
-  return ir::Literal::make(allocSize, Datatype::Int32);
 }
 
 bool CompressedModeFormat::equals(const ModeFormatImpl& other) const {

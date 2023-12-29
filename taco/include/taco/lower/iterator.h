@@ -59,6 +59,7 @@ public:
   /// Get the child of this iterator in its iterator list.
   const Iterator getChild() const;
 
+
   /// Returns true if the iterator iterates over the dimension.
   bool isDimensionIterator() const;
 

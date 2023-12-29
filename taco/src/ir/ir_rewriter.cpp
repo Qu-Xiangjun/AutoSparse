@@ -174,16 +174,6 @@ void IRRewriter::visit(const Or* op) {
   expr = visitBinaryOp(op, this);
 }
 
-void IRRewriter::visit(const BinOp* op) {
-  Expr a = rewrite(op->a);
-  Expr b = rewrite(op->b);
-  if (a == op->a && b == op->b) {
-    expr = op;
-  } else {
-    expr = BinOp::make(op->a, op->b, op->strStart, op->strMid, op->strEnd);
-  }
-}
-
 void IRRewriter::visit(const Cast* op) {
   Expr a = rewrite(op->a);
   if (a == op->a) {
@@ -435,7 +425,7 @@ void IRRewriter::visit(const Allocate* op) {
     stmt = op;
   }
   else {
-    stmt = Allocate::make(var, num_elements, op->is_realloc, op->old_elements, op->clear);
+    stmt = Allocate::make(var, num_elements, op->is_realloc, op->old_elements);
   }
 }
 

@@ -1,3 +1,3 @@
-PyTaco Index Variables
+PyTaco Index Vars
 =======================
 .. autoclass:: pytaco.index_var

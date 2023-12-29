@@ -1,4 +1,4 @@
-Converting PyTaco Data Type to NumPy
+Converting PyTaco Datatype to Numpy
 ======================================
 
 .. autofunction:: pytaco.as_np_dtype

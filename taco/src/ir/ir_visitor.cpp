@@ -115,11 +115,6 @@ void IRVisitor::visit(const Or* op){
   op->b.accept(this);
 }
 
-void IRVisitor::visit(const BinOp* op) {
-  op->a.accept(this);
-  op->b.accept(this);
-}
-
 void IRVisitor::visit(const Cast* op){
   op->a.accept(this);
 }

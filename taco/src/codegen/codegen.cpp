@@ -244,10 +244,6 @@ string CodeGen::unpackTensorProperty(string varname, const GetProperty* op,
   } else if (op->property == TensorProperty::ValuesSize) {
     ret << "int " << varname << " = " << tensor->name << "->vals_size;\n";
     return ret.str();
-  } else if (op->property == TensorProperty::FillValue) {
-    ret << printType(tensor->type, false) << " " << varname << " = ";
-    ret << "*((" <<printType(tensor->type, true) << ")(" << tensor->name << "->fill_value));\n";
-    return ret.str();
   }
 
   string tp;
@@ -285,8 +281,6 @@ string CodeGen::packTensorProperty(string varname, Expr tnsr,
   } else if (property == TensorProperty::ValuesSize) {
     ret << tensor->name << "->vals_size = " << varname << ";\n";
     return ret.str();
-  } else if (property == TensorProperty::FillValue) {
-    return "";
   }
 
   string tp;
@@ -571,6 +565,19 @@ string CodeGen::printFuncName(const Function *func,
       ret << delimiter << tp << " " << var->name;
     }
     delimiter = ", ";
+  }
+
+  //[WJY] cuda device copied
+  if (func->name == "compute") {
+    delimiter = ", ";
+    for (size_t i=0; i<func->outputs.size(); i++) {
+      auto var = func->outputs[i].as<Var>();
+      ret << delimiter << "taco_tensor_t *" << var->name << "d";
+    }
+    for (size_t i=0; i<func->inputs.size(); i++) {
+      auto var = func->inputs[i].as<Var>();
+      ret << delimiter << "taco_tensor_t *" << var->name << "d";
+    }
   }
 
   if (unfoldInput) {

@@ -34,10 +34,6 @@ Transformation::Transformation(ForAllReplace forallreplace)
         : transformation(new ForAllReplace(forallreplace)) {
 }
 
-Transformation::Transformation(SetMergeStrategy setmergestrategy)
-        : transformation(new SetMergeStrategy(setmergestrategy)) {
-}
-
 Transformation::Transformation(Parallelize parallelize)
         : transformation(new Parallelize(parallelize)) {
 }
@@ -135,109 +131,12 @@ std::ostream& operator<<(std::ostream& os, const Reorder& reorder) {
   return os;
 }
 
-struct SetMergeStrategy::Content {
-  IndexVar i_var;
-  MergeStrategy strategy;
-};
-
-SetMergeStrategy::SetMergeStrategy(IndexVar i, MergeStrategy strategy) : content(new Content) {
-  content->i_var = i;
-  content->strategy = strategy;
-}
-
-IndexVar SetMergeStrategy::geti() const {
-  return content->i_var;
-}
-
-MergeStrategy SetMergeStrategy::getMergeStrategy() const {
-  return content->strategy;
-}
-
-IndexStmt SetMergeStrategy::apply(IndexStmt stmt, string* reason) const {
-  INIT_REASON(reason);
-
-  string r;
-  if (!isConcreteNotation(stmt, &r)) {
-    *reason = "The index statement is not valid concrete index notation: " + r;
-    return IndexStmt();
-  }
-
-  struct SetMergeStrategyRewriter : public IndexNotationRewriter {
-    using IndexNotationRewriter::visit;
-
-    ProvenanceGraph provGraph;
-    map<TensorVar,ir::Expr> tensorVars;
-    set<IndexVar> definedIndexVars;
-
-    SetMergeStrategy transformation;
-    string reason;
-    SetMergeStrategyRewriter(SetMergeStrategy transformation)
-            : transformation(transformation) {}
-
-    IndexStmt setmergestrategy(IndexStmt stmt) {
-      provGraph = ProvenanceGraph(stmt);
-      tensorVars = createIRTensorVars(stmt);
-      return rewrite(stmt);
-    }
-
-    void visit(const ForallNode* node) {
-      Forall foralli(node);
-      IndexVar i = transformation.geti();
-      
-      definedIndexVars.insert(foralli.getIndexVar());
-
-      if (foralli.getIndexVar() == i) {
-        Iterators iterators(foralli, tensorVars);
-        MergeLattice lattice = MergeLattice::make(foralli, iterators, provGraph, 
-                                                  definedIndexVars);
-        for (auto iterator : lattice.iterators()) {
-          if (!iterator.isOrdered()) {
-            reason = "Precondition failed: Variable " 
-            + i.getName() +
-            " is not ordered and cannot be galloped.";
-            return;
-          }
-        }
-        if (lattice.points().size() != 1) {
-          reason = "Precondition failed: The merge lattice of variable " 
-                + i.getName() +
-                " has more than 1 point and cannot be merged by galloping";
-          return;
-        }
-
-        MergeStrategy strategy = transformation.getMergeStrategy();
-        stmt = rewrite(foralli.getStmt());
-        stmt = Forall(node->indexVar, stmt, strategy, node->parallel_unit, 
-                      node->output_race_strategy, node->unrollFactor);
-        return;
-      }
-      IndexNotationRewriter::visit(node);
-    }
-  };
-  SetMergeStrategyRewriter rewriter = SetMergeStrategyRewriter(*this);
-  IndexStmt rewritten = rewriter.setmergestrategy(stmt);
-  if (!rewriter.reason.empty()) {
-    *reason = rewriter.reason;
-    return IndexStmt();
-  }
-  return rewritten;
-}
-
-void SetMergeStrategy::print(std::ostream& os) const {
-  os << "mergeby(" << geti() << ", " 
-     << MergeStrategy_NAMES[(int)getMergeStrategy()] << ")";
-}
-
-std::ostream& operator<<(std::ostream& os, const SetMergeStrategy& setmergestrategy) {
-  setmergestrategy.print(os);
-  return os;
-}
 
 // class Precompute
 struct Precompute::Content {
   IndexExpr expr;
-  std::vector<IndexVar> i_vars;
-  std::vector<IndexVar> iw_vars;
+  IndexVar i;
+  IndexVar iw;
   TensorVar workspace;
 };
 
@@ -246,33 +145,22 @@ Precompute::Precompute() : content(nullptr) {
 
 Precompute::Precompute(IndexExpr expr, IndexVar i, IndexVar iw,
                      TensorVar workspace) : content(new Content) {
-  std::vector<IndexVar> i_vars{i};
-  std::vector<IndexVar> iw_vars{iw};
   content->expr = expr;
-  content->i_vars = i_vars;
-  content->iw_vars = iw_vars;
+  content->i = i;
+  content->iw = iw;
   content->workspace = workspace;
 }
 
-  Precompute::Precompute(IndexExpr expr, std::vector<IndexVar> i_vars,
-                         std::vector<IndexVar> iw_vars,
-                         TensorVar workspace) : content(new Content) {
-  content->expr = expr;
-  content->i_vars = i_vars;
-  content->iw_vars = iw_vars;
-  content->workspace = workspace;
-}
-  
 IndexExpr Precompute::getExpr() const {
   return content->expr;
 }
 
-std::vector<IndexVar>& Precompute::getIVars() const {
-  return content->i_vars;
+IndexVar Precompute::geti() const {
+  return content->i;
 }
 
-std::vector<IndexVar>& Precompute::getIWVars() const {
-  return content->iw_vars;
+IndexVar Precompute::getiw() const {
+  return content->iw;
 }
 
 TensorVar Precompute::getWorkspace() const {
@@ -389,301 +277,88 @@ static IndexStmt eliminateRedundantReductions(IndexStmt stmt,
 }
 
 IndexStmt Precompute::apply(IndexStmt stmt, std::string* reason) const {
-    INIT_REASON(reason);
+  INIT_REASON(reason);
 
-    // Precondition: The expr to precompute is in `stmt`
-    Assignment assignment = getAssignmentContainingExpr(stmt, getExpr());
-    if (!assignment.defined()) {
-        *reason = "The expression (" + util::toString(getExpr()) + ") " +
-                  "is not in " + util::toString(stmt);
-        return IndexStmt();
+  // Precondition: The expr to precompute is not in `stmt`
+  Assignment assignment = getAssignmentContainingExpr(stmt, getExpr());
+  if (!assignment.defined()) {
+    *reason = "The expression (" + util::toString(getExpr()) + ") " +
+              "is not in " + util::toString(stmt);
+    return IndexStmt();
+  }
+
+  struct PrecomputeRewriter : public IndexNotationRewriter {
+    using IndexNotationRewriter::visit;
+
+    Precompute precompute;
+
+    void visit(const ForallNode* op) {
+      Forall foralli(op);
+      IndexVar i = precompute.geti();
+      IndexVar j = foralli.getIndexVar();
+
+      Assignment assign = getAssignmentContainingExpr(foralli, 
+                                                      precompute.getExpr());
+      if (j == i && assign.defined()) {
+        IndexStmt s = foralli.getStmt();
+        TensorVar ws = precompute.getWorkspace();
+        IndexExpr e = precompute.getExpr();
+        IndexVar iw = precompute.getiw();
+
+        IndexStmt consumer = forall(i, replace(s, {{e, ws(i)}}));
+        IndexStmt producer = forall(iw, Assignment(ws(iw), replace(e, {{i,iw}}), 
+                                                   assign.getOperator()));
+        Where where(consumer, producer);
+
+        stmt = where;
+        return;
+      }
+
+      IndexStmt s = rewrite(op->stmt);
+      if (s == op->stmt) {
+        stmt = op;
+        return;
+      } else if (isa<Where>(s)) {
+        Where body = to<Where>(s);
+        const auto consumerHasJ = 
+            util::contains(body.getConsumer().getIndexVars(), j);
+        const auto producerHasJ = 
+            util::contains(body.getProducer().getIndexVars(), j);
+        if (consumerHasJ && !producerHasJ) {
+          const auto producer = body.getProducer();
+          const auto consumer = Forall(op->indexVar, body.getConsumer(), 
+                                       op->parallel_unit, 
+                                       op->output_race_strategy, 
+                                       op->unrollFactor);
+          stmt = Where(consumer, producer);
+          return;
+        } else if (producerHasJ && !consumerHasJ) {
+          const auto producer = Forall(op->indexVar, body.getProducer(), 
+                                       op->parallel_unit, 
+                                       op->output_race_strategy, 
+                                       op->unrollFactor);
+          const auto consumer = body.getConsumer();
+          stmt = Where(consumer, producer);
+          return;
+        }
+      }
+      stmt = Forall(op->indexVar, s, op->parallel_unit, 
+                    op->output_race_strategy, op->unrollFactor);
     }
-    vector<IndexVar> forallIndexVars;
-    match(stmt,
-          function<void(const ForallNode*)>([&](const ForallNode* op) {
-              forallIndexVars.push_back(op->indexVar);
-          })
-    );
+  };
+  PrecomputeRewriter rewriter;
+  rewriter.precompute = *this;
+  stmt = rewriter.rewrite(stmt);
 
-    ProvenanceGraph provGraph = ProvenanceGraph(stmt);
+  // Convert redundant reductions to assignments
+  stmt = eliminateRedundantReductions(stmt);
 
-
-
-    struct PrecomputeRewriter : public IndexNotationRewriter {
-        using IndexNotationRewriter::visit;
-        Precompute precompute;
-        ProvenanceGraph provGraph;
-        vector<IndexVar> forallIndexVarList;
-
-        Assignment getConsumerAssignment(IndexStmt stmt, TensorVar& ws) {
-            Assignment a = Assignment();
-            match(stmt,
-                  function<void(const AssignmentNode*, Matcher*)>([&](const AssignmentNode* op, Matcher* ctx) {
-                      a = Assignment(op);
-                  }),
-                  function<void(const WhereNode*, Matcher*)>([&](const WhereNode* op, Matcher* ctx) {
-                      ctx->match(op->consumer);
-                      ctx->match(op->producer);
-                  }),
-                  function<void(const AccessNode*, Matcher*)>([&](const AccessNode* op, Matcher* ctx) {
-                      if (op->tensorVar == ws) {
-                          return;
-                      }
-                  })
-            );
-
-            IndexSetRel rel = a.getIndexSetRel();
-            /// The reduceOp depends on the relation between indexVar sets of rhs and lhs. For rcl and inter, reduceOp
-            /// must be +=. For lcr, reduceOp must be =. For none and equal, reduceOp can't be decided at this stage.
-            switch (rel) {
-                case none: a = Assignment(a.getLhs(), a.getRhs());break;
-                case rcl:  a = Assignment(a.getLhs(), a.getRhs(), Add());break;
-                case lcr: a = Assignment(a.getLhs(), a.getRhs());break;
-                case inter: a = Assignment(a.getLhs(), a.getRhs(), Add());break;
-                case equal: a = Assignment(a.getLhs(), a.getRhs());break;
-            }
-            return a;
-        }
-
-        Assignment getProducerAssignment(TensorVar& ws,
-                                         const std::vector<IndexVar>& i_vars,
-                                         const std::vector<IndexVar>& iw_vars,
-                                         const IndexExpr& e,
-                                         map<IndexVar, IndexVar> substitutions) {
-
-            auto a = ws(iw_vars) = replace(e, substitutions);
-            IndexSetRel rel = a.getIndexSetRel();
-            /// The reduceOp depends on the relation between indexVar sets of rhs and lhs. For rcl and inter, reduceOp
-            /// must be +=. For lcr, reduceOp must be =. For none and equal, reduceOp can't be decided at this stage.
-            switch (rel) {
-                case none: a = Assignment(a.getLhs(), a.getRhs());break;
-                case rcl:  a = Assignment(a.getLhs(), a.getRhs(), Add());break;
-                case lcr: a = Assignment(a.getLhs(), a.getRhs());break;
-                case inter: a = Assignment(a.getLhs(), a.getRhs(), Add());break;
-                case equal: a = Assignment(a.getLhs(), a.getRhs());break;
-            }
-            return a;
-        }
-
-        IndexStmt generateForalls(IndexStmt stmt, vector<IndexVar> indexVars) {
-            auto returnStmt = stmt;
-            for (auto &i : indexVars) {
-                returnStmt = forall(i, returnStmt);
-            }
-
-            return returnStmt;
-        }
-
-        bool containsIndexVarScheduled(vector<IndexVar> indexVars,
-                                       IndexVar indexVar) {
-            bool contains = false;
-            for (auto &i : indexVars) {
-                if (i == indexVar) {
-                    contains = true;
-                } else if (provGraph.isFullyDerived(indexVar) && !provGraph.isFullyDerived(i)) {
-                    for (auto &child : provGraph.getFullyDerivedDescendants(i)) {
-                        if (child == indexVar)
-                            contains = true;
-                    }
-                }
-            }
-            return contains;
-        }
-
-        void visit(const ForallNode* node) {
-            Forall foralli(node);
-            std::vector<IndexVar> i_vars = precompute.getIVars();
-
-            bool containsWhere = false;
-            match(foralli,
-                  function<void(const WhereNode*)>([&](const WhereNode* op) {
-                      containsWhere = true;
-                  })
-            );
-
-            if (!containsWhere) {
-                vector<IndexVar> forallIndexVars;
-                match(foralli,
-                      function<void(const ForallNode*)>([&](const ForallNode* op) {
-                          forallIndexVars.push_back(op->indexVar);
-                      })
-                );
-
-                IndexStmt s = foralli.getStmt();
-                TensorVar ws = precompute.getWorkspace();
-                IndexExpr e = precompute.getExpr();
-                std::vector<IndexVar> iw_vars = precompute.getIWVars();
-
-                map<IndexVar, IndexVar> substitutions;
-                taco_iassert(i_vars.size() == iw_vars.size()) << "i_vars and iw_vars lists must be the same size";
-
-                for (int index = 0; index < (int)i_vars.size(); index++) {
-                    substitutions[i_vars[index]] = iw_vars[index];
-                }
-
-                // Build consumer by replacing with temporary (in replacedStmt)
-                IndexStmt replacedStmt = replace(s, {{e, ws(i_vars) }});
-                if (replacedStmt != s) {
-                    // Then modify the replacedStmt to have the correct foralls
-                    // by concretizing the consumer assignment
-
-                    auto consumerAssignment = getConsumerAssignment(replacedStmt, ws);
-                    auto consumerIndexVars = consumerAssignment.getIndexVars();
-
-                    auto producerAssignment = getProducerAssignment(ws, i_vars, iw_vars, e, substitutions);
-                    auto producerIndexVars = producerAssignment.getIndexVars();
-
-                    vector<IndexVar> producerForallIndexVars;
-                    vector<IndexVar> consumerForallIndexVars;
-                    vector<IndexVar> outerForallIndexVars;
-
-                    bool stopForallDistribution = false;
-                    for (auto &i : util::reverse(forallIndexVars)) {
-                        if (!stopForallDistribution && containsIndexVarScheduled(i_vars, i)) {
-                            producerForallIndexVars.push_back(substitutions[i]);
-                            consumerForallIndexVars.push_back(i);
-                        } else {
-                            auto consumerContains = containsIndexVarScheduled(consumerIndexVars, i);
-                            auto producerContains = containsIndexVarScheduled(producerIndexVars, i);
-                            if (stopForallDistribution || (producerContains && consumerContains)) {
-                                outerForallIndexVars.push_back(i);
-                                stopForallDistribution = true;
-                            } else if (!stopForallDistribution && consumerContains) {
-                                consumerForallIndexVars.push_back(i);
-                            } else if (!stopForallDistribution && producerContains) {
-                                producerForallIndexVars.push_back(i);
-                            }
-                        }
-                    }
-                    IndexStmt consumer = generateForalls(consumerAssignment, consumerForallIndexVars);
-
-                    IndexStmt producer = generateForalls(producerAssignment, producerForallIndexVars);
-                    Where where(consumer, producer);
-
-                    stmt = generateForalls(where, outerForallIndexVars);
-
-                    return;
-                }
-            }
-            IndexNotationRewriter::visit(node);
-        }
-    };
-
-    /// RedundantVisitor uses Forall Context to determine reduceOp for none and equal.
-    /// We assume += is used if a workspace is accessed multiple times, otherwise =.
-    /// Forall Context describes the related indexVars of the given indexVar at a specific stage. `ctx_stack` implements such concept.
-    struct RedundantVisitor: public IndexNotationVisitor {
-        using IndexNotationVisitor::visit;
-
-        std::vector<Assignment>& to_change;
-        std::vector<IndexVar> ctx_stack;
-        std::vector<int> num_stack;
-        int ctx_num;
-        const ProvenanceGraph& provGraph;
-
-        RedundantVisitor(std::vector<Assignment>& to_change, const ProvenanceGraph& provGraph):to_change(to_change), ctx_num(0), provGraph(provGraph){}
-
-        void visit(const ForallNode* node) {
-            Forall foralli(node);
-            IndexVar var = foralli.getIndexVar();
-            ctx_stack.push_back(var);
-            if (! num_stack.empty()) {
-                num_stack.back()++;
-            }
-            if (num_stack.empty()) {
-                num_stack.push_back(1);
-            }
-            IndexNotationVisitor::visit(node);
-        }
-        void visit(const WhereNode* node) {
-            num_stack.push_back(0);
-            IndexNotationVisitor::visit(node->consumer);
-            ctx_num = num_stack.back();
-            for (int i = 0; i < ctx_num; i++){
-                ctx_stack.pop_back();
-            }
-            num_stack.pop_back();
-            num_stack.push_back(0);
-            IndexNotationVisitor::visit(node->producer);
-            ctx_num = num_stack.back();
-            for (int i = 0; i < ctx_num; i++){
-                ctx_stack.pop_back();
-            }
-            num_stack.pop_back();
-        }
-        void visit(const AssignmentNode* node) {
-            Assignment a(node->lhs, node->rhs, node->op);
-            vector<IndexVar> freeVars = a.getLhs().getIndexVars();
-            set<IndexVar> seen(freeVars.begin(), freeVars.end());
-
-            /// For equal, if some indexVar in lhs has sibling in ctx stack, reduceOp will be +=.
-            bool is_equal = (a.getIndexSetRel() == equal);
-            bool has_sibling = false;
-            match(a.getRhs(),
-                  std::function<void(const AccessNode*)>([&](const AccessNode* op) {
-                      for (auto& var : op->indexVars) {
-                          for (auto& svar : ctx_stack) {
-                              if ((provGraph.getUnderivedAncestors(var)[0] == provGraph.getUnderivedAncestors(svar)[0]) && svar != var) {
-                                  has_sibling = true;
-                              }
-                          }
-                      }
-                  }));
-            if (is_equal && has_sibling) {
-                to_change.push_back(a);
-            }
-
-            /// For none, if ctx_stack except the top contains indexVars in lhs, reduceOp will be +=.
-            bool is_none = (a.getIndexSetRel() == none);
-            bool has_outside = true;
-            for (auto & var : seen) {
-                for (auto &svar: ctx_stack) {
-                    if (svar != ctx_stack.back() && var != svar) {
-                        has_outside = false;
-                    }
-                }
-            }
-            if (is_none && has_outside) {
-                to_change.push_back(a);
-            }
-        }
-    };
-
-    struct RedundantRewriter: public IndexNotationRewriter {
-        using IndexNotationRewriter::visit;
-        std::set<Assignment> to_change;
-        RedundantRewriter(std::vector<Assignment>& to_change):to_change(to_change.begin(),to_change.end()){}
-
-        void visit(const AssignmentNode* node) {
-            Assignment a(node->lhs, node->rhs, node->op);
-            for (auto & v: to_change) {
-                if ((v.getLhs() == a.getLhs()) && (v.getRhs() == a.getRhs()) ) {
-                    stmt = Assignment(a.getLhs(), a.getRhs(), Add());
-                    return;
-                }
-            }
-            IndexNotationRewriter::visit(node);
-        }
-
-
-    };
-
-    PrecomputeRewriter rewriter;
-    rewriter.precompute = *this;
-    rewriter.provGraph = provGraph;
-    rewriter.forallIndexVarList = forallIndexVars;
-    stmt = rewriter.rewrite(stmt);
-    std::vector<Assignment> to_change;
-    RedundantVisitor findVisitor(to_change, provGraph);
-    stmt.accept(&findVisitor);
-    RedundantRewriter ReRewriter(to_change);
-    stmt = ReRewriter.rewrite(stmt);
-    return stmt;
+  return stmt;
 }
 
 void Precompute::print(std::ostream& os) const {
-  os << "precompute(" << getExpr() << ", " << getIVars() << ", "
-     << getIWVars() << ", " << getWorkspace() << ")";
+  os << "precompute(" << getExpr() << ", " << geti() << ", "
+     << getiw() << ", " << getWorkspace() << ")";
 }
 
 bool Precompute::defined() const {
@@ -779,7 +454,6 @@ IndexStmt ForAllReplace::apply(IndexStmt stmt, string* reason) const {
           for (auto i = replacement.rbegin(); i != replacement.rend(); ++i ) {
             stmt = forall(*i, stmt);
           }
-          elementsMatched = 0;
         }
         // else cut out this node
         return;
@@ -921,7 +595,6 @@ IndexStmt Parallelize::apply(IndexStmt stmt, std::string* reason) const {
       provGraph = ProvenanceGraph(stmt);
 
       const auto reductionVars = getReductionVars(stmt);
-
       reductionIndexVars.clear();
       for (const auto& iv : stmt.getIndexVars()) {
         if (util::contains(reductionVars, iv)) {
@@ -989,29 +662,29 @@ IndexStmt Parallelize::apply(IndexStmt stmt, std::string* reason) const {
                                                            definedIndexVars);
 
         // Precondition 3: Every result iterator must have insert capability
-        for (Iterator iterator : underivedLattice.results()) {
-          if (util::contains(assembledByUngroupedInsert, iterator.getTensor())) {
-            for (Iterator it = iterator; !it.isRoot(); it = it.getParent()) {
-              if (it.hasInsertCoord() || !it.isYieldPosPure()) {
-                reason = "Precondition failed: The output tensor does not "
-                         "support parallelized inserts";
-                return;
-              }
-            }
-          } else {
-            while (true) {
-              if (!iterator.hasInsert()) {
-                reason = "Precondition failed: The output tensor must support " 
-                         "inserts";
-                return;
-              }
-              if (iterator.isLeaf()) {
-                break;
-              }
-              iterator = iterator.getChild();
-            }
-          }
-        }
+        //for (Iterator iterator : underivedLattice.results()) {
+        //  if (util::contains(assembledByUngroupedInsert, iterator.getTensor())) {
+        //    for (Iterator it = iterator; !it.isRoot(); it = it.getParent()) {
+        //      if (it.hasInsertCoord() || !it.isYieldPosPure()) {
+        //        reason = "Precondition failed: The output tensor does not "
+        //                 "support parallelized inserts";
+        //        return;
+        //      }
+        //    }
+        //  } else {
+        //    while (true) {
+        //      if (!iterator.hasInsert()) {
+        //        reason = "Precondition failed: The output tensor must support " 
+        //                 "inserts";
+        //        return;
+        //      }
+        //      if (iterator.isLeaf()) {
+        //        break;
+        //      }
+        //      iterator = iterator.getChild();
+        //    }
+        //  }
+        //}
 
         if (parallelize.getOutputRaceStrategy() == OutputRaceStrategy::Temporary &&
             util::contains(reductionIndexVars, underivedForall.getIndexVar())) {
@@ -1034,7 +707,7 @@ IndexStmt Parallelize::apply(IndexStmt stmt, std::string* reason) const {
           );
           taco_iassert(!precomputeAssignments.empty());
 
-          IndexStmt precomputed_stmt = forall(i, foralli.getStmt(), foralli.getMergeStrategy(), parallelize.getParallelUnit(), parallelize.getOutputRaceStrategy(), foralli.getUnrollFactor());
+          IndexStmt precomputed_stmt = forall(i, foralli.getStmt(), parallelize.getParallelUnit(), parallelize.getOutputRaceStrategy(), foralli.getUnrollFactor());
           for (auto assignment : precomputeAssignments) {
             // Construct temporary of correct type and size of outer loop
             TensorVar w(string("w_") + ParallelUnit_NAMES[(int) parallelize.getParallelUnit()], Type(assignment->lhs.getDataType(), {Dimension(i)}), taco::dense);
@@ -1043,7 +716,7 @@ IndexStmt Parallelize::apply(IndexStmt stmt, std::string* reason) const {
             IndexStmt producer = ReplaceReductionExpr(map<Access, Access>({{assignment->lhs, w(i)}})).rewrite(precomputed_stmt);
             taco_iassert(isa<Forall>(producer));
             Forall producer_forall = to<Forall>(producer);
-            producer = forall(producer_forall.getIndexVar(), producer_forall.getStmt(), foralli.getMergeStrategy(), parallelize.getParallelUnit(), parallelize.getOutputRaceStrategy(), foralli.getUnrollFactor());
+            producer = forall(producer_forall.getIndexVar(), producer_forall.getStmt(), parallelize.getParallelUnit(), parallelize.getOutputRaceStrategy(), foralli.getUnrollFactor());
 
             // build consumer that writes from temporary to output, mark consumer as parallel reduction
             ParallelUnit reductionUnit = ParallelUnit::CPUThreadGroupReduction;
@@ -1055,7 +728,7 @@ IndexStmt Parallelize::apply(IndexStmt stmt, std::string* reason) const {
                 reductionUnit = ParallelUnit::GPUBlockReduction;
               }
             }
-            IndexStmt consumer = forall(i, Assignment(assignment->lhs, w(i), assignment->op), foralli.getMergeStrategy(), reductionUnit, OutputRaceStrategy::ParallelReduction);
+            IndexStmt consumer = forall(i, Assignment(assignment->lhs, w(i), assignment->op), reductionUnit, OutputRaceStrategy::ParallelReduction);
             precomputed_stmt = where(consumer, producer);
           }
           stmt = precomputed_stmt;
@@ -1067,14 +740,14 @@ IndexStmt Parallelize::apply(IndexStmt stmt, std::string* reason) const {
           // reducing at end
           IndexStmt body = scalarPromote(foralli.getStmt(), provGraph, 
                                          false, true);
-          stmt = forall(i, body, foralli.getMergeStrategy(), parallelize.getParallelUnit(), 
+          stmt = forall(i, body, parallelize.getParallelUnit(), 
                         parallelize.getOutputRaceStrategy(), 
                         foralli.getUnrollFactor());
           return;
         }
 
 
-        stmt = forall(i, foralli.getStmt(), foralli.getMergeStrategy(), parallelize.getParallelUnit(), parallelize.getOutputRaceStrategy(), foralli.getUnrollFactor());
+        stmt = forall(i, foralli.getStmt(), parallelize.getParallelUnit(), parallelize.getOutputRaceStrategy(), foralli.getUnrollFactor());
         return;
       }
 
@@ -1241,7 +914,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
       if (s == op->stmt) {
         stmt = op;
       } else if (s.defined()) {
-        stmt = Forall(op->indexVar, s, op->merge_strategy, op->parallel_unit, 
+        stmt = Forall(op->indexVar, s, op->parallel_unit, 
                       op->output_race_strategy, op->unrollFactor);
       } else {
         stmt = IndexStmt();
@@ -1267,11 +940,8 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
       const auto resultTensor = resultAccess.getTensorVar();
       
       if (resultTensor != result) {
-        // TODO: Should check that annihilator of original reduction op equals
-        // fill value of original result
         Access lhs = to<Access>(rewrite(op->lhs));
-        IndexExpr reduceOp = op->op.defined() ? Add() : IndexExpr();
-        stmt = (rhs != op->rhs) ? Assignment(lhs, rhs, reduceOp) : op;
+        stmt = (rhs != op->rhs) ? Assignment(lhs, rhs, op->op) : op;
         return;
       }
 
@@ -1281,7 +951,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
         return;
       }
 
-      queryResults[resultTensor] =
+      queryResults[resultTensor] = 
           std::vector<std::vector<TensorVar>>(resultTensor.getOrder());
 
       const auto indices = resultAccess.getIndexVars();
@@ -1300,16 +970,16 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
         parentCoords.push_back(indices[modeOrdering[i]]);
         childCoords.erase(childCoords.begin());
 
-        for (const auto& query:
+        for (const auto& query: 
             modeFormats[i].getAttrQueries(parentCoords, childCoords)) {
           const auto& groupBy = query.getGroupBy();
 
           // TODO: support multiple aggregations in single query
-          taco_iassert(query.getAttrs().size() == 1);
+          taco_iassert(query.getAttrs().size() == 1); 
 
           std::vector<Dimension> queryDims;
           for (const auto& coord : groupBy) {
-            const auto pos = std::find(groupBy.begin(), groupBy.end(), coord)
+            const auto pos = std::find(groupBy.begin(), groupBy.end(), coord) 
                            - groupBy.begin();
             const auto dim = resultTensor.getType().getShape().getDimension(pos);
             queryDims.push_back(dim);
@@ -1320,7 +990,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
               case AttrQuery::COUNT:
               {
                 std::vector<IndexVar> dedupCoords = groupBy;
-                dedupCoords.insert(dedupCoords.end(), attr.params.begin(),
+                dedupCoords.insert(dedupCoords.end(), attr.params.begin(), 
                                    attr.params.end());
                 std::vector<Dimension> dedupDims(dedupCoords.size());
                 TensorVar dedupTmp(modeName + "_dedup", Type(Bool, dedupDims));
@@ -1329,7 +999,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
 
                 const auto resultName = modeName + "_" + attr.label;
                 TensorVar queryResult(resultName, Type(Int32, queryDims));
-                epilog = Assignment(queryResult(groupBy),
+                epilog = Assignment(queryResult(groupBy), 
                                     Cast(dedupTmp(dedupCoords), Int()), Add());
                 for (const auto& coord : util::reverse(dedupCoords)) {
                   epilog = forall(coord, epilog);
@@ -1366,56 +1036,6 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
 
       expr = op;
     }
-
-    void visit(const CallNode* op) {
-      std::vector<IndexExpr> args;
-      bool rewritten = false;
-      for(auto& arg : op->args) {
-        IndexExpr rewrittenArg = rewrite(arg);
-        args.push_back(rewrittenArg);
-        if (arg != rewrittenArg) {
-          rewritten = true;
-        }
-      }
-
-      if (rewritten) {
-        const std::map<IndexExpr, IndexExpr> subs = util::zipToMap(op->args, args);
-        IterationAlgebra newAlg = replaceAlgIndexExprs(op->iterAlg, subs);
-
-        struct InferSymbolic : public IterationAlgebraVisitorStrict {
-          IndexExpr ret;
-
-          IndexExpr infer(IterationAlgebra alg) {
-            ret = IndexExpr();
-            alg.accept(this);
-            return ret;
-          }
-          virtual void visit(const RegionNode* op) {
-            ret = op->expr();
-          }
-
-          virtual void visit(const ComplementNode* op) {
-            taco_not_supported_yet;
-          }
-
-          virtual void visit(const IntersectNode* op) {
-            IndexExpr lhs = infer(op->a);
-            IndexExpr rhs = infer(op->b);
-            ret = lhs * rhs;
-          }
-
-          virtual void visit(const UnionNode* op) {
-            IndexExpr lhs = infer(op->a);
-            IndexExpr rhs = infer(op->b);
-            ret = lhs + rhs;
-          }
-        };
-        expr = InferSymbolic().infer(newAlg);
-      }
-      else {
-        expr = op;
-      }
-    }
   };
   LowerAttrQuery queryLowerer(getResult(), queryResults, insertedResults);
   loweredQueries = queryLowerer.lower(loweredQueries);
@@ -1449,7 +1069,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
       if (producer == op->producer && consumer == op->consumer) {
         stmt = op;
       } else {
-        stmt = new WhereNode(consumer, producer);
+        stmt = new WhereNode(consumer, producer); // [WJY] Commented out
       }
     }
 
@@ -1512,7 +1132,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
       if (s == op->stmt) {
         stmt = op;
       } else if (s.defined()) {
-        stmt = new ForallNode(op->indexVar, s, op->merge_strategy, op->parallel_unit, 
+        stmt = new ForallNode(op->indexVar, s, op->parallel_unit, 
                               op->output_race_strategy, op->unrollFactor);
       } else {
         stmt = IndexStmt();
@@ -1524,7 +1144,7 @@ IndexStmt SetAssembleStrategy::apply(IndexStmt stmt, string* reason) const {
       if (consumer == op->consumer) {
         stmt = op;
       } else if (consumer.defined()) {
-        stmt = new WhereNode(consumer, op->producer);
+        stmt = new WhereNode(consumer, op->producer); //[WJY] commented out
       } else {
         stmt = op->producer;
       }
@@ -1822,7 +1442,7 @@ IndexStmt reorderLoopsTopologically(IndexStmt stmt) {
       taco_iassert(util::contains(sortedVars, i));
       stmt = innerBody;
       for (auto it = sortedVars.rbegin(); it != sortedVars.rend(); ++it) {
-        stmt = forall(*it, stmt, foralli.getMergeStrategy(), forallParallelUnit.at(*it), forallOutputRaceStrategy.at(*it), foralli.getUnrollFactor());
+        stmt = forall(*it, stmt, forallParallelUnit.at(*it), forallOutputRaceStrategy.at(*it), foralli.getUnrollFactor());
       }
       return;
     }
@@ -1928,7 +1548,7 @@ IndexStmt scalarPromote(IndexStmt stmt, ProvenanceGraph provGraph,
   FindHoistLevel findHoistLevel(hoistLevel, reduceOp, provGraph, isWholeStmt, 
                                 promoteScalar);
   stmt.accept(&findHoistLevel);
-  
+
   struct HoistWrites : public IndexNotationRewriter {
     using IndexNotationRewriter::visit;
 
@@ -1968,15 +1588,17 @@ IndexStmt scalarPromote(IndexStmt stmt, ProvenanceGraph provGraph,
         return;
       }
 
-      stmt = forall(i, body, foralli.getMergeStrategy(), foralli.getParallelUnit(),
+      stmt = forall(i, body, foralli.getParallelUnit(),
                     foralli.getOutputRaceStrategy(), foralli.getUnrollFactor());
       for (const auto& consumer : consumers) {
-        stmt = where(consumer, stmt);
+        stmt = where(consumer, stmt); 
       }
     }
   };
   HoistWrites hoistWrites(hoistLevel, reduceOp);
-  return hoistWrites.rewrite(stmt);
+  
+  return hoistWrites.rewrite(stmt); // [WJY] commented out : where the "WHERE" clause involved in concretenotation
+  return stmt;
 }
 
 IndexStmt scalarPromote(IndexStmt stmt) {

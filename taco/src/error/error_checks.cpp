@@ -41,9 +41,7 @@ std::pair<bool, string> dimensionsTypecheck(const std::vector<IndexVar>& resultV
   for (size_t mode = 0; mode < resultVars.size(); mode++) {
     IndexVar var = resultVars[mode];
     auto dimension = shape.getDimension(mode);
-    if (util::contains(indexVarDims,var) && indexVarDims.at(var) != dimension &&
-        !(indexVarDims.at(var).isIndexVarSized() && indexVarDims.at(var).getIndexVarSize() == var) &&
-        !(dimension.isIndexVarSized() && dimension.getIndexVarSize() == var)) {
+    if (util::contains(indexVarDims,var) && indexVarDims.at(var) != dimension) {
       errors.push_back(addDimensionError(var, indexVarDims.at(var), dimension));
     } else {
       indexVarDims.insert({var, dimension});
@@ -65,9 +63,7 @@ std::pair<bool, string> dimensionsTypecheck(const std::vector<IndexVar>& resultV
         dimension = Dimension(a.getIndexSet(mode).size());
       }
 
-      if (util::contains(indexVarDims,var) && indexVarDims.at(var) != dimension &&
-        !(indexVarDims.at(var).isIndexVarSized() && indexVarDims.at(var).getIndexVarSize() == var) &&
-        !(dimension.isIndexVarSized() && dimension.getIndexVarSize() == var)) {
+      if (util::contains(indexVarDims,var) && indexVarDims.at(var) != dimension) {
         errors.push_back(addDimensionError(var, indexVarDims.at(var), dimension));
       } else {
         indexVarDims.insert({var, dimension});

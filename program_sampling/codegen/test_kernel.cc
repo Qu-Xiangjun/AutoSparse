@@ -84,12 +84,12 @@ int main(int argc, char *argv[])
 	// Generating Random Dense B
 	////////////////////////////
 	int N = 256; // Number of Column in B(k,j)
-	vector<float> A = vector<float>(roundup(num_col, 1024) * N, 1); // 1初始化数组，列数padding到1024,实际用不了这么多
+	vector<float> B = vector<float>(roundup(num_col, 1024) * N, 1);
 
 	////////////////////////////
 	// Generating Dense Output C
 	////////////////////////////
-	vector<float> C = vector<float>(roundup(num_row, 1024) * N, 0); // 0初始化数组，列数padding到1024
+	vector<float> C = vector<float>(roundup(num_row, 1024) * N, 0);
 
 
 	////////////////////////////
@@ -100,19 +100,21 @@ int main(int argc, char *argv[])
 	vector<FormatInfo> TensorA, TensorB, TensorC;
 	TensorC.push_back({"i", num_row, UNCOMPRESSED}); // {name, dimention, mode_type}
 	TensorC.push_back({"j", N, UNCOMPRESSED});
+	TensorA.push_back({"i", num_row, UNCOMPRESSED});
+	TensorA.push_back({"k", num_col, COMPRESSED});
+	TensorB.push_back({"k", num_col, UNCOMPRESSED});
+	TensorB.push_back({"j", N, UNCOMPRESSED});
 	M.add_tensor("C", TensorC, C, true);
-	TensorA.push_back({"i", num_col, UNCOMPRESSED});
-	TensorA.push_back({"k", N, UNCOMPRESSED});
-	M.add_tensor("A", TensorA, C, false);
-	TensorB.push_back({"k", num_row, UNCOMPRESSED});
-	TensorB.push_back({"j", num_col, COMPRESSED});
-	M.add_tensor("B", TensorB, coo, false);
+	M.add_tensor("A", TensorA, coo, false);
+	M.add_tensor("B", TensorB, B, false);
 	M.reset_all();
 
 	///////////////////////////////
 	// Excute Puring Correct Result
 	///////////////////////////////
-	M.parallelize("i"); // 为什么不使用NUMCORE 而是48？
+	vector<string> reordered_vars = {"i", "k", "j"};
+	M.lreorder(reordered_vars);
+	M.parallelize("i");
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;

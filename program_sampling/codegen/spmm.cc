@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	cout << "NUMROW : " << num_row << " / NUMCOL : " << num_col << " / NNZ : " << num_nonzero << " ";
 	cout << endl;
 
-	vector<pair<uint64_t, float>> coo(num_nonzero);
+	Compressed_Coo coo(num_nonzero);
 	int col_digit2 = (int)(ceil(log2(num_col)));
 	#pragma omp parallel for schedule(dynamic, 4)
 	for (int i = 0; i < num_row; i++) // 行号
@@ -208,10 +208,11 @@ int main(int argc, char *argv[])
 			string schedule_command = M.compile(pnum, pchunk);	// 编译生成kernel
 			verify = true;
 			float avgtime = M.run(10, 50, verify); // 运行并返回时间，这里不需要验证
-			cout << "Testing Candidate SuperSchedules... " << schedule << " = " << avgtime << " ms" << "  correct:"<<verify<<endl;
+			cout << "correct:" << verify << ", " << avgtime << " ms" << ", Schedules:" << schedule << endl;
 			if (bestTime > avgtime)
 			{
 				bestTime = avgtime;
+				schedule.pop_back();
 				bestSuperSchedule = schedule;
 			}
 		}

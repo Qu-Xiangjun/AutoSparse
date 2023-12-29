@@ -75,7 +75,8 @@ public:
     vector<vector<int>> T_crd;
     vector<vector<int>> T_un_pos;   // non unique pos for COMPRESSED_NU    
     vector<vector<int>> T_un_crd;   // non unique pos for COMPRESSED_NU, SINGLETON_NU 
-    vector<float>       T_val;      // Store none-zero according low to high coord.
+    vector<float>       T_vals;     // Store none-zero according low to high coord.
+    int                 T_vals_size;// The none zeros count in the storage format.
     taco_tensor_t       *T;
     
     const bool          is_dense;   // All ranks are uncompressed.
@@ -85,7 +86,7 @@ public:
 public:
     /* Construct tensor from sparse coo format. */
     Tensor(Compressed_Coo &coo_init, vector<FormatInfo> &format_init) 
-    : coo(coo), format(format_init), is_dense(false)
+    : coo(coo_init), format(format_init), is_dense(false)
     {
         /* Initial format compressed bit info */
         int num_rank = format.size();
@@ -103,7 +104,7 @@ public:
 
     /* construct tensor from dense format. */
     Tensor(vector<float> &dense_vals, vector<FormatInfo> &format_init)
-    : T_val(dense_vals), format(format_init), format_rst(format_init), is_dense(true)
+    : T_vals(dense_vals), format(format_init), format_rst(format_init), is_dense(true)
     {
         /* Initial class property */
         T = NULL;
@@ -120,23 +121,22 @@ public:
     /////////////////////////
 
     vector<FormatInfo>  &get_format()   { return format; }
-    vector<float>       &get_val()      { return T_val; }
+    vector<float>       &get_vals()     { return T_vals; }
     vector<vector<int>> &get_pos()      { return T_pos; }
     vector<vector<int>> &get_crd()      { return T_crd; }
+    vector<vector<int>> &get_un_pos()   { return T_un_pos; }
+    vector<vector<int>> &get_un_crd()   { return T_un_crd; }
 
     /* Fill the val with a scalar */
     void fill_val(float scalar)
     {
-        fill(T_val.begin(), T_val.end(), scalar);
+        fill(T_vals.begin(), T_vals.end(), scalar);
     }
 
     /*  Clear all the change by shedule and pack to format. */
     void reset() 
     {
         format = format_rst;
-        T_pos.clear();
-        T_crd.clear();
-        if(!is_dense) T_crd.clear();
         destroy_taco_tensor_t();
     }
 
@@ -328,6 +328,8 @@ public:
                 break;
             }
         }
+        T->vals = (uint8_t *)(T_vals.data());
+        T->vals_size = T_vals_size;
     }
 
     /* Destroy exist taco_tensor_t. */
@@ -342,13 +344,15 @@ public:
             delete[] T->indices[rank];
         }
         delete[] T->indices;
-        delete   T;
+        delete T;
+        T = nullptr;
     }
 
     void pack()
     {
         if(is_dense)
         {
+            T_vals_size = T_vals.size();
             init_taco_tensor_t();
             return ;
         }
@@ -360,14 +364,16 @@ public:
         vector<int> newstartbit(num_rank);
         Compressed_Coo packed_coo(nnz);
         vector<uint64_t> unique_corrds(num_rank, -1);
-        T_pos = vector<vector<int>>(num_rank, vector<int>());
-        T_crd = vector<vector<int>>(num_rank, vector<int>());
+        T_pos    = vector<vector<int>>(num_rank, vector<int>());
+        T_un_pos = vector<vector<int>>(num_rank, vector<int>());
+        T_crd    = vector<vector<int>>(num_rank, vector<int>());
+        T_un_crd = vector<vector<int>>(num_rank, vector<int>());
 
         int limit = nnz * 20; // 5e8
         int format_size = 0; // Count the format storage int32 overhead.
 
         /* Pack to packed coo copied deeply from coo, and resort packed coo. */
-        // #pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < nnz; i++) // Traverse all the none-zero value in coo.
         {
             float value = coo[i].second;
@@ -448,7 +454,7 @@ public:
                 }
             }
             // Store value for the indice.
-            if (T_val.size() <= pos_idx)
+            if (T_vals.size() <= pos_idx)
             {
                 if (pos_idx > limit)
                 {
@@ -457,14 +463,26 @@ public:
                     );
                     exit(-1);
                 }
-                T_val.resize((pos_idx + 1000000), 0);
+                T_vals.resize((pos_idx + 1000000), 0);
             }
-            T_val[pos_idx] = value; // Only mentioned in this position index stored none-zero value.
+            if(
+                format[num_rank - 1].mode == SINGLETON_NU or 
+                format[num_rank - 1].mode == COMPRESSED_NU
+            ) // If last rank mode is non-unique, position index is different with `pos_idx`.
+            {
+                T_vals[T_un_crd[num_rank - 1].size() - 1] = value;
+                T_vals_size = T_un_crd[num_rank - 1].size();
+            }
+            else
+            {
+                T_vals[pos_idx] = value; 
+                T_vals_size = pos_idx;
+            }
         }
         
         /* Do the prefixsum for T_pos, which had only count number of intervals. */
         long pos_size = 1; // Record every level pos array size, which can accumulate to format_size.
-        for (int rank = 0; rank <= num_rank; rank++)
+        for (int rank = 0; rank < num_rank; rank++)
         {
             switch (format[rank].mode)
             {
@@ -475,7 +493,7 @@ public:
             case COMPRESSED:
                 for (int i = 0; i < pos_size; i++)
                     T_pos[rank][i + 1] += T_pos[rank][i]; // Prefixsum
-                format_size = pos_size + 1 + T_crd[rank].size();
+                format_size = pos_size + 1 + T_crd[rank].size(); // pos and crd array size.
 				pos_size = T_crd[rank].size();
                 break;
             case COMPRESSED_NU:
@@ -483,12 +501,19 @@ public:
                     T_un_pos[rank][i + 1] += T_un_pos[rank][i]; // Prefixsum
                 format_size = pos_size + 1 + T_un_crd[rank].size();
 				pos_size = T_crd[rank].size();
+
+                /* Unify expression of un_pos, un_crd array to pos, crd. */
+                T_crd[rank] = T_un_crd[rank];
+                T_pos[rank] = T_un_pos[rank];
+
                 break;
             case SINGLETON:
                 /* Don't need pos array */
                 break;
             case SINGLETON_NU:
                 /* Don't need pos array */
+                /* Unify expression of un_pos, un_crd array to pos, crd. */
+                T_crd[rank] = T_un_crd[rank];
                 break;
             default: 
                 break;

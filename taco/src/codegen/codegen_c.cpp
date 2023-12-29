@@ -51,7 +51,6 @@ const string cHeaders =
   "  taco_mode_t* mode_types;    // mode storage types\n"
   "  uint8_t***   indices;       // tensor index data (per mode)\n"
   "  uint8_t*     vals;          // tensor values\n"
-  "  uint8_t*     fill_value;    // tensor fill value\n"
   "  int32_t      vals_size;     // values array size\n"
   "} taco_tensor_t;\n"
   "#endif\n"
@@ -61,28 +60,6 @@ const string cHeaders =
   "#endif\n"
   "int cmp(const void *a, const void *b) {\n"
   "  return *((const int*)a) - *((const int*)b);\n"
-  "}\n"
-  // Increment arrayStart until array[arrayStart] >= target or arrayStart >= arrayEnd
-  // using an exponential search algorithm: https://en.wikipedia.org/wiki/Exponential_search.
-  "int taco_gallop(int *array, int arrayStart, int arrayEnd, int target) {\n"
-  "  if (array[arrayStart] >= target || arrayStart >= arrayEnd) {\n"
-  "    return arrayStart;\n"
-  "  }\n"
-  "  int step = 1;\n"
-  "  int curr = arrayStart;\n"
-  "  while (curr + step < arrayEnd && array[curr + step] < target) {\n"
-  "    curr += step;\n"
-  "    step = step * 2;\n"
-  "  }\n"
-  "\n"
-  "  step = step / 2;\n"
-  "  while (step > 0) {\n"
-  "    if (curr + step < arrayEnd && array[curr + step] < target) {\n"
-  "      curr += step;\n"
-  "    }\n"
-  "    step = step / 2;\n"
-  "  }\n"
-  "  return curr+1;\n"
   "}\n"
   "int taco_binarySearchAfter(int *array, int arrayStart, int arrayEnd, int target) {\n"
   "  if (array[arrayStart] >= target) {\n"
@@ -381,11 +358,12 @@ void CodeGen_C::visit(const Var* op) {
 
 static string genVectorizePragma(int width) {
   stringstream ret;
-  ret << "#pragma clang loop interleave(enable) ";
-  if (!width)
-    ret << "vectorize(enable)";
-  else
-    ret << "vectorize_width(" << width << ")";
+  ret << "#pragma vector ";
+  //ret << "#pragma clang loop interleave(enable) ";
+  //if (!width)
+  //  ret << "vectorize(enable)";
+  //else
+  //  ret << "vectorize_width(" << width << ")";
 
   return ret.str();
 }
@@ -505,9 +483,8 @@ void CodeGen_C::visit(const Min* op) {
     op->operands[0].accept(this);
     return;
   }
-  const auto opString = op->type.isFloat() ? "fmin" : "TACO_MIN";
   for (size_t i=0; i<op->operands.size()-1; i++) {
-    stream << opString << "(";
+    stream << "TACO_MIN(";
     op->operands[i].accept(this);
     stream << ",";
   }

@@ -1,6 +1,6 @@
 #include "taco/lower/mode_format_singleton.h"
 
-#include "taco/ir/ir_generators.h"
+#include "ir/ir_generators.h"
 #include "taco/ir/simplify.h"
 #include "taco/util/strings.h"
 
@@ -10,15 +10,15 @@ using namespace taco::ir;
 namespace taco {
 
 SingletonModeFormat::SingletonModeFormat() : 
-    SingletonModeFormat(false, true, true, false, false) {
+    SingletonModeFormat(false, true, true, false) {
 }
 
 SingletonModeFormat::SingletonModeFormat(bool isFull, bool isOrdered,
                                          bool isUnique, bool isZeroless,
-                                         bool isPadded, long long allocSize) :
+                                         long long allocSize) :
     ModeFormatImpl("singleton", isFull, isOrdered, isUnique, true, true,
-                   isZeroless, isPadded, false, true, false, false, true, 
-		   false, true, true), 
+                   isZeroless, false, true, false, false, true, false, true, 
+                   true), 
     allocSize(allocSize) {
 }
 
@@ -28,7 +28,6 @@ ModeFormat SingletonModeFormat::copy(
   bool isOrdered = this->isOrdered;
   bool isUnique = this->isUnique;
   bool isZeroless = this->isZeroless;
-  bool isPadded = this->isPadded;
   for (const auto property : properties) {
     switch (property) {
       case ModeFormat::FULL:
@@ -55,19 +54,13 @@ ModeFormat SingletonModeFormat::copy(
       case ModeFormat::NOT_ZEROLESS:
         isZeroless = false;
         break;	
-      case ModeFormat::PADDED:
-        isPadded = true;
-        break;
-      case ModeFormat::NOT_PADDED:
-        isPadded = false;
-        break;	
       default:
         break;
     }
   }
   const auto singletonVariant = 
       std::make_shared<SingletonModeFormat>(isFull, isOrdered, isUnique, 
-                                            isZeroless, isPadded);
+                                            isZeroless);
   return ModeFormat(singletonVariant);
 }
 
@@ -135,7 +128,7 @@ Expr SingletonModeFormat::getAssembledSize(Expr prevSize, Mode mode) const {
 Stmt SingletonModeFormat::getInitCoords(Expr prevSize, 
     std::vector<AttrQueryResult> queries, Mode mode) const {
   Expr crdArray = getCoordArray(mode.getModePack());
-  return Allocate::make(crdArray, prevSize, false, Expr(), isPadded);
+  return Allocate::make(crdArray, prevSize, false, Expr());
 }
 
 ModeFunction SingletonModeFormat::getYieldPos(Expr parentPos, 

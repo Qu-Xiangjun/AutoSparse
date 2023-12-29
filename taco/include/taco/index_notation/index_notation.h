@@ -9,9 +9,7 @@
 #include <set>
 #include <map>
 #include <utility>
-#include <functional>
 
-#include "taco/util/name_generator.h"
 #include "taco/format.h"
 #include "taco/error.h"
 #include "taco/util/intrusive_ptr.h"
@@ -23,7 +21,6 @@
 #include "taco/index_notation/index_notation_nodes_abstract.h"
 #include "taco/ir_tags.h"
 #include "taco/index_notation/provenance_graph.h"
-#include "taco/index_notation/properties.h"
 
 namespace taco {
 
@@ -42,8 +39,6 @@ class IndexExpr;
 class Assignment;
 class Access;
 
-class IterationAlgebra;
-
 struct AccessNode;
 struct IndexVarIterationModifier;
 struct LiteralNode;
@@ -54,10 +49,8 @@ struct SubNode;
 struct MulNode;
 struct DivNode;
 struct CastNode;
-struct CallNode;
 struct CallIntrinsicNode;
 struct ReductionNode;
-struct IndexVarNode;
 
 struct AssignmentNode;
 struct YieldNode;
@@ -70,35 +63,6 @@ struct SuchThatNode;
 
 class IndexExprVisitorStrict;
 class IndexStmtVisitorStrict;
-
-/// Describe the relation between indexVar sets of lhs and rhs in an Assignment node.
-/// equal: lhs = rhs
-/// none: lhs and rhs are mutually exclusive. And lhs and rhs are not empty sets.
-/// lcr: rhs is a proper subset of lhs. (lhs contains rhs)
-/// rcl: lhs is a proper subset of rhs. (rhs contains lhs)
-/// inter: lhs and rhs share common elements but are not equal or empty. Some examples:
-/// ```
-/// // equal
-/// ws(i1) += A(i1) // i1 is a child index node
-/// ws(i) = A(i) // i is a parent index node
-///
-/// // none
-/// ws(i1) += A(i) // i1 is a child of i
-/// B_new(i) = B(i1)
-///
-/// // lcr
-/// ws(i,k) = A(i) * B(i)
-///
-/// // rcl
-/// ws(i) += A(i,k) * B(i,k)
-///
-/// // inter
-/// ws(i,j) += A(i,k) * B(k,j)
-/// ```
-///
-enum IndexSetRel {
-    equal, none, lcr, rcl, inter
-};
 
 /// Return true if the index statement is of the given subtype.  The subtypes
 /// are Assignment, Forall, Where, Sequence, and Multi.
@@ -267,7 +231,7 @@ public:
   Access() = default;
   Access(const Access&) = default;
   Access(const AccessNode*);
-  Access(const TensorVar& tensorVar, const std::vector<IndexVar>& indices={},
+  Access(const TensorVar& tensorVar, const std::vector<IndexVar>& indices={}, 
          const std::map<int, std::shared_ptr<IndexVarIterationModifier>>& modifiers={},
          bool isAccessingStructure=false);
 
@@ -332,11 +296,6 @@ public:
   Assignment operator+=(const IndexExpr&);
 
   typedef AccessNode Node;
-
-  // Equality and comparison are overridden on Access to perform a deep
-  // comparison of the access rather than a pointer check.
-  friend bool operator==(const Access& a, const Access& b);
-  friend bool operator<(const Access& a, const Access &b);
 };
 
 
@@ -364,13 +323,10 @@ public:
   Literal(std::complex<float>);
   Literal(std::complex<double>);
 
-  static Literal zero(Datatype);
+  static IndexExpr zero(Datatype);
 
   /// Returns the literal value.
   template <typename T> T getVal() const;
-
-  /// Returns an untyped pointer to the literal value
-  void* getValPtr();
 
   typedef LiteralNode Node;
 };
@@ -491,26 +447,6 @@ public:
   typedef CastNode Node;
 };
 
-/// A call to an operator
-class Call: public IndexExpr {
-public:
-  Call() = default;
-  Call(const CallNode*);
-  Call(const CallNode*, std::string name);
-
-  const std::vector<IndexExpr>& getArgs() const;
-  const std::function<ir::Expr(const std::vector<ir::Expr>&)> getFunc() const;
-  const IterationAlgebra& getAlgebra() const;
-  const std::vector<Property>& getProperties() const;
-  const std::string getName() const;
-  const std::map<std::vector<int>, std::function<ir::Expr(const std::vector<ir::Expr>&)>> getDefs() const;
-  const std::vector<int>& getDefinedArgs() const;
-
-  typedef CallNode Node;
-
-private:
-  std::string name;
-};
 
 /// A call to an intrinsic.
 /// ```
@@ -530,8 +466,6 @@ public:
 
   typedef CallIntrinsicNode Node;
 };
-
-std::ostream& operator<<(std::ostream&, const IndexVar&);
 
 /// Create calls to various intrinsics.
 IndexExpr mod(IndexExpr, IndexExpr);
@@ -615,10 +549,6 @@ public:
   /// Takes any index notation and concretizes unknowns to make it concrete notation
   IndexStmt concretize() const;
 
-  /// Takes any index notation and concretizes unknowns to make it concrete notation
-  /// given a Provenance Graph of indexVars
-  IndexStmt concretizeScheduled(ProvenanceGraph provGraph, std::vector<IndexVar> forallIndexVarList) const;
-
   /// The \code{split} transformation splits (strip-mines) an index
   /// variable into two nested index variables, where the size of the
   /// inner index variable is constant.  The size of the outer index
@@ -662,23 +592,6 @@ public:
 
   /// reorder takes a new ordering for a set of index variables that are directly nested in the iteration order
   IndexStmt reorder(std::vector<IndexVar> reorderedvars) const;
-
-  /// The mergeby transformation specifies how to merge iterators on
-  /// the given index variable. By default, if an iterator is used for windowing
-  /// it will be merged with the "gallop" strategy.
-  /// All other iterators are merged with the "two finger" strategy.
-  /// The two finger strategy merges by advancing each iterator one at a time, 
-  /// while the gallop strategy implements the exponential search algorithm.
-  /// 
-  /// Preconditions:
-  /// This command applies to variables involving sparse iterators only;
-  /// it is a no-op if the variable invovles any dense iterators.
-  /// Any variable can be merged with the two finger strategy, whereas gallop
-  /// only applies to a variable if its merge lattice has a single point 
-  /// (i.e. an intersection). For example, if a variable involves multiplications
-  /// only, it can be merged with gallop.
-  /// Furthermore, all iterators must be ordered for gallop to apply.
-  IndexStmt mergeby(IndexVar i, MergeStrategy strategy) const;
 
   /// The parallelize
   /// transformation tags an index variable for parallel execution.  The
@@ -768,12 +681,6 @@ public:
   /// reorder computations to increase locality
   IndexStmt precompute(IndexExpr expr, IndexVar i, IndexVar iw, TensorVar workspace) const;
 
-  ///  The precompute transformation is described in kjolstad2019
-  ///  allows us to leverage scratchpad memories and
-  ///  reorder computations to increase locality
-  IndexStmt precompute(IndexExpr expr, std::vector<IndexVar> i_vars,
-                       std::vector<IndexVar> iw_vars, TensorVar workspace) const;
-  
   /// bound specifies a compile-time constraint on an index variable's
   /// iteration space that allows knowledge of the
   /// size or structured sparsity pattern of the inputs to be
@@ -796,18 +703,6 @@ public:
   /// preallocating memory and coordinating insertions of nonzeros.
   IndexStmt assemble(TensorVar result, AssembleStrategy strategy, 
                      bool separately_schedulable = false) const;
-
-  /// The wsaccel primitive specifies the dimensions of a workspace that will be accelerated.
-  /// Acceleration means adding compressed acceleration datastructures (bitmap, coordinate list) to a dense workspace.
-  /// shouldAccel controls whether acceleration will be applied.
-  /// When shouldAccel is true, if accelIndexVars is empty, then all dimensions should be accelerated.
-  /// When shouldAccel is true, if accelIndexVars is not empty, then dimensions in accelIndexVars will be accelerated.
-  /// When shouldAccel is false, accelIndexVars is ignored.
-  /// Currently, it only supports one-dimension acceleration. Acceleration is used by default.
-  ///
-  /// Precondition:
-  /// Workspace can be accessed by the IndexVars in the accelIndexVars.
-  IndexStmt wsaccel(TensorVar& ws, bool shouldAccel = true,const std::vector<IndexVar>& accelIndexVars ={});
 
   /// Casts index statement to specified subtype.
   template <typename SubType>
@@ -861,9 +756,6 @@ public:
   /// Return the reduction index variables i nthe assign
   std::vector<IndexVar> getReductionVars() const;
 
-  /// Return the set relation of indexVars in lhs and rhs
-  IndexSetRel getIndexSetRel() const;
-
   typedef AssignmentNode Node;
 };
 
@@ -890,14 +782,13 @@ public:
   Forall() = default;
   Forall(const ForallNode*);
   Forall(IndexVar indexVar, IndexStmt stmt);
-  Forall(IndexVar indexVar, IndexStmt stmt, MergeStrategy merge_strategy, ParallelUnit parallel_unit, OutputRaceStrategy output_race_strategy, size_t unrollFactor = 0);
+  Forall(IndexVar indexVar, IndexStmt stmt, ParallelUnit parallel_unit, OutputRaceStrategy output_race_strategy, size_t unrollFactor = 0);
 
   IndexVar getIndexVar() const;
   IndexStmt getStmt() const;
 
   ParallelUnit getParallelUnit() const;
   OutputRaceStrategy getOutputRaceStrategy() const;
-  MergeStrategy getMergeStrategy() const;
 
   size_t getUnrollFactor() const;
 
@@ -906,7 +797,7 @@ public:
 
 /// Create a forall index statement.
 Forall forall(IndexVar i, IndexStmt stmt);
-Forall forall(IndexVar i, IndexStmt stmt, MergeStrategy merge_strategy, ParallelUnit parallel_unit, OutputRaceStrategy output_race_strategy, size_t unrollFactor = 0);
+Forall forall(IndexVar i, IndexStmt stmt, ParallelUnit parallel_unit, OutputRaceStrategy output_race_strategy, size_t unrollFactor = 0);
 
 
 /// A where statment has a producer statement that binds a tensor variable in
@@ -1081,27 +972,17 @@ private:
 
 /// Index variables are used to index into tensors in index expressions, and
 /// they represent iteration over the tensor modes they index into.
-class IndexVar : public IndexExpr, public IndexVarInterface {
-
+class IndexVar : public util::Comparable<IndexVar>, public IndexVarInterface {
 public:
   IndexVar();
   ~IndexVar() = default;
   IndexVar(const std::string& name);
-  IndexVar(const std::string& name, const Datatype& type);
-  IndexVar(const IndexVarNode *);
 
   /// Returns the name of the index variable.
   std::string getName() const;
 
-  // Need these to overshadow the comparisons in for the IndexExpr instrusive pointer
   friend bool operator==(const IndexVar&, const IndexVar&);
   friend bool operator<(const IndexVar&, const IndexVar&);
-  friend bool operator!=(const IndexVar&, const IndexVar&);
-  friend bool operator>=(const IndexVar&, const IndexVar&);
-  friend bool operator<=(const IndexVar&, const IndexVar&);
-  friend bool operator>(const IndexVar&, const IndexVar&);
-
-  typedef IndexVarNode Node;
 
   /// Indexing into an IndexVar returns a window into it.
   WindowedIndexVar operator()(int lo, int hi, int stride = 1);
@@ -1158,12 +1039,11 @@ SuchThat suchthat(IndexStmt stmt, std::vector<IndexVarRel> predicate);
 class TensorVar : public util::Comparable<TensorVar> {
 public:
   TensorVar();
-  TensorVar(const Type& type, const Literal& fill = Literal());
-  TensorVar(const std::string& name, const Type& type, const Literal& fill = Literal());
-  TensorVar(const Type& type, const Format& format, const Literal& fill = Literal());
-  TensorVar(const std::string& name, const Type& type, const Format& format, const Literal& fill = Literal());
-  TensorVar(const int &id, const std::string& name, const Type& type, const Format& format,
-            const Literal& fill = Literal());
+  TensorVar(const Type& type);
+  TensorVar(const std::string& name, const Type& type);
+  TensorVar(const Type& type, const Format& format);
+  TensorVar(const std::string& name, const Type& type, const Format& format);
+  TensorVar(const int &id, const std::string& name, const Type& type, const Format& format);
 
   /// Returns the ID of the tensor variable.
   int getId() const;
@@ -1183,21 +1063,6 @@ public:
   /// Returns the schedule of the tensor var, which describes how to compile
   /// and execute it's expression.
   const Schedule& getSchedule() const;
-
-  /// Gets the fill value of the tensor variable. May be left undefined.
-  const Literal& getFill() const;
-
-  /// Gets the acceleration dimensions
-  const std::vector<IndexVar>& getAccelIndexVars() const;
-
-  /// Gets the acceleration flag
-  bool getShouldAccel() const;
-
-  /// Set the acceleration dimensions
-  void setAccelIndexVars(const std::vector<IndexVar>& accelIndexVars, bool shouldAccel);
-
-  /// Set the fill value of the tensor variable
-  void setFill(const Literal& fill);
 
   /// Set the name of the tensor variable.
   void setName(std::string name);
@@ -1254,13 +1119,8 @@ bool isEinsumNotation(IndexStmt, std::string* reason=nullptr);
 /// notation is printed to.
 bool isReductionNotation(IndexStmt, std::string* reason=nullptr);
 
-/// Check whether the statement is in the reduction index notation dialect
-/// given a schedule described by the Provenance Graph
-bool isReductionNotationScheduled(IndexStmt, ProvenanceGraph, std::string* reason=nullptr);
-
 /// Check whether the statement is in the concrete index notation dialect.
-/// This means every index variable has a forall node, each index variable used
-/// for computation is under a forall node for that variable, there are no reduction
+/// This means every index variable has a forall node, there are no reduction
 /// nodes, and that every reduction variable use is nested inside a compound
 /// assignment statement.  You can optionally pass in a pointer to a string
 /// that the reason why it is not concrete notation is printed to.
@@ -1276,30 +1136,13 @@ IndexStmt makeReductionNotation(IndexStmt);
 /// as needed.
 IndexStmt makeConcreteNotation(IndexStmt);
 
-
-/// Convert einsum notation to reduction notation, by applying Einstein's
-/// summation convention to sum non-free/reduction variables over their term
-/// taking into account a schedule given by the Provenance Graph.
-Assignment makeReductionNotationScheduled(Assignment, ProvenanceGraph);
-IndexStmt makeReductionNotationScheduled(IndexStmt, ProvenanceGraph);
-
-/// Convert reduction notation to concrete notation, by inserting forall nodes,
-/// replacing reduction nodes by compound assignments, and inserting temporaries
-/// as needed while taking into account a schedule given by the Provenance Graph.
-IndexStmt makeConcreteNotationScheduled(IndexStmt, ProvenanceGraph, std::vector<IndexVar> forallIndexVars);
-
 /// Returns the results of the index statement, in the order they appear.
 std::vector<TensorVar> getResults(IndexStmt stmt);
 
 /// Returns the input tensors to the index statement, in the order they appear.
 std::vector<TensorVar> getArguments(IndexStmt stmt);
 
-/// Returns true iff all of the loops over free variables come before all of the loops over
-/// reduction variables. Therefore, this returns true if the reduction controlled by the loops
-/// does not a scatter.
-bool allForFreeLoopsBeforeAllReductionLoops(IndexStmt stmt);
-
-  /// Returns the temporaries in the index statement, in the order they appear.
+/// Returns the temporaries in the index statement, in the order they appear.
 std::vector<TensorVar> getTemporaries(IndexStmt stmt);
 
 /// Returns the attribute query results in the index statement, in the order 
@@ -1351,15 +1194,7 @@ IndexExpr zero(IndexExpr, const std::set<Access>& zeroed);
 /// zero and then propagating and removing zeroes.
 IndexStmt zero(IndexStmt, const std::set<Access>& zeroed);
 
-/// Infers the fill value of the input expression by applying properties if possible. If unable
-/// to successfully infer the fill value of the result, returns the empty IndexExpr
-IndexExpr inferFill(IndexExpr);
-
-/// Returns true if there are no forall nodes in the indexStmt. Used to check
-/// if the last loop is being lowered.
-bool hasNoForAlls(IndexStmt);
-
-/// Create an `other` tensor with the given name and format,
+/// Create an `other` tensor with the given name and format, 
 /// and return tensor(indexVars) = other(indexVars) if otherIsOnRight,
 /// and otherwise returns other(indexVars) = tensor(indexVars).
 IndexStmt generatePackStmt(TensorVar tensor,

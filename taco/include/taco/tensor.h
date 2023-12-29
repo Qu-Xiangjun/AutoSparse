@@ -62,27 +62,19 @@ public:
   /// Create a tensor with the given dimensions. The format defaults to sparse 
   /// in every mode.
   TensorBase(Datatype ctype, std::vector<int> dimensions, 
-             ModeFormat modeType = ModeFormat::compressed, Literal fill = Literal());
+             ModeFormat modeType = ModeFormat::compressed);
   
   /// Create a tensor with the given dimensions and format.
-  TensorBase(Datatype ctype, std::vector<int> dimensions, Format format, Literal fill = Literal());
+  TensorBase(Datatype ctype, std::vector<int> dimensions, Format format);
 
   /// Create a tensor with the given data type, dimensions and format. The 
   /// format defaults to sparse in every mode.
-  TensorBase(std::string name, Datatype ctype, std::vector<int> dimensions,
-             ModeFormat modeType = ModeFormat::compressed, Literal fill = Literal());
-
-  /// Create a tensor with the given dimensions and fill value. The format
-  /// defaults to sparse in every mode.
-  TensorBase(Datatype ctype, std::vector<int> dimensions, Literal fill);
-
-  /// Create a tensor with the given data type, dimensions and fill value. The
-  /// format defaults to sparse in every mode.
-  TensorBase(std::string name, Datatype ctype, std::vector<int> dimensions, Literal fill);
-
+  TensorBase(std::string name, Datatype ctype, std::vector<int> dimensions, 
+             ModeFormat modeType = ModeFormat::compressed);
+  
   /// Create a tensor with the given data type, dimensions and format.
   TensorBase(std::string name, Datatype ctype, std::vector<int> dimensions,
-             Format format, Literal fill = Literal());
+             Format format);
 
   /* --- Metadata Methods    --- */
 
@@ -473,10 +465,8 @@ public:
   /// Get the taco_tensor_t representation of this tensor.
   taco_tensor_t* getTacoTensorT();
 
-  /// Get the fill value of this tensor.
-  Literal getFillValue() const;
-
   /* --- Friend Functions    --- */
+
   /// True iff two tensors have the same type and the same values.
   friend bool equals(const TensorBase&, const TensorBase&);
 
@@ -572,29 +562,18 @@ public:
 
   /// Create a tensor with the given dimensions. The format defaults to sparse 
   /// in every mode.
-  Tensor(std::vector<int> dimensions, ModeFormat modeType = ModeFormat::compressed,
-          CType fill = CType());
+  Tensor(std::vector<int> dimensions, ModeFormat modeType = ModeFormat::compressed);
 
   /// Create a tensor with the given dimensions and format
-  Tensor(std::vector<int> dimensions, Format format, CType fill = CType());
+  Tensor(std::vector<int> dimensions, Format format);
 
   /// Create a tensor with the given name, dimensions and format. The format 
   /// defaults to sparse in every mode.
-  Tensor(std::string name, std::vector<int> dimensions,
-         ModeFormat modeType = ModeFormat::compressed,
-         CType fill = CType());
-
-  /// Create a tensor with the given dimensions and fill value. The format
-  /// defaults to sparse in every mode.
-  Tensor(std::vector<int> dimensions, CType fill);
-
-  /// Create a tensor with the given data type, dimensions and fill value. The
-  /// format defaults to sparse in every mode.
-  Tensor(std::string name, std::vector<int> dimensions, CType fill);
+  Tensor(std::string name, std::vector<int> dimensions, 
+         ModeFormat modeType = ModeFormat::compressed);
 
   /// Create a tensor with the given name, dimensions and format
-  Tensor(std::string name, std::vector<int> dimensions, Format format,
-          CType fill = CType());
+  Tensor(std::string name, std::vector<int> dimensions, Format format);
 
   /// Create a tensor from a TensorBase instance. The Tensor and TensorBase
   /// objects will reference the same underlying tensor so it is a shallow copy.
@@ -612,7 +591,6 @@ public:
 
   /// Returns a copy of the tensor without explicit zeros.
   Tensor<CType> removeExplicitZeros(Format format) const;
-  Tensor<CType> removeExplicitFillValues(Format format, int value) const;
 
   const_iterator<int,CType> begin() const;
   const_iterator<int,CType> begin();
@@ -918,10 +896,10 @@ struct TensorBase::Content {
   unsigned int       uniqueId;
 
   Content(std::string name, Datatype dataType, const std::vector<int>& dimensions,
-          Format format, Literal fill)
+          Format format)
       : dataType(dataType), dimensions(dimensions),
-        storage(TensorStorage(dataType, dimensions, format, fill)),
-        tensorVar(TensorVar(util::getUniqueId(), name, Type(dataType,convert(dimensions)),format, fill)) {
+        storage(TensorStorage(dataType, dimensions, format)),
+        tensorVar(TensorVar(util::getUniqueId(), name, Type(dataType,convert(dimensions)),format)) {
           uniqueId = tensorVar.getId();
         }
 };
@@ -1085,30 +1063,21 @@ template <typename CType>
 Tensor<CType>::Tensor(CType value) : TensorBase(value) {}
 
 template <typename CType>
-Tensor<CType>::Tensor(std::vector<int> dimensions, ModeFormat modeType, CType fill)
-    : TensorBase(type<CType>(), dimensions, modeType, fill) {}
+Tensor<CType>::Tensor(std::vector<int> dimensions, ModeFormat modeType) 
+    : TensorBase(type<CType>(), dimensions, modeType) {}
 
 template <typename CType>
-Tensor<CType>::Tensor(std::vector<int> dimensions, Format format, CType fill)
-    : TensorBase(type<CType>(), dimensions, format, fill) {}
+Tensor<CType>::Tensor(std::vector<int> dimensions, Format format)
+    : TensorBase(type<CType>(), dimensions, format) {}
 
 template <typename CType>
-Tensor<CType>::Tensor(std::string name, std::vector<int> dimensions,
-                      ModeFormat modeType, CType fill)
-    : TensorBase(name, type<CType>(), dimensions, modeType, fill) {}
+Tensor<CType>::Tensor(std::string name, std::vector<int> dimensions, 
+                      ModeFormat modeType)
+    : TensorBase(name, type<CType>(), dimensions, modeType) {}
 
 template <typename CType>
-Tensor<CType>::Tensor(std::vector<int> dimensions, CType fill)
-    : TensorBase(type<CType>(), dimensions, fill) {}
-
-template <typename CType>
-Tensor<CType>::Tensor(std::string name, std::vector<int> dimensions, CType fill)
-    : TensorBase(name, type<CType>(), dimensions, fill) {}
-
-template <typename CType>
-Tensor<CType>::Tensor(std::string name, std::vector<int> dimensions, Format format,
-                      CType fill)
-    : TensorBase(name, type<CType>(), dimensions, format, fill) {}
+Tensor<CType>::Tensor(std::string name, std::vector<int> dimensions, Format format)
+    : TensorBase(name, type<CType>(), dimensions, format) {}
 
 template <typename CType>
 Tensor<CType>::Tensor(const TensorBase& tensor) : TensorBase(tensor) {
@@ -1254,14 +1223,9 @@ Tensor<CType> Tensor<CType>::transpose(std::string name, std::vector<int> newMod
 
 template <typename CType>
 Tensor<CType> Tensor<CType>::removeExplicitZeros(Format format) const {
-  return removeExplicitFillValues(format, 0);
-}
-
-template <typename CType>
-Tensor<CType> Tensor<CType>::removeExplicitFillValues(Format format, int value) const {
   Tensor<CType> newTensor(getDimensions(), format);
   for (const auto& elem : *this) {
-    if (elem.second != static_cast<CType>(value)) {
+    if (elem.second != static_cast<CType>(0)) {
       newTensor.insertUnchecked<int,CType>(elem.first, elem.second);
     }
   }

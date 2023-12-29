@@ -57,25 +57,14 @@ Tensor Compute Functions
    outer
    tensordot
 
-Tensor Manipulation Functions
+Tensor Manipulation functions
 ===============================
 .. currentmodule:: pytaco
 
 .. autosummary::
    :toctree: functions
 
-    tensor.transpose
+    tensor.insert
     tensor.pack
     tensor.compile
-    tensor.assemble
-    tensor.compute
-    tensor.evaluate
-    tensor.to_dense
-    tensor.to_array
-    tensor.toarray
-    tensor.to_sp_csr
-    tensor.to_sp_csc
-    tensor.copy
-    tensor.insert
-    tensor.remove_explicit_zeros
     remove_explicit_zeros

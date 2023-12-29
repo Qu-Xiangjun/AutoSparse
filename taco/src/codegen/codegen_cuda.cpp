@@ -49,7 +49,6 @@ const string cHeaders =
   "  taco_mode_t* mode_types;    // mode storage types\n"
   "  uint8_t***   indices;       // tensor index data (per mode)\n"
   "  uint8_t*     vals;          // tensor values\n"
-  "  uint8_t*     fill_value;    // tensor fill value\n"
   "  int32_t      vals_size;     // values array size\n"
   "} taco_tensor_t;\n"
   "#endif\n"
@@ -65,6 +64,7 @@ const string gpuAssertMacro =
   "    if (abort) exit(code);\n"
   "  }\n"
   "}\n"
+  "__device__ __constant__ int binary_index_device;\n"
   "__device__ __host__ int taco_binarySearchAfter(int *array, int arrayStart, int arrayEnd, int target) {\n"
   "  if (array[arrayStart] >= target) {\n"
   "    return arrayStart;\n"
@@ -107,7 +107,8 @@ const string gpuAssertMacro =
   "  }\n"
   "  return lowerBound;\n"
   "}\n"
-  "__global__ void taco_binarySearchBeforeBlock(int * __restrict__ array, int * __restrict__ results, int arrayStart, int arrayEnd, int values_per_block, int num_blocks) {\n"
+  "__global__ void taco_binarySearchBeforeBlock(taco_tensor_t * __restrict__ arrayt, int * __restrict__ results, int arrayStart, int arrayEnd, int values_per_block, int num_blocks) {\n"
+  "  int* __restrict__ array = (int*)(arrayt->indices[binary_index_device][0]);\n"
   "  int thread = threadIdx.x;\n"
   "  int block = blockIdx.x;\n"
   "  int idx = block * blockDim.x + thread;\n"
@@ -118,7 +119,7 @@ const string gpuAssertMacro =
   "  results[idx] = taco_binarySearchBefore(array, arrayStart, arrayEnd, idx * values_per_block);\n"
   "}\n"
   "\n"
-  "__host__ int * taco_binarySearchBeforeBlockLaunch(int * __restrict__ array, int * __restrict__ results, int arrayStart, int arrayEnd, int values_per_block, int block_size, int num_blocks){\n"
+  "__host__ int * taco_binarySearchBeforeBlockLaunch(taco_tensor_t * __restrict__ array, int * __restrict__ results, int arrayStart, int arrayEnd, int values_per_block, int block_size, int num_blocks){\n"
   "  int num_search_blocks = (num_blocks + 1 + block_size - 1) / block_size;\n"
   "  taco_binarySearchBeforeBlock<<<num_search_blocks, block_size>>>(array, results, arrayStart, arrayEnd, values_per_block, num_blocks);\n"
   "  return results;\n"
@@ -589,7 +590,11 @@ void CodeGen_CUDA::printDeviceFuncCall(const vector<pair<string, Expr>> currentP
     taco_iassert(currentParameters[i].second.as<Var>()) << "Unable to convert output " << currentParameters[i].second
                                                         << " to Var";
     string varName = currentParameters[i].first;
-    stream << delimiter << varName;
+    if (varName == "A" || varName == "B" || varName == "C") {
+      stream << delimiter << varName << "d"; //[WJY] device variable call
+    } else {
+      stream << delimiter << varName ; //[WJY] device variable call
+    }
 
     delimiter = ", ";
   }

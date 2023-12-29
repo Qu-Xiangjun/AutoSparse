@@ -35,9 +35,6 @@ IndexNotationVisitor::~IndexNotationVisitor() {
 void IndexNotationVisitor::visit(const AccessNode* op) {
 }
 
-void IndexNotationVisitor::visit(const IndexVarNode *op) {
-}
-
 void IndexNotationVisitor::visit(const LiteralNode* op) {
 }
 
@@ -67,12 +64,6 @@ void IndexNotationVisitor::visit(const DivNode* op) {
 
 void IndexNotationVisitor::visit(const CastNode* op) {
   op->a.accept(this);
-}
-
-void IndexNotationVisitor::visit(const CallNode* op) {
-  for (auto& arg : op->args) {
-    arg.accept(this);
-  }
 }
 
 void IndexNotationVisitor::visit(const CallIntrinsicNode* op) {

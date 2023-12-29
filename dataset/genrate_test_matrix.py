@@ -67,4 +67,4 @@ c = np.matmul(a, b)
 print(c)
 
 # 存下来a
-write_matrix_2_csr_file(a, "./dataset", 'test_matrix')
+write_matrix_2_csr_file(a, "./suitsparse", 'test_matrix')

@@ -22,7 +22,6 @@ class AddSuchThatPredicates;
 class Parallelize;
 class TopoReorder;
 class SetAssembleStrategy;
-class SetMergeStrategy;
 
 /// A transformation is an optimization that transforms a statement in the
 /// concrete index notation into a new statement that computes the same result
@@ -37,7 +36,6 @@ public:
   Transformation(TopoReorder);
   Transformation(AddSuchThatPredicates);
   Transformation(SetAssembleStrategy);
-  Transformation(SetMergeStrategy);
 
   IndexStmt apply(IndexStmt stmt, std::string *reason = nullptr) const;
 
@@ -91,12 +89,10 @@ class Precompute : public TransformationInterface {
 public:
   Precompute();
   Precompute(IndexExpr expr, IndexVar i, IndexVar iw, TensorVar workspace);
-  Precompute(IndexExpr expr, std::vector<IndexVar> i_vars,
-             std::vector<IndexVar> iw_vars, TensorVar workspace);
-  
+
   IndexExpr getExpr() const;
-  std::vector<IndexVar>& getIVars() const;
-  std::vector<IndexVar>& getIWVars() const;
+  IndexVar geti() const;
+  IndexVar getiw() const;
   TensorVar getWorkspace() const;
 
   /// Apply the precompute optimization to a concrete index statement.
@@ -207,25 +203,6 @@ private:
 
 /// Print a SetAssembleStrategy command.
 std::ostream &operator<<(std::ostream &, const SetAssembleStrategy&);
-
-class SetMergeStrategy : public TransformationInterface {
-public:
-  SetMergeStrategy(IndexVar i, MergeStrategy strategy);
-
-  IndexVar geti() const;
-  MergeStrategy getMergeStrategy() const;
-
-  IndexStmt apply(IndexStmt stmt, std::string *reason = nullptr) const;
-
-  void print(std::ostream &os) const;
-
-private:
-  struct Content;
-  std::shared_ptr<Content> content;
-};
-
-/// Print a SetMergeStrategy command.
-std::ostream &operator<<(std::ostream &, const SetMergeStrategy&);
 
 // Autoscheduling functions
 

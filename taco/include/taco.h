@@ -3,7 +3,6 @@
 
 #include "taco/tensor.h"
 #include "taco/format.h"
-#include "taco/index_notation/tensor_operator.h"
 #include "taco/index_notation/index_notation.h"
 
 #endif

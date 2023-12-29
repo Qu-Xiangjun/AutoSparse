@@ -97,20 +97,6 @@ std::vector<V> remove(const std::vector<V>& vector,
   return result;
 }
 
-template <typename V>
-std::vector<V> removeDuplicates(const std::vector<V>& vector) {
-  std::set<V> seen;
-  std::vector<V> result;
-
-  for(const V& v: vector) {
-    if(!contains(seen, v)) {
-      seen.insert(v);
-      result.push_back(v);
-    }
-  }
-  return result;
-}
-
 template <typename V, typename T>
 std::vector<V> filter(const std::vector<V>& vector, T test) {
   std::vector<V> result;
@@ -131,16 +117,6 @@ size_t count(const std::vector<V>& vector, T test) {
     }
   }
   return count;
-}
-
-template <typename K, typename V>
-std::map<K, V> zipToMap(const std::vector<K>& keys, const std::vector<V>& values) {
-  std::map<K, V> result;
-  size_t limit = std::min(keys.size(), values.size());
-  for(size_t i = 0; i < limit; ++i) {
-    result.insert({keys[i], values[i]});
-  }
-  return result;
 }
 
 /**
@@ -173,9 +149,9 @@ bool all(const C& collection, T test) {
   return true;
 }
 
-template <typename C, typename T>
-bool any(const C& collection, T test) {
-  for (auto& element : collection) {
+template <typename V, typename T>
+bool any(const std::vector<V>& vector, T test) {
+  for (auto& element : vector) {
     if (test(element)) {
       return true;
     }

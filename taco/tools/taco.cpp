@@ -102,8 +102,8 @@ static void printUsageInfo() {
   printFlag("f=<tensor>:<format>",
             "Specify the format of a tensor in the expression. Formats are "
             "specified per dimension using d (dense), s (sparse), "
-            "u (sparse, not unique), q (singleton), c (singleton, not unique), "
-            "or p (singleton, padded). All formats default to dense. "
+            "u (sparse, not unique), q (singleton), or c (singleton, not unique). "
+            "All formats default to dense. "
             "The ordering of modes can also be optionally specified as a "
             "comma-delimited list of modes in the order they should be stored. "
             "Examples: A:ds (i.e., CSR), B:ds:1,0 (i.e., CSC), c:d (i.e., "
@@ -383,35 +383,23 @@ static bool setSchedulingCommands(vector<vector<string>> scheduleCommands, parse
       stmt = stmt.divide(findVar(i), divide1, divide2, divideFactor);
     } else if (command == "precompute") {
       string exprStr, i, iw, name;
-      vector<string> i_vars, iw_vars;
-
       taco_uassert(scheduleCommand.size() == 3 || scheduleCommand.size() == 4)
         << "'precompute' scheduling directive takes 3 or 4 parameters: "
-        << "precompute(expr, i, iw [, workspace_name]) or precompute(expr, {i_vars}, "
-           "{iw_vars} [, workspace_name])" << scheduleCommand.size();
-
+        << "precompute(expr, i, iw [, workspace_name])";
       exprStr = scheduleCommand[0];
-//      i       = scheduleCommand[1];
-//      iw      = scheduleCommand[2];
-      i_vars  = parser::varListParser(scheduleCommand[1]);
-      iw_vars = parser::varListParser(scheduleCommand[2]);
-
+      i       = scheduleCommand[1];
+      iw      = scheduleCommand[2];
       if (scheduleCommand.size() == 4)
         name  = scheduleCommand[3];
       else
         name  = "workspace";
 
-      vector<IndexVar> origs;
-      vector<IndexVar> pres;
-      for (auto& i : i_vars) {
-        origs.push_back(findVar(i));
-      }
-      for (auto& iw : iw_vars) {
-        try {
-          pres.push_back(findVar(iw));
-        } catch (TacoException &e) {
-          pres.push_back(IndexVar(iw));
-        }
+      IndexVar orig = findVar(i);
+      IndexVar pre;
+      try {
+        pre = findVar(iw);
+      } catch (TacoException &e) {
+        pre = IndexVar(iw);
       }
 
       struct GetExpr : public IndexNotationVisitor {
@@ -468,22 +456,17 @@ static bool setSchedulingCommands(vector<vector<string>> scheduleCommands, parse
       visitor.setExprStr(exprStr);
       stmt.accept(&visitor);
 
-      vector<Dimension> dims;
+      Dimension dim;
       auto domains = stmt.getIndexVarDomains();
-      for (auto& orig : origs) {
-        auto it = domains.find(orig);
-        if (it != domains.end()) {
-          dims.push_back(it->second);
-        } else {
-          dims.push_back(Dimension(orig));
-        }
+      auto it = domains.find(orig);
+      if (it != domains.end()) {
+        dim = it->second;
+      } else {
+        dim = Dimension(orig);
       }
 
-      std::vector<ModeFormatPack> modeFormatPacks(dims.size(), Dense);
-      Format format(modeFormatPacks);
-      TensorVar workspace(name, Type(Float64, dims), format);
-
-      stmt = stmt.precompute(visitor.expr, origs, pres, workspace);
+      TensorVar workspace(name, Type(Float64, {dim}), Dense);
+      stmt = stmt.precompute(visitor.expr, orig, pre, workspace);
 
     } else if (command == "reorder") {
       taco_uassert(scheduleCommand.size() > 1) << "'reorder' scheduling directive needs at least 2 parameters: reorder(outermost, ..., innermost)";
@@ -494,24 +477,6 @@ static bool setSchedulingCommands(vector<vector<string>> scheduleCommands, parse
       }
 
       stmt = stmt.reorder(reorderedVars);
-
-    } else if (command == "mergeby") {
-      taco_uassert(scheduleCommand.size() == 2) << "'mergeby' scheduling directive takes 2 parameters: mergeby(i, strategy)";
-      string i, strat;
-      MergeStrategy strategy;
-
-      i = scheduleCommand[0];
-      strat = scheduleCommand[1];
-      if (strat == "TwoFinger") {
-        strategy = MergeStrategy::TwoFinger;
-      } else if (strat == "Gallop") {
-        strategy = MergeStrategy::Gallop;
-      } else {
-        taco_uerror << "Merge strategy not defined.";
-        goto end;
-      }
-
-      stmt = stmt.mergeby(findVar(i), strategy);
 
     } else if (command == "bound") {
       taco_uassert(scheduleCommand.size() == 4) << "'bound' scheduling directive takes 4 parameters: bound(i, i1, bound, type)";
@@ -766,9 +731,6 @@ int main(int argc, char* argv[]) {
             break;
           case 'q':
             modeTypes.push_back(ModeFormat::Singleton);
-            break;
-          case 'p':
-            modeTypes.push_back(ModeFormat::Singleton(ModeFormat::PADDED));
             break;
           default:
             return reportError("Incorrect format descriptor", 3);
@@ -1158,8 +1120,8 @@ int main(int argc, char* argv[]) {
     cuda |= setSchedulingCommands(scheduleCommands, parser, stmt);
   }
   else {
-    stmt = insertTemporaries(stmt);
-    stmt = parallelizeOuterLoop(stmt);
+    //stmt = insertTemporaries(stmt); // [WJY] commented
+    //stmt = parallelizeOuterLoop(stmt); // [WJY] commentout
   }
 
   if (cuda) {
@@ -1173,6 +1135,7 @@ int main(int argc, char* argv[]) {
   }
 
   stmt = scalarPromote(stmt);
+  //stmt = parallelizeOuterLoop(stmt); //[WJY] comment out
   if (printConcrete) {
     cout << stmt << endl;
   }
