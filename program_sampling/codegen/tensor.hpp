@@ -92,7 +92,7 @@ public:
         int num_rank = format.size();
         format[num_rank - 1].startbit = 0; 
         format[num_rank - 1].lenbit   = get_ceil_log2(format[num_rank - 1].dimension);
-        for (int rank = num_rank - 2; rank ; rank--)
+        for (int rank = num_rank - 2; rank >= 0 ; rank--)
         {   // Higher rank first
             format[rank].startbit = format[rank + 1].startbit + format[rank + 1].lenbit;
             format[rank].lenbit   = get_ceil_log2(format[rank].dimension);
@@ -201,8 +201,7 @@ public:
      * arg1 : var
      *   axis name.
      * arg2 : outer_var
-     *   The outer loop, takes the position of the computed assignment statement 
-     *   as the innermost layer.
+     *   The outer loop is further away from the innermost assignment statement.
      * arg3 : inner_var
      *   The inner loop is closer to innermost computed assignment statement.
      * arg4 : factor
@@ -218,21 +217,21 @@ public:
             exit(-1);
         }
         int rank = get_axis_format_info(var);
-        FormatInfo outer_axis;
-        outer_axis.var = outer_var;
-        outer_axis.dimension = min(factor, format[rank].dimension);
-        outer_axis.mode = format[rank].mode;
-        outer_axis.startbit = format[rank].startbit;
-        outer_axis.lenbit = get_ceil_log2(outer_axis.dimension);
+        FormatInfo innner_axis;
+        innner_axis.var = inner_var;
+        innner_axis.dimension = min(factor, format[rank].dimension);
+        innner_axis.mode = format[rank].mode;
+        innner_axis.startbit = format[rank].startbit;
+        innner_axis.lenbit = get_ceil_log2(innner_axis.dimension);
 
-        format[rank].var = inner_var;
+        format[rank].var = outer_var;
         format[rank].dimension = 
-            (format[rank].dimension + outer_axis.dimension - 1) / outer_axis.dimension;
+            (format[rank].dimension + innner_axis.dimension - 1) / innner_axis.dimension;
         format[rank].mode = format[rank].mode;
-        format[rank].startbit = format[rank].startbit + outer_axis.lenbit;
+        format[rank].startbit = format[rank].startbit + innner_axis.lenbit;
         format[rank].lenbit = get_ceil_log2(format[rank].dimension);
 
-        format.insert(format.begin() + rank, outer_axis);
+        format.insert(format.begin() + rank + 1, innner_axis);
     }
 
     /**
@@ -361,7 +360,6 @@ public:
         auto start_time = Clock::now();
         int nnz = coo.size();
         int num_rank = format.size();
-        vector<int> newstartbit(num_rank);
         Compressed_Coo packed_coo(nnz);
         vector<uint64_t> unique_corrds(num_rank, -1);
         T_pos    = vector<vector<int>>(num_rank, vector<int>());
@@ -374,14 +372,14 @@ public:
 
         /* Pack to packed coo copied deeply from coo, and resort packed coo. */
         #pragma omp parallel for
-        for(int i = 0; i < nnz; i++) // Traverse all the none-zero value in coo.
+        for (int i = 0; i < nnz; i++) // Traverse all the none-zero value in coo.
         {
             float value = coo[i].second;
             uint64_t packed_corrds = coo[i].first;
             packed_coo[i] = {packed_corrds, value};
         }
-        // __gnu_parallel::sort(packed_coo.begin(), packed_coo.end());
-        sort(packed_coo.begin(), packed_coo.end());
+        __gnu_parallel::sort(packed_coo.begin(), packed_coo.end());
+        // sort(packed_coo.begin(), packed_coo.end());
 
         /* Pack to taco tensor type buffer according to current format. */
         for (int i = 0; i < nnz; i++) // Traverse all the nnz value to pack
@@ -399,7 +397,7 @@ public:
                 switch (format[rank].mode)
                 {
 				case UNCOMPRESSED:
-                    pos_idx = pos_idx * format[rank].dimension + coords;
+                    pos_idx = pos_idx * format[rank].dimension + rank_coord;
                     break;
                 case SINGLETON_NU:
                 case COMPRESSED_NU:
@@ -449,7 +447,7 @@ public:
                 
                 default: 
                     /* UNCOMPRESSED axis  */
-                    pos_idx = pos_idx * format[rank].dimension + coords;
+                    pos_idx = pos_idx * format[rank].dimension + rank_coord;
                     break;
                 }
             }
@@ -476,7 +474,7 @@ public:
             else
             {
                 T_vals[pos_idx] = value; 
-                T_vals_size = pos_idx;
+                T_vals_size = pos_idx + 1;
             }
         }
         

@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
-	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, verify, true) << " ms" << endl;
+	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, false, true) << " ms" << endl;
 
 	string arg(argv[2]);	// 调度文件地址
 	fstream arg_file(arg);
@@ -208,7 +208,8 @@ int main(int argc, char *argv[])
 			string schedule_command = M.compile(pnum, pchunk);	// 编译生成kernel
 			verify = true;
 			float avgtime = M.run(10, 50, verify); // 运行并返回时间，这里不需要验证
-			cout << "correct:" << verify << ", " << avgtime << " ms" << ", Schedules:" << schedule << endl;
+			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
+			cout << " ms" << ", Schedules:" << schedule << endl;
 			if (bestTime > avgtime)
 			{
 				bestTime = avgtime;

@@ -31,6 +31,7 @@ void fwrite2file(float* val, int data_size, string title = "*******")
 	outputFile << endl;
 	outputFile.close();
 	cout<< "[Debug] Debug data write successed." <<endl;
+    outputFile.close();
 }
 
 /* Safe func to execute shell command. */
@@ -261,7 +262,7 @@ public:
         // Replace new axes var name.
         int index = distance(vars.begin(), it);
         vars[index] = outer_var;
-        vars.push_back(inner_var);
+        vars.insert(vars.begin() + index + 1, inner_var);
 
         if (lh_tensor->is_var_exist(var))
         {
@@ -794,6 +795,8 @@ public:
                 // fwrite2file((float *)T[0]->vals, T[0]->vals_size, "******* T0 *******");
                 // fwrite2file((float *)T[1]->vals, T[1]->vals_size, "******* T1 *******");
                 // fwrite2file((float *)T[2]->vals, T[2]->vals_size, "******* T2 *******");
+                // fwrite2file((float *)(rhs_tensor["A"]->T_pos[1].data()), rhs_tensor["A"]->T_pos[1].size(), "******* T1 pos *******");
+                // fwrite2file((float *)(rhs_tensor["A"]->T_crd[1].data()), rhs_tensor["A"]->T_crd[1].size(), "******* T1 crd *******");
                 compute_func.func2(T[0], T[1], T[2]);
                 break;
             case 3:
@@ -863,9 +866,9 @@ public:
             compute_func.func1(T[0], T[1]);
             break;
         case 2:
-            fwrite2file((float *)T[0]->vals, T[0]->vals_size, "******* T0 *******");
-            fwrite2file((float *)T[1]->vals, T[1]->vals_size, "******* T1 *******");
-            fwrite2file((float *)T[2]->vals, T[2]->vals_size, "******* T2 *******");
+            // fwrite2file((float *)T[0]->vals, T[0]->vals_size, "******* T0 *******");
+            // fwrite2file((float *)T[1]->vals, T[1]->vals_size, "******* T1 *******");
+            // fwrite2file((float *)T[2]->vals, T[2]->vals_size, "******* T2 *******");
             compute_func.func2(T[0], T[1], T[2]);
             break;
         case 3:
@@ -878,7 +881,7 @@ public:
             break;
         }
 
-        if (verify)
+        if (verify && corret_val.size())
         {
             vector<float> &res = lh_tensor->get_vals();
             bool flag = true;
@@ -890,7 +893,7 @@ public:
                     break;
                 }
             }
-            verify = flag;
+            verify_res = flag;
         }
 
         if (store)
@@ -900,7 +903,7 @@ public:
             int res_size = T[0]->vals_size;
 			fwrite2file(res, res_size, "******* T0 *******");
             corret_val.resize(res_size);
-            // #pragma omp parallel for
+            #pragma omp parallel for
             for (int i = 0; i < res_size; i++)
 				corret_val[i] = res[i];
         }

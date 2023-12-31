@@ -10,11 +10,17 @@
 
 using namespace std;
 
+typedef int (*compute2)(taco_tensor_t *C, taco_tensor_t *A, taco_tensor_t *B);
+compute2 func2;
+
+// void run()
+// {
+
+// }
+
 
 int main()
 {
-    typedef int (*compute2)(taco_tensor_t *C, taco_tensor_t *A, taco_tensor_t *B);
-    compute2 func2;
     void *lib_handle = dlopen("./taco_kernel.so", RTLD_NOW | RTLD_LOCAL);
     if (!lib_handle)
     {
@@ -41,5 +47,5 @@ int main()
         T1->vals_size = T_vals.size();
     }
     func2(T1, T1, T1);
-
+    return 0;
 }
