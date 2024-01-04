@@ -23,6 +23,10 @@ typedef enum {
 	SINGLETON_NU
 } mode_type;
 
+vector<mode_type> mode_type_array = {
+    UNCOMPRESSED, COMPRESSED, COMPRESSED_NU, SINGLETON, SINGLETON_NU
+};
+
 /* Tensor expression struct in taco */
 typedef struct 
 {
@@ -362,20 +366,36 @@ public:
         int num_rank = format.size();
         Compressed_Coo packed_coo(nnz);
         vector<uint64_t> unique_corrds(num_rank, -1);
+		vector<int> newstartbit(num_rank);
         T_pos    = vector<vector<int>>(num_rank, vector<int>());
         T_un_pos = vector<vector<int>>(num_rank, vector<int>());
         T_crd    = vector<vector<int>>(num_rank, vector<int>());
         T_un_crd = vector<vector<int>>(num_rank, vector<int>());
+        T_vals = vector<float>();
 
         int limit = nnz * 20; // 5e8
         int format_size = 0; // Count the format storage int32 overhead.
 
-        /* Pack to packed coo copied deeply from coo, and resort packed coo. */
+        /* Pack to packed coo copied deeply from coo in new rank order, and sort. */
+        int prefixsum = 0; // 求和所有维度的 lenbit
+		for (int rank = num_rank - 1; rank >= 0; rank--)
+		{
+			newstartbit[rank] = prefixsum;
+			prefixsum += format[rank].lenbit;
+		}
         #pragma omp parallel for
         for (int i = 0; i < nnz; i++) // Traverse all the none-zero value in coo.
         {
             float value = coo[i].second;
-            uint64_t packed_corrds = coo[i].first;
+            uint64_t coords = coo[i].first;
+            uint64_t packed_corrds = 0;
+            for (int rank = num_rank - 1; rank >= 0; rank--) // 遍历每个非零值的每个压缩维度
+			{
+				uint64_t rank_coord = extract( // 获得 在该维度上的坐标
+					coords, format[rank].startbit, format[rank].lenbit
+				);
+				packed_corrds |= (rank_coord << newstartbit[rank]);
+			}
             packed_coo[i] = {packed_corrds, value};
         }
         __gnu_parallel::sort(packed_coo.begin(), packed_coo.end());
@@ -391,9 +411,9 @@ public:
             for (int rank = 0; rank < num_rank; rank++) 
             {
                 // current rank's coord
-                int rank_coord = extract(coords, format[rank].startbit, format[rank].lenbit);
+                int rank_coord = extract(coords, newstartbit[rank], format[rank].lenbit);
                 // current rank's coord with all the upper rank coords in compressed bin.
-                uint64_t upper_coords = extract_upper_coords(coords, format[rank].startbit);
+                uint64_t upper_coords = extract_upper_coords(coords, newstartbit[rank]);
                 switch (format[rank].mode)
                 {
 				case UNCOMPRESSED:

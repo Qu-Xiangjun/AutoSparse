@@ -22,7 +22,7 @@ using namespace std::chrono_literals;
 /* Debug func. */
 void fwrite2file(float* val, int data_size, string title = "*******")
 {
-	ofstream outputFile("Debug_data.txt", ios::app);
+	ofstream outputFile("Debug_data.txt");
 	outputFile << title << endl;
 	for(int tt = 0; tt < data_size; tt++) 
 	{
@@ -107,6 +107,7 @@ public:
                                         // to verify other optional computation.
     string taco_command;                // Compile the taco_command
     bool compile_success;               // Compile result.
+    string global_kernel;               // Record the kernel tensor expression.
     
 
 public:
@@ -156,6 +157,7 @@ public:
         precompute_vars.clear();
         taco_command.clear();
         compile_success = false;
+        global_kernel.clear(); 
         
         lh_tensor->reset();
         for (auto &it : rhs_tensor)
@@ -394,7 +396,7 @@ public:
         parallelize(var, "CPUVector");
     }
 
-    void precompute(string expr, string var)
+    void precompute(string var, string expr = "")
     {
         auto it = find(vars.begin(), vars.end(), var);
         if (it == vars.end()) // The axis var don't exist.
@@ -503,6 +505,8 @@ public:
 
         kernel.pop_back(); // Discard extra '*'.
         kernel += "\"";
+
+        global_kernel = kernel;
         
         return kernel + format + pricision;
     }
@@ -599,7 +603,15 @@ public:
         // precompute
         for (auto &it : precompute_vars)
         {
-            schedules += " -s=\"preocmpute(" + it.second + ",";
+            if (global_kernel.empty())
+            {
+                throw std::runtime_error(
+                    "[ERROR] Kernel of tensor expression is empty."
+                );
+            }
+            int equalPos = global_kernel.find('=');
+            string afterEqual = global_kernel.substr(equalPos + 1);
+            schedules += " -s=\"precompute(" + afterEqual + ",";
             if(var_is_compressed[it.first])
                 schedules += it.first + "Bound," + it.first + "Bound)\"";
             else
@@ -623,10 +635,11 @@ public:
         // unroll
         for (auto &it : unroll_vars)
         {
+            int unroll_factor = min(it.second, dimensions[it.first]);
             if(var_is_compressed[it.first])
-                schedules += " -s\"unroll(" + it.first + "Bound," + to_string(it.second) + ")\"";
+                schedules += " -s\"unroll(" + it.first + "Bound," + to_string(unroll_factor) + ")\"";
             else
-                schedules += " -s\"unroll(" + it.first + "," + to_string(it.second) + ")\"";
+                schedules += " -s\"unroll(" + it.first + "," + to_string(unroll_factor) + ")\"";
         }
 
         return schedules;
@@ -722,6 +735,8 @@ public:
 	 * 	 Whether store current excution result as correct result.
 	 * arg6 : avg_test
      *   The test time select average or middle number.
+     * arg7 : time_limit
+     *   Execution program time limit.
 	 * Return
 	 * ------
 	 * ret : elapsed_time
@@ -729,11 +744,12 @@ public:
      */
     double run(
         int warm, int round,bool &verify_res, bool verify = true, 
-        bool store = false, bool avg_test = true
+        bool store = false, bool avg_test = true, double time_limit = 1000000.0
     )
     {
         verify_res = false;
         double elapsed_time = 0.;
+        vector<double> elapsed;
 
         if (!compile_success) 
         {
@@ -782,21 +798,23 @@ public:
         {
             T.push_back(it.second->T);
         }
+        // fwrite2file((float *)T[0]->vals, T[0]->vals_size, "******* T0 *******");
+        // fwrite2file((float *)T[1]->vals, T[1]->vals_size, "******* T1 *******");
+        // fwrite2file((float *)(rhs_tensor["A"]->T_pos[1].data()), rhs_tensor["A"]->T_pos[1].size(), "******* T1 pos *******");
+        // fwrite2file((float *)(rhs_tensor["A"]->T_crd[1].data()), rhs_tensor["A"]->T_crd[1].size(), "******* T1 crd *******");
+        // fwrite2file((float *)T[2]->vals, T[2]->vals_size, "******* T2 *******");
 
         // Warmup.
         while (warm--)
         {
+            auto t1 = Clock::now();
             switch (rhs_tensor.size())
             {
             case 1:
                 compute_func.func1(T[0], T[1]);
                 break;
             case 2:
-                // fwrite2file((float *)T[0]->vals, T[0]->vals_size, "******* T0 *******");
-                // fwrite2file((float *)T[1]->vals, T[1]->vals_size, "******* T1 *******");
-                // fwrite2file((float *)T[2]->vals, T[2]->vals_size, "******* T2 *******");
-                // fwrite2file((float *)(rhs_tensor["A"]->T_pos[1].data()), rhs_tensor["A"]->T_pos[1].size(), "******* T1 pos *******");
-                // fwrite2file((float *)(rhs_tensor["A"]->T_crd[1].data()), rhs_tensor["A"]->T_crd[1].size(), "******* T1 crd *******");
+                
                 compute_func.func2(T[0], T[1], T[2]);
                 break;
             case 3:
@@ -808,10 +826,12 @@ public:
             default:
                 break;
             }
+            elapsed_time = compute_clock(Clock::now(), t1);
+			if (elapsed_time > time_limit)
+				goto verifyStart;
         }
 
         // Test.
-        vector<double> elapsed;
         while (round--)
         {
             auto start_time = Clock::now();
@@ -854,6 +874,7 @@ public:
         }
 
         // Verify and Store
+        verifyStart:
         if (!verify and !store){
             dlclose(lib_handle);
             return elapsed_time;
@@ -880,7 +901,7 @@ public:
         default:
             break;
         }
-
+        
         if (verify && corret_val.size())
         {
             vector<float> &res = lh_tensor->get_vals();

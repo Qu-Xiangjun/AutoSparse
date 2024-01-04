@@ -309,7 +309,7 @@ WACO中用于直接标注上dense的轴迭代范围。方便Parallel unroll等�
 WACO 目前只对i1轴，即i轴最外层轴进行并行化，单独选择num_thread 为当前系统核数量，chunk_size即omp_sched_dynamic的块分配大小可变。
 - 注意Parallel 的轴必须提前bound。
 - 注意reduce 轴不能直接Parallel， 需要添加atomics。
-- 注意sparse的轴无法Parallel。
+- **注意sparse的轴无法Parallel**。
 - 是否可以改变Parallel 随机选择一个lsplit后的轴，或者每次只对最外层的轴进行变换呢？
 - 只能选一个
 
@@ -328,6 +328,6 @@ WACO并未使用
 WACO 并未使用。
 利用暂存存储器和重新排序计算来增加局部性。给定一个要进行预计算的子表达式`expr`、一个要预计算的索引变量`i`和一个要预计算的索引变量`iw`(可以与`i`相同或不同)，预计算的结果存储在一个临时张量变量中。`-s=parallelize(i, u, strat)`
 - 随机选择一个轴，然后将该轴最近的子表达式当做目标，轴名称不需要变。
-- 另外也可以只选择reduce的轴或只选择space的轴进行，对比一下看看哪个OK一些作为策略？我理解是reduce的轴更需要缓存结果进行累加。
+- 另外也可以只选择reduce的轴或只选择space的轴进行，对比一下看看哪个OK一些作为策略？我理解是reduce的轴更需要缓存结果进行累加。即是否优先选择输出的轴
 
 

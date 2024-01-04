@@ -21,16 +21,21 @@ default_random_engine generator(chrono::system_clock::now().time_since_epoch().c
 uniform_real_distribution<float> uniform(-1.0, 1.0);
 
 
+/**
+ * argc = 3
+ * argv[1]: The input matrix filepath.
+ * argv[2]: The schedule filepath.
+ */
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+	if (argc != 3)
 	{
 		cout << "Wrong arguments" << endl;
 		exit(-1);
 	}
 	string mtx_name(argv[1]); // 矩阵文件的地址
 
-    //////////////////////////
+	//////////////////////////
 	// Reading CSR A from file
 	//////////////////////////
 	int num_row, num_col, num_nonzero;
@@ -77,7 +82,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-    	////////////////////////////
+	////////////////////////////
 	// Generating Random Dense B
 	////////////////////////////
 	int N = 256; // Number of Column in B(k,j)
@@ -103,95 +108,22 @@ int main(int argc, char *argv[])
 	M.add_tensor("B", TensorB, B, false);
 
 	cout << "Use " << NUMCORE << " Threads" << endl;
-    M.reset_all();
+
+	// 首先用固定值并行化 chunk = 48的干净csr进行执行
+	M.reset_all();
 	M.parallelize("i"); // 为什么不使用NUMCORE 而是48？
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
-	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, false, true) << " ms" << endl;
+	double fixed_time = M.run(10, 50, verify, false, true);
+	fixedCSR << "FixedCSR : " << fixed_time << " ms" << endl;
 
-	string schedule;
-	float bestTime = 1000000000;
-	
-    // Run the extension schedule design space.
-    string arg3(argv[3]);
-    fstream arg3_file(arg3);
-    string best_autosparse_schedule;
-    for (; getline(arg3_file, schedule); )
-    {
-        stringstream ss(schedule);
-        int i_fsplit, k_fsplit, j_fsplit;
-        vector<string> fr(4);
-        vector<int> vm(4);
-        int i_lsplit1, i_lsplit0, k_lsplit1, k_lsplit0, j_lsplit1, j_lsplit0;
-        vector<string> lreordered_vars(12);
-        string parallel_var, vectorize_var, unroll_var, precompute_var;
-        int unroll_factor;
-        int thread_num, parachunk;
-        ss >> i_fsplit >> k_fsplit >> j_fsplit;
-	    ss >> fr[0] >> fr[1] >> fr[2] >> fr[3];
-	    ss >> vm[0] >> vm[1] >> vm[2] >> vm[3]; 
-        ss >> i_lsplit1 >> i_lsplit0 >> k_lsplit1 >> k_lsplit0 >> j_lsplit1 >> j_lsplit0;
-        for (int i = 0; i < 12 ; i++) ss >> lreordered_vars[i];
-        ss >> parallel_var >> vectorize_var >> unroll_var >> unroll_factor >> precompute_var;
-        ss >> thread_num >> parachunk;
-
-        try
-        {
-            M.reset_all();
-            M.fsplit("i", "i1", "i0", i_fsplit);
-            M.fsplit("j", "j1", "j0", k_fsplit);
-            M.fsplit("k", "k1", "k0", j_fsplit);
-            M.freorder("A", fr);
-            M.fmode("A", "i1", mode_type_array[vm[0]]);
-            M.fmode("A", "i0", mode_type_array[vm[1]]);
-            M.fmode("A", "k1", mode_type_array[vm[2]]);
-            M.fmode("A", "k0", mode_type_array[vm[3]]);
-
-            M.lsplit("i1", "i11", "i10", i_lsplit1);
-            M.lsplit("i0", "i01", "i00", i_lsplit0);
-            M.lsplit("k1", "k11", "k10", k_lsplit1);
-            M.lsplit("k0", "k01", "k00", k_lsplit0);
-            M.lsplit("j1", "j11", "j10", j_lsplit1);
-            M.lsplit("j0", "j01", "j00", j_lsplit0);
-            M.lreorder(lreordered_vars);
-            if (parallel_var != "None")
-            {
-                M.parallelize(parallel_var);
-            }
-            if (vectorize_var != "None")
-            {
-                M.vectorize(vectorize_var);
-            }
-            if (unroll_var != "None")
-            {
-                M.unroll(unroll_var, unroll_factor);
-            }
-            M.precompute(precompute_var);
-
-            M.compile(thread_num, parachunk);
-            verify = true;
-            float avgtime = M.run(10, 50, verify);
-			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
-			cout << " ms" << ", Schedules:" << schedule << endl;
-            if (bestTime > avgtime)
-			{
-				bestTime = avgtime;
-				schedule.pop_back();
-				best_autosparse_schedule = schedule;
-			}
-        }
-        catch(const exception& e)
-        {
-            cerr << e.what() << endl;
-        }
-    }
-
-    bestTime = 1000000000;
-	string bestSuperSchedule;
-	string arg(argv[2]);	// waco 调度文件地址
+	string arg(argv[2]);	// 调度文件地址
 	fstream arg_file(arg);
-    for (; getline(arg_file, schedule);) // 从arg_file 读取一行存储到schedule 字符串中
+	string schedule;
+	string bestSuperSchedule;
+	float bestTime = 1000000000;
+	for (; getline(arg_file, schedule);) // 从arg_file 读取一行存储到schedule 字符串中
 	{
 		stringstream ss(schedule);
 		int isplit, ksplit, jsplit;
@@ -276,7 +208,7 @@ int main(int argc, char *argv[])
 			}
 			string schedule_command = M.compile(pnum, pchunk);	// 编译生成kernel
 			verify = true;
-			float avgtime = M.run(10, 50, verify, true, false, true, bestTime*10); // 运行并返回时间，这里不需要验证
+			float avgtime = M.run(10, 50, verify, true, false, true, fixed_time * 2); // 运行并返回时间，这里不需要验证
 			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
 			cout << " ms" << ", Schedules:" << schedule << endl;
 			if (bestTime > avgtime)
@@ -289,4 +221,47 @@ int main(int argc, char *argv[])
 		{
 		}
 	}
+	cout << endl;
+	cout << "SuperSchedule found by WACO : " << bestSuperSchedule << endl;
+	cout << "WACO : " << bestTime << " ms" << endl;
+	cout << fixedCSR.str() << endl;
+
+	return 0;
 }
+
+//{
+//  vector<float> elapsed;
+//  sparse_matrix_t SA;
+//  MKL_INT M = num_row;
+//  MKL_INT K = num_col;
+//  MKL_INT *mkl_A_pos = (MKL_INT*)mkl_malloc(sizeof(MKL_INT) * A_pos.size(), 64);
+//  MKL_INT *mkl_A_crd = (MKL_INT*)mkl_malloc(sizeof(MKL_INT) * A_crd.size(), 64);
+//  float   *mkl_A_val = (float*)  mkl_malloc(sizeof(float) * A_val.size(), 64);
+//  vector<float> mklC = vector<float>(roundup(num_row,1024)*N,0);
+//  for (int i = 0; i<A_pos.size(); i++) mkl_A_pos[i] = A_pos[i];
+//  for (int i = 0; i<A_crd.size(); i++) mkl_A_crd[i] = A_crd[i];
+//  for (int i = 0; i<A_val.size(); i++) mkl_A_val[i] = A_val[i];
+
+//  sparse_status_t status = mkl_sparse_s_create_csr(&SA, SPARSE_INDEX_BASE_ZERO, M, K, mkl_A_pos, &(mkl_A_pos[1]), mkl_A_crd, mkl_A_val);
+//  matrix_descr descr;
+//  descr.type = SPARSE_MATRIX_TYPE_GENERAL;
+//
+//  auto ts = Clock::now();
+//  mkl_sparse_set_memory_hint(SA, SPARSE_MEMORY_AGGRESSIVE);
+//  auto ts1 = Clock::now();
+//  status = mkl_sparse_set_mm_hint(SA, SPARSE_OPERATION_NON_TRANSPOSE, descr, SPARSE_LAYOUT_ROW_MAJOR, N, atoi(argv[4]));
+//  auto ts2 = Clock::now();
+//  status = mkl_sparse_optimize(SA);
+//  auto te = Clock::now();
+// 	cout << "Start " << endl;
+//  for(int niter=0; niter<3; niter++) status = mkl_sparse_s_mm(SPARSE_OPERATION_NON_TRANSPOSE, 1.0, SA, descr, SPARSE_LAYOUT_ROW_MAJOR, B.data(), N, N, 0.0, mklC.data(), N);
+//  for (int niter = 0; niter < 10; niter++) {
+//    auto t1 = Clock::now();
+//    status = mkl_sparse_s_mm(SPARSE_OPERATION_NON_TRANSPOSE, 1.0, SA, descr, SPARSE_LAYOUT_ROW_MAJOR, B.data(), N, N, 0.0, mklC.data(), N);
+//    elapsed.push_back(compute_clock(Clock::now(), t1));
+//  }
+//  sort(elapsed.begin(), elapsed.end());
+//  cout << "MKL " << elapsed[elapsed.size()/2] << endl;
+//  mkl_free(mkl_A_pos);
+//  mkl_free(mkl_A_crd);
+//}
