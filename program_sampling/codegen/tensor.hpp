@@ -509,12 +509,32 @@ public:
                 pos_size *= format[rank].dimension;
                 break;
             case COMPRESSED:
+                if (T_pos[rank].size() < pos_size)
+                {
+                    if (pos_size > limit)
+					{
+						throw std::invalid_argument( 
+                        "[ERROR][Tensor] Format storage size overleaf when pack."
+                        );
+					}
+					T_pos[rank].resize(pos_size + 1, 0);
+                }
                 for (int i = 0; i < pos_size; i++)
                     T_pos[rank][i + 1] += T_pos[rank][i]; // Prefixsum
                 format_size = pos_size + 1 + T_crd[rank].size(); // pos and crd array size.
 				pos_size = T_crd[rank].size();
                 break;
             case COMPRESSED_NU:
+                if (T_un_pos[rank].size() < pos_size)
+                {
+                    if (pos_size > limit)
+					{
+						throw std::invalid_argument( 
+                        "[ERROR][Tensor] Format storage size overleaf when pack."
+                        );
+					}
+					T_un_pos[rank].resize(pos_size + 1, 0);
+                }
                 for (int i = 0; i < pos_size; i++)
                     T_un_pos[rank][i + 1] += T_un_pos[rank][i]; // Prefixsum
                 format_size = pos_size + 1 + T_un_crd[rank].size();
@@ -537,7 +557,19 @@ public:
                 break;
             }
         }
-        
+
+        if (T_vals.size() < pos_size)
+		{
+			// cout << pos_size << endl;
+			if (pos_size > limit)
+			{
+				throw std::invalid_argument( 
+                    "[ERROR][Tensor] Format storage size overleaf when pack."
+                );
+			}
+			T_vals.resize(pos_size + 1, 0);
+		}
+
         init_taco_tensor_t();
     }
 

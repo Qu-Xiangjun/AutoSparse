@@ -115,7 +115,8 @@ int main(int argc, char *argv[])
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
-	double fixed_time = M.run(10, 50, verify, false, true);
+	double fixed_time = 0.;
+	fixed_time = M.run(10, 50, verify, false, true);
 	fixedCSR << "FixedCSR : " << fixed_time << " ms" << endl;
 
 	string arg(argv[2]);	// 调度文件地址
