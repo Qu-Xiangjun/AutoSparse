@@ -289,7 +289,8 @@ WACO 的`split`只对存储格式的轴操作，并不会使用sch上的split操
 - 对于存储格式的轴进行split会使得存储时候轴进行拆分，拆分后的轴如果reorder可以更改实际存储的数据相邻性和内容，如UC变成UCUU后，存储的0值可能多一些，块内部数据相邻，原来UC时候相邻的数据现在如果在同一个块还是相邻，原来隔很远的，现在在块内可能相邻了，跨块就不相邻了。
 - 那么有没有必要再加一个`fsplit`之后的`lsplit`呢？
   - 我觉得加上这个是没有语法错误的，可以单独加
-  - 但加了之后可以再额外的`lreorder`， 使得`lsplit`产生的新轴 区别于 存储的`forder`进行迭代？ 但是这样是不是会降低性能 
+  - 但加了之后可以再额外的`lreorder`， 使得`lsplit`产生的新轴 区别于 存储的`forder`进行迭代？ 但是这样是不是会降低性能
+  - 注意 `lsplit` 和 `singleton` 相关的轴不兼容 
 
 **Reorder**
 WACO 里面分为 `freorder` 和 `lreorder`, 但两者共用的相同的reorder顺序，实际是变换的`lreoder`中包含所有的已split轴，然后`freorder`仅从`lreorder`的结果中提取出各个张量程序轴在其中的顺序作为格式的存储顺序
@@ -317,6 +318,8 @@ WACO 目前只对i1轴，即i轴最外层轴进行并行化，单独选择num_th
 WACO并未使用这个
 - 可以和Parallel一样随机选择一个轴
 - 可以尝试选多个unroll，可以设置一个 count，大于这可以不用unroll，因为收益不大？
+- 某些轴需要bound，这里随机咯
+- 发现`sparse`轴添加无效果，因此只考虑dense轴unroll
 
 **Vectorize**
 WACO并未使用
@@ -329,5 +332,9 @@ WACO 并未使用。
 利用暂存存储器和重新排序计算来增加局部性。给定一个要进行预计算的子表达式`expr`、一个要预计算的索引变量`i`和一个要预计算的索引变量`iw`(可以与`i`相同或不同)，预计算的结果存储在一个临时张量变量中。`-s=parallelize(i, u, strat)`
 - 随机选择一个轴，然后将该轴最近的子表达式当做目标，轴名称不需要变。
 - 另外也可以只选择reduce的轴或只选择space的轴进行，对比一下看看哪个OK一些作为策略？我理解是reduce的轴更需要缓存结果进行累加。即是否优先选择输出的轴
+- 注意和`sinlgeton` 属性的轴不兼容
 
 
+/home/qxj/AutoSparse/taco/build/bin/taco "C(i1,i0,j1,j0)=A(i0,k0,k1,i1)*B(k1,k0,j1,j0)" -f=C:dddd:0,1,2,3 -f=A:cdss:0,1,2,3 -f=B:dddd:0,1,2,3 -t=C:float -t=A:float -t=B:float -s="split(i1,i11,i10,2)" -s="split(k1,k11,k10,2)" -s="split(k0,k01,k00,2)" -s="split(j1,j11,j10,2)" -s="split(j0,j01,j00,32)" -s="bound(j00,j00Bound,32,MaxExact)" -s="bound(j01,j01Bound,32,MaxExact)" -s="bound(j10,j10Bound,2,MaxExact)" -s="bound(j11,j11Bound,128,MaxExact)" -s="bound(k00,k00Bound,2,MaxExact)" -s="bound(k01,k01Bound,32,MaxExact)" -s="reorder(k00Bound,j11Bound,k10,k11,k01Bound,i0,j01Bound,j00Bound,i11,j10Bound,i10)" -s="precompute(A(i0,k0,k1,i1)*B(k1,k0,j1,j0),j01Bound,j01Bound)" -s="parallelize(j10Bound,CPUVector,Atomics)" -s="parallelize(k00Bound,CPUThread,Atomics)" -s"unroll(k10,0)" -write-compute=taco_kernel.c
+
+/home/qxj/AutoSparse/taco/build/bin/taco "C(i1,i0,j1,j0)=A(k1,i1,k0,i0)*B(k1,k0,j1,j0)" -f=C:dddd:0,1,2,3 -f=A:scuq:0,1,2,3 -f=B:dddd:0,1,2,3 -t=C:float -t=A:float -t=B:float -s="split(k1,k11,k10,4)" -s="split(k0,k01,k00,4)" -s="split(j1,j11,j10,8)" -s="split(j0,j01,j00,8)" -s="bound(j00,j00Bound,8,MaxExact)" -s="bound(j01,j01Bound,8,MaxExact)" -s="bound(j10,j10Bound,8,MaxExact)" -s="bound(j11,j11Bound,64,MaxExact)" -s="reorder(i1,j11Bound,j01Bound,k11,k10,j00Bound,j10Bound,k00,k01,i0)" -s"unroll(j01Bound,2)" -write-compute=taco_kernel.c

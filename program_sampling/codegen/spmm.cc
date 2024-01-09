@@ -23,12 +23,13 @@ uniform_real_distribution<float> uniform(-1.0, 1.0);
 
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+    if (argc != 4)
 	{
 		cout << "Wrong arguments" << endl;
 		exit(-1);
 	}
 	string mtx_name(argv[1]); // 矩阵文件的地址
+	cout << mtx_name << endl;
 
     //////////////////////////
 	// Reading CSR A from file
@@ -108,23 +109,26 @@ int main(int argc, char *argv[])
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
-	fixedCSR << "FixedCSR : " << M.run(10, 50, verify, false, true) << " ms" << endl;
+	double fix_time = M.run(10, 50, verify, false, true);
+	fixedCSR << "FixedCSR : " << fix_time << " ms" << endl;
+	cout << fixedCSR.str() << endl;
 
 	string schedule;
 	float bestTime = 1000000000;
 	
     // Run the extension schedule design space.
-    string arg3(argv[3]);
+    string arg3(argv[2]);
     fstream arg3_file(arg3);
     string best_autosparse_schedule;
     for (; getline(arg3_file, schedule); )
     {
         stringstream ss(schedule);
         int i_fsplit, k_fsplit, j_fsplit;
-        vector<string> fr(4);
-        vector<int> vm(4);
+        vector<string> fr(4); // reordered vars for format.
+        vector<int> vm(4); // vars mode
         int i_lsplit1, i_lsplit0, k_lsplit1, k_lsplit0, j_lsplit1, j_lsplit0;
-        vector<string> lreordered_vars(12);
+		int lreordered_vars_size;
+        vector<string> lreordered_vars;
         string parallel_var, vectorize_var, unroll_var, precompute_var;
         int unroll_factor;
         int thread_num, parachunk;
@@ -132,7 +136,9 @@ int main(int argc, char *argv[])
 	    ss >> fr[0] >> fr[1] >> fr[2] >> fr[3];
 	    ss >> vm[0] >> vm[1] >> vm[2] >> vm[3]; 
         ss >> i_lsplit1 >> i_lsplit0 >> k_lsplit1 >> k_lsplit0 >> j_lsplit1 >> j_lsplit0;
-        for (int i = 0; i < 12 ; i++) ss >> lreordered_vars[i];
+		ss >> lreordered_vars_size;
+		lreordered_vars.resize(lreordered_vars_size);
+        for (int i = 0; i < lreordered_vars_size; i++) ss >> lreordered_vars[i];
         ss >> parallel_var >> vectorize_var >> unroll_var >> unroll_factor >> precompute_var;
         ss >> thread_num >> parachunk;
 
@@ -148,12 +154,18 @@ int main(int argc, char *argv[])
             M.fmode("A", "k1", mode_type_array[vm[2]]);
             M.fmode("A", "k0", mode_type_array[vm[3]]);
 
-            M.lsplit("i1", "i11", "i10", i_lsplit1);
-            M.lsplit("i0", "i01", "i00", i_lsplit0);
-            M.lsplit("k1", "k11", "k10", k_lsplit1);
-            M.lsplit("k0", "k01", "k00", k_lsplit0);
-            M.lsplit("j1", "j11", "j10", j_lsplit1);
-            M.lsplit("j0", "j01", "j00", j_lsplit0);
+			if (i_lsplit1 > 1)
+				M.lsplit("i1", "i11", "i10", i_lsplit1);
+			if (i_lsplit0 > 1)
+				M.lsplit("i0", "i01", "i00", i_lsplit0);
+			if (k_lsplit1 > 1)
+				M.lsplit("k1", "k11", "k10", k_lsplit1);
+			if (k_lsplit0 > 1)
+				M.lsplit("k0", "k01", "k00", k_lsplit0);
+			if (j_lsplit1 > 1)
+				M.lsplit("j1", "j11", "j10", j_lsplit1);
+			if (j_lsplit0 > 1)
+				M.lsplit("j0", "j01", "j00", j_lsplit0);
             M.lreorder(lreordered_vars);
             if (parallel_var != "None")
             {
@@ -167,11 +179,14 @@ int main(int argc, char *argv[])
             {
                 M.unroll(unroll_var, unroll_factor);
             }
-            M.precompute(precompute_var);
+			if (precompute_var != "None")
+            {
+				M.precompute(precompute_var);
+			}
 
             M.compile(thread_num, parachunk);
             verify = true;
-            float avgtime = M.run(10, 50, verify);
+            float avgtime = M.run(10, 50, verify, true, false, true, fix_time * 3);
 			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
 			cout << " ms" << ", Schedules:" << schedule << endl;
             if (bestTime > avgtime)
@@ -187,9 +202,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    bestTime = 1000000000;
+    double bestTime2 = 1000000000;
 	string bestSuperSchedule;
-	string arg(argv[2]);	// waco 调度文件地址
+	string arg(argv[3]);	// waco 调度文件地址
 	fstream arg_file(arg);
     for (; getline(arg_file, schedule);) // 从arg_file 读取一行存储到schedule 字符串中
 	{
@@ -276,12 +291,12 @@ int main(int argc, char *argv[])
 			}
 			string schedule_command = M.compile(pnum, pchunk);	// 编译生成kernel
 			verify = true;
-			float avgtime = M.run(10, 50, verify, true, false, true, bestTime*10); // 运行并返回时间，这里不需要验证
+			float avgtime = M.run(10, 50, verify, true, false, true, fix_time * 3); // 运行并返回时间，这里不需要验证
 			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
 			cout << " ms" << ", Schedules:" << schedule << endl;
-			if (bestTime > avgtime)
+			if (bestTime2 > avgtime)
 			{
-				bestTime = avgtime;
+				bestTime2 = avgtime;
 				bestSuperSchedule = schedule;
 			}
 		}
@@ -289,4 +304,13 @@ int main(int argc, char *argv[])
 		{
 		}
 	}
+
+	cout << endl;
+	cout << "Best Schedule found by AutoSparse : " << best_autosparse_schedule << endl;
+	cout << "SuperSchedule found by WACO       : " << bestSuperSchedule << endl;
+	cout << "AutoSparse : " << bestTime << " ms" << endl;
+	cout << "WACO       : " << bestTime2 << " ms" << endl;
+	cout << fixedCSR.str() << endl;
+
+	return 0;
 }

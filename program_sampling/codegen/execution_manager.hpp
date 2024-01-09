@@ -569,6 +569,7 @@ public:
             }
             int equalPos = global_kernel.find('=');
             string afterEqual = global_kernel.substr(equalPos + 1);
+            afterEqual.pop_back();
             schedules += " -s=\"precompute(" + afterEqual + ",";
             if(var_is_compressed[it.first])
                 schedules += it.first + "Bound," + it.first + "Bound)\"";
@@ -637,7 +638,8 @@ public:
         }
 
         taco_command = string(env_val) + "/taco/build/bin/taco ";
-        taco_command += gen_command() + gen_schedule();
+        taco_command += gen_command();
+        taco_command += gen_schedule();
         taco_command += " -write-compute=taco_kernel.c";
 
         // Add the header to kernel.c
@@ -654,16 +656,10 @@ public:
 						"  int32_t      vals_size;\\n"
 						"} taco_tensor_t;\\n";
 		string taco_header_command = "sed -i '1s/^/" + header + "/' taco_kernel.c";
-        // cout << taco_command << endl;
-		executeCommand(taco_command);
+        cout << taco_command << endl;
+		compile_success = executeCommand(taco_command);
         // cout<<taco_header_command<<endl;
-		executeCommand(taco_header_command);
-        if (rhs_tensor.size() == 3)
-		{
-			string patch_command = "python " + string(env_val); 
-            patch_command += "/program_sampling/codegen/sddmm_patch.py ./taco_kernel.c";
-			executeCommand(patch_command);
-		}
+		compile_success = executeCommand(taco_header_command);
 
         // Compile kernel.c
         string cc_command;

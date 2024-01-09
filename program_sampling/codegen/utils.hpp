@@ -75,7 +75,7 @@ void fwrite2file(vector<int> val, int data_size, string title = "*******")
 
 /* Safe func to execute shell command. */
 bool executeCommand(const string cmd) {
-    FILE* pipe = popen(cmd.c_str(), "r"); // Open a pipe to execute the command
+    FILE* pipe = popen((cmd + " 2>&1").c_str(), "r"); // Open a pipe to execute the command
     if (!pipe) 
     {
         stringstream ss;
