@@ -109,14 +109,15 @@ int main(int argc, char *argv[])
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
-	double fix_time = M.run(10, 50, verify, false, true);
+	double fix_time = -1;
+	fix_time = M.run(10, 50, verify, false, true);
 	fixedCSR << "FixedCSR : " << fix_time << " ms" << endl;
 	cout << fixedCSR.str() << endl;
 
 	string schedule;
-	float bestTime = 1000000000;
 	
     // Run the extension schedule design space.
+	float bestTime = 1000000000;
     string arg3(argv[2]);
     fstream arg3_file(arg3);
     string best_autosparse_schedule;

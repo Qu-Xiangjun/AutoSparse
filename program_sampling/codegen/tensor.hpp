@@ -408,20 +408,47 @@ public:
             float value = packed_coo[i].second;
             long pos_idx = 0; // accumulate none-zero value as each dimensio unfolds.
             // Traverse all the rank from high to low axis.
+            // vector<int> debug_vec_coords;
             for (int rank = 0; rank < num_rank; rank++) 
             {
                 // current rank's coord
                 int rank_coord = extract(coords, newstartbit[rank], format[rank].lenbit);
+                // debug_vec_coords.push_back(rank_coord);
                 // current rank's coord with all the upper rank coords in compressed bin.
                 uint64_t upper_coords = extract_upper_coords(coords, newstartbit[rank]);
                 switch (format[rank].mode)
                 {
 				case UNCOMPRESSED:
+                    if (rank > 1)
+                    {
+                        if (format[rank - 1].mode == SINGLETON_NU or 
+                            format[rank - 1].mode == COMPRESSED_NU)
+                        {
+                            pos_idx = T_crd[rank - 1].size() - 1; // Real pos_idx.
+                        }
+                    }
                     pos_idx = pos_idx * format[rank].dimension + rank_coord;
                     break;
+
                 case SINGLETON_NU:
                 case COMPRESSED_NU:
-                    T_un_crd[rank].push_back(rank_coord);
+                    if (rank > 1) 
+                    {
+                        if (format[rank - 1].mode == UNCOMPRESSED and 
+                            format[rank].mode == SINGLETON_NU)
+                        {
+                            T_un_crd[rank].resize(pos_idx + 1, 0); // Dense index.
+                            T_un_crd[rank][pos_idx] = rank_coord;
+                        }
+                        else
+                        {
+                            T_un_crd[rank].push_back(rank_coord);
+                        }
+                    }
+                    else
+                    {
+                        T_un_crd[rank].push_back(rank_coord);
+                    }
                     if (T_un_pos[rank].size() <= pos_idx + 1)
                     {
                         if (pos_idx > limit)
@@ -434,8 +461,32 @@ public:
                         T_un_pos[rank].resize((pos_idx + 1000000), 0);
                     }
                     T_un_pos[rank][pos_idx + 1]++;
+                    pos_idx = T_un_crd[rank].size() - 1;
+
                     // notice there is no break, because need to excute next code for T_pos T_crd,
                     // which can get unique crd size for pos_idx.
+                    if(upper_coords != unique_corrds[rank])
+                    {   
+                        unique_corrds[rank] = upper_coords;
+                        T_crd[rank].push_back(rank_coord);
+                        // expand T_pos array size. because pos array size always be last
+                        // rank none-zero count + 1.
+                        if (T_pos[rank].size() <= pos_idx + 1)
+                        {
+                            if (pos_idx > limit)
+                            {
+                                throw std::invalid_argument(
+                                    "[ERROR][Tensor] Format storage size overleaf when pack." 
+                                );
+                                exit(-1);
+                            }
+                            T_pos[rank].resize((pos_idx + 1000000), 0);
+                        }
+                        // Notice now the pos array have not prefixsumed.
+                        T_pos[rank][pos_idx + 1]++;  
+                    }
+                    break;
+
                 case SINGLETON: // SINGLETON only need crd array, so implemente same with COMPRESSED.
                 case COMPRESSED:
                     // Notice coords is sorted, so that same upper coords in this rank indicates
@@ -444,7 +495,23 @@ public:
                     if(upper_coords != unique_corrds[rank])
                     {   
                         unique_corrds[rank] = upper_coords;
-                        T_crd[rank].push_back(rank_coord);
+                        if (rank > 1) 
+                        {
+                            if (format[rank - 1].mode == UNCOMPRESSED and 
+                                format[rank].mode == SINGLETON)
+                            {
+                                T_crd[rank].resize(pos_idx + 1, 0);
+                                T_crd[rank][pos_idx] = rank_coord;
+                            }
+                            else 
+                            {
+                                T_crd[rank].push_back(rank_coord);
+                            }
+                        }
+                        else 
+                        {
+                            T_crd[rank].push_back(rank_coord);
+                        }
                         // expand T_pos array size. because pos array size always be last
                         // rank none-zero count + 1.
                         if (T_pos[rank].size() <= pos_idx + 1)
@@ -483,19 +550,16 @@ public:
                 }
                 T_vals.resize((pos_idx + 1000000), 0);
             }
-            if(
-                format[num_rank - 1].mode == SINGLETON_NU or 
-                format[num_rank - 1].mode == COMPRESSED_NU
-            ) // If last rank mode is non-unique, position index is different with `pos_idx`.
-            {
-                T_vals[T_un_crd[num_rank - 1].size() - 1] = value;
-                T_vals_size = T_un_crd[num_rank - 1].size();
-            }
-            else
-            {
-                T_vals[pos_idx] = value; 
-                T_vals_size = pos_idx + 1;
-            }
+            T_vals[pos_idx] = value; 
+            T_vals_size = pos_idx + 1;
+
+            // if(num_rank == 4){
+            //     for(int rr = 0; rr < debug_vec_coords.size(); rr++)
+            //     {
+            //         cout<< debug_vec_coords[rr]<<",";
+            //     }
+            //     cout<<endl;
+            // }
         }
         
         /* Do the prefixsum for T_pos, which had only count number of intervals. */
@@ -506,8 +570,17 @@ public:
             {
             case UNCOMPRESSED:
                 format_size += 1; // Only record axis size.
+                if (rank > 1)
+                {
+                    if (format[rank - 1].mode == SINGLETON_NU or 
+                        format[rank - 1].mode == COMPRESSED_NU)
+                    {
+                        pos_size = T_crd[rank - 1].size() - 1; // Real pos_size.
+                    }
+                }
                 pos_size *= format[rank].dimension;
                 break;
+                
             case COMPRESSED:
                 if (T_pos[rank].size() < pos_size)
                 {
@@ -521,9 +594,16 @@ public:
                 }
                 for (int i = 0; i < pos_size; i++)
                     T_pos[rank][i + 1] += T_pos[rank][i]; // Prefixsum
-                format_size = pos_size + 1 + T_crd[rank].size(); // pos and crd array size.
+                format_size += pos_size + 1 + T_crd[rank].size(); // pos and crd array size.
 				pos_size = T_crd[rank].size();
                 break;
+
+            case SINGLETON:
+                /* Don't need pos array */
+                format_size += T_crd[rank].size();
+                pos_size = T_crd[rank].size();
+                break;
+
             case COMPRESSED_NU:
                 if (T_un_pos[rank].size() < pos_size)
                 {
@@ -537,27 +617,38 @@ public:
                 }
                 for (int i = 0; i < pos_size; i++)
                     T_un_pos[rank][i + 1] += T_un_pos[rank][i]; // Prefixsum
-                format_size = pos_size + 1 + T_un_crd[rank].size();
-				pos_size = T_crd[rank].size();
-
-                /* Unify expression of un_pos, un_crd array to pos, crd. */
-                T_crd[rank] = T_un_crd[rank];
-                T_pos[rank] = T_un_pos[rank];
-
+                format_size += pos_size + 1 + T_un_crd[rank].size();
+				pos_size = T_un_crd[rank].size();
                 break;
-            case SINGLETON:
-                /* Don't need pos array */
-                break;
+
             case SINGLETON_NU:
                 /* Don't need pos array */
-                /* Unify expression of un_pos, un_crd array to pos, crd. */
-                T_crd[rank] = T_un_crd[rank];
+                format_size += T_un_crd[rank].size();
+                pos_size = T_un_crd[rank].size();
+                // /* Unify expression of un_pos, un_crd array to pos, crd. */
+                // T_crd[rank] = T_un_crd[rank];
                 break;
+
             default: 
                 break;
             }
         }
 
+        /* Unify expression of un_pos, un_crd array to pos, crd. */
+        for (int rank = 0; rank < num_rank; rank++)
+        {
+            switch (format[rank].mode)
+            {
+            case COMPRESSED_NU:
+            case SINGLETON_NU:
+                T_crd[rank] = T_un_crd[rank];
+                T_pos[rank] = T_un_pos[rank];
+            default: 
+                break;
+            }
+        }
+
+        /* Expand T_val */
         if (T_vals.size() < pos_size)
 		{
 			// cout << pos_size << endl;
@@ -567,8 +658,17 @@ public:
                     "[ERROR][Tensor] Format storage size overleaf when pack."
                 );
 			}
-			T_vals.resize(pos_size + 1, 0);
+            // If last rank is dense, val vector size less than vsited index range.
+			T_vals.resize(pos_size + 1, 0); 
 		}
+
+        // if(num_rank == 4)
+        // {
+        //     fwrite2file(T_pos[0], T_pos[0].size(), "******* T0_pos *******");
+        //     fwrite2file(T_crd[0], T_crd[0].size(), "******* T0_crd *******");
+        //     fwrite2file(T_crd[2], T_crd[2].size(), "******* T2_crd *******");
+        //     fwrite2file(T_crd[3], T_crd[3].size(), "******* T3_crd *******");
+        // }
 
         init_taco_tensor_t();
     }

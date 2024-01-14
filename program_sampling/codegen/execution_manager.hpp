@@ -525,7 +525,7 @@ public:
                 var_is_compressed[var] = false;
                 var_is_compressed[outer_var] = true;
                 var_is_compressed[inner_var] = true;
-                dimensions[outer_var] = roundup(dimensions[var], factor);
+                dimensions[outer_var] = (dimensions[var] + factor - 1) / factor;
                 dimensions[inner_var] = factor;
             }
 
@@ -558,25 +558,6 @@ public:
         }
         
 
-        // precompute
-        for (auto &it : precompute_vars)
-        {
-            if (global_kernel.empty())
-            {
-                throw std::runtime_error(
-                    "[ERROR] Kernel of tensor expression is empty."
-                );
-            }
-            int equalPos = global_kernel.find('=');
-            string afterEqual = global_kernel.substr(equalPos + 1);
-            afterEqual.pop_back();
-            schedules += " -s=\"precompute(" + afterEqual + ",";
-            if(var_is_compressed[it.first])
-                schedules += it.first + "Bound," + it.first + "Bound)\"";
-            else
-                schedules += it.first + "," + it.first + ")\"";
-        }
-
         // parallel
         for (auto &it : parallel_vars)
         {
@@ -596,9 +577,28 @@ public:
         {
             int unroll_factor = min(it.second, dimensions[it.first]);
             if(var_is_compressed[it.first])
-                schedules += " -s\"unroll(" + it.first + "Bound," + to_string(unroll_factor) + ")\"";
+                schedules += " -s=\"unroll(" + it.first + "Bound," + to_string(unroll_factor) + ")\"";
             else
-                schedules += " -s\"unroll(" + it.first + "," + to_string(unroll_factor) + ")\"";
+                schedules += " -s=\"unroll(" + it.first + "," + to_string(unroll_factor) + ")\"";
+        }
+
+        // precompute
+        for (auto &it : precompute_vars)
+        {
+            if (global_kernel.empty())
+            {
+                throw std::runtime_error(
+                    "[ERROR] Kernel of tensor expression is empty."
+                );
+            }
+            int equalPos = global_kernel.find('=');
+            string afterEqual = global_kernel.substr(equalPos + 1);
+            afterEqual.pop_back();
+            schedules += " -s=\"precompute(" + afterEqual + ",";
+            if(var_is_compressed[it.first])
+                schedules += it.first + "Bound," + it.first + "Bound)\"";
+            else
+                schedules += it.first + "," + it.first + ")\"";
         }
 
         return schedules;
@@ -643,7 +643,13 @@ public:
         taco_command += " -write-compute=taco_kernel.c";
 
         // Add the header to kernel.c
-        string header = "#include <stdint.h> \\n"
+        string header = "#include <stdio.h>\\n"
+                        "#include <stdlib.h>\\n"
+                        "#include <stdint.h>\\n"
+                        "#include <stdbool.h>\\n"
+                        "#include <math.h>\\n"
+                        "#include <complex.h>\\n"
+                        "#include <string.h>\\n"
 						"typedef enum { taco_mode_dense, taco_mode_sparse } taco_mode_t;\\n"
 						"typedef struct {\\n"
 						"  int32_t      order;\\n"
@@ -654,7 +660,49 @@ public:
 						"  uint8_t***   indices;\\n"
 						"  uint8_t*     vals;\\n"
 						"  int32_t      vals_size;\\n"
-						"} taco_tensor_t;\\n";
+						"} taco_tensor_t;\\n"
+                        "int taco_binarySearchAfter(int *array, int arrayStart, int arrayEnd, int target) {\\n"
+                        "  if (array[arrayStart] >= target) {\\n"
+                        "    return arrayStart;\\n"
+                        "  }\\n"
+                        "  int lowerBound = arrayStart;\\n"
+                        "  int upperBound = arrayEnd;\\n"
+                        "  while (upperBound - lowerBound > 1) {\\n"
+                        "    int mid = (upperBound + lowerBound) >> 1;\\n"
+                        "    int midValue = array[mid];\\n"
+                        "    if (midValue < target) {\\n"
+                        "      lowerBound = mid;\\n"
+                        "    }\\n"
+                        "    else if (midValue > target) {\\n"
+                        "      upperBound = mid;\\n"
+                        "    }\\n"
+                        "    else {\\n"
+                        "      return mid;\\n"
+                        "    }\\n"
+                        "  }\\n"
+                        "  return upperBound;\\n"
+                        "}\\n"
+                        "int taco_binarySearchBefore(int *array, int arrayStart, int arrayEnd, int target) {\\n"
+                        "  if (array[arrayEnd] <= target) {\\n"
+                        "    return arrayEnd;\\n"
+                        "  }\\n"
+                        "  int lowerBound = arrayStart;\\n"
+                        "  int upperBound = arrayEnd;\\n"
+                        "  while (upperBound - lowerBound > 1) {\\n"
+                        "    int mid = (upperBound + lowerBound) >> 1;\\n"
+                        "    int midValue = array[mid];\\n"
+                        "    if (midValue < target) {\\n"
+                        "      lowerBound = mid;\\n"
+                        "    }\\n"
+                        "    else if (midValue > target) {\\n"
+                        "      upperBound = mid;\\n"
+                        "    }\\n"
+                        "    else {\\n"
+                        "      return mid;\\n"
+                        "    }\\n"
+                        "  }\\n"
+                        "  return lowerBound;\\n"
+                        "}\\n";
 		string taco_header_command = "sed -i '1s/^/" + header + "/' taco_kernel.c";
         cout << taco_command << endl;
 		compile_success = executeCommand(taco_command);
@@ -858,6 +906,7 @@ public:
         if (verify && corret_val.size())
         {
             vector<float> &res = lh_tensor->get_vals();
+            // fwrite2file((float*)res.data(), res.size(), "******* T0 *******");
             bool flag = true;
             for (int i = 0; i < res.size(); i++)
             {

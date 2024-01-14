@@ -50,18 +50,18 @@ random.seed(0)
 a = np.ones((32, 32))
 b = np.ones((32, 256))
 
-sparsity = 1.0 / (2**4)
+sparsity = 1.0 / (2**2)
 for i in range(32):
-    # zero_count = 256 - int(256 * sparsity)
-    # index = [i for i in range(256)]
-    # random.shuffle(index)
-    # index = index[:zero_count]
-    # for j in index:
-    #     a[i, j] = 0
+    zero_count = 32 - int(32 * sparsity)
+    index = [x for x in range(32)]
+    random.shuffle(index)
+    index = index[:zero_count]
+    for j in index:
+        a[i, j] = 0
 
-    for j in range(32):
-        if i != j:
-            a[i, j] = 0
+    # for j in range(32):
+    #     if i != j:
+    #         a[i, j] = 0
 
 c = np.matmul(a, b) 
 print(c)
