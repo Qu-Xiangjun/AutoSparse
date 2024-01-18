@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
         {
             M.reset_all();
             M.fsplit("i", "i1", "i0", i_fsplit);
-            M.fsplit("j", "j1", "j0", k_fsplit);
-            M.fsplit("k", "k1", "k0", j_fsplit);
+            M.fsplit("j", "j1", "j0", j_fsplit);
+            M.fsplit("k", "k1", "k0", k_fsplit);
             M.freorder("A", fr);
             M.fmode("A", "i1", mode_type_array[vm[0]]);
             M.fmode("A", "i0", mode_type_array[vm[1]]);
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
             float avgtime = M.run(10, 50, verify, true, false, true, fix_time * 3);
 			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
 			cout << " ms" << ", Schedules:" << schedule << endl;
-            if (bestTime > avgtime)
+            if (verify and bestTime > avgtime)
 			{
 				bestTime = avgtime;
 				schedule.pop_back();

@@ -11,6 +11,64 @@ work_dir = os.path.dirname(os.path.dirname(current_filepath))
 sys.argv = [current_filepath,
             os.path.join(work_dir, 'dataset', 'total.txt')]
 
+def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
+    # q must be last one, only if all the axis followed by q is 1 of dimension.
+    q_flag = False 
+    for idx, item in enumerate(freordered_vars):
+        if q_flag and dimensions[item] != 1:
+            return False
+        if vars_mode[item] == 3 and dimensions[item] == 1:
+            q_flag = True
+    # The previous axis of c can't be dense axis, unless c axis' length is 1.
+    # If there are some axes separated in between c and dense axis, all the axes 
+    # can't be c axes of length 1.
+    c_flag = False
+    for idx, item in enumerate(freordered_vars[::-1]):
+        if c_flag:
+            if ((vars_mode[item] == 4 or vars_mode[item] == 3 ) \
+                and dimensions[item] == 1):
+                continue
+            elif vars_mode[item] == 0:
+                return False
+        if vars_mode[item] == 4 and dimensions[item] != 1:
+            c_flag = True
+    # Last axis of 4 will cause error if its length is't 1.
+    last_item = freordered_vars[-1]
+    if vars_mode[last_item] == 4 and dimensions[last_item] != 1:
+        return False
+    # If previous axis of `c` is sparse or singleton, all the length of `c` and
+    # axis followed by `c` must be 1.
+    sqc_flag = False
+    for idx, item in enumerate(freordered_vars):
+        if idx == 0:
+            continue
+        if sqc_flag:
+            if dimensions[item] == 1:
+                continue
+            else:
+                return False
+        last_item = freordered_vars[idx - 1]
+        if (vars_mode[item] == 4 and dimensions[item] == 1 and \
+            (vars_mode[last_item] == 1 or vars_mode[last_item] == 3)):
+            sqc_flag = True
+    # Return
+    return True
+
+def test_check_mode():
+    freordered_vars = ['i0', 'k0', 'k1', 'i1']
+    vars_mode = {}
+    dimensions = {}
+    vars_mode['k1'] = 3
+    vars_mode['i1'] = 3
+    vars_mode['i0'] = 0
+    vars_mode['k0'] = 2
+    dimensions['k1'] = 16
+    dimensions['i1'] = 32
+    dimensions['i0'] = 1
+    dimensions['k0'] = 2
+    a = check_mode(freordered_vars, vars_mode, dimensions)
+    print(a)
+
 def check_lreorder(vars_mode : dict, freordered_vars_lsplit : list, lreordered_vars : list):
     # The order between sparse array axes is fixed.
     for idx in range(1, len(freordered_vars_lsplit)):
@@ -63,18 +121,30 @@ def random_generate_config(mtx_name, autosparse_prefix):
                 # Beacuse first level and
                 # Only if the dimensions is 1, the mode can be singleton.
                 vars_mode[item] = random.choice([0, 1, 2])
-            elif vars_mode[freordered_vars[idx - 1]] == 0:
+            elif vars_mode[freordered_vars[idx - 1]] == 0: # dense
                 # (un_)singleton follow dense level will make computation error, 
                 # only if dimensions is 1.
                 vars_mode[item] = random.choice([0, 1, 2])
             elif vars_mode[freordered_vars[idx - 1]] == 1: # sparse
                 vars_mode[item] = random.choice([0, 1, 2])
             elif vars_mode[freordered_vars[idx - 1]] == 2: # un_sparse
-                vars_mode[item] = random.choice([i for i in range(5)])
+                # only last axis can contain singleton followed un_sparse.
+                if idx == len(freordered_vars) - 1: 
+                    # Notice last one cant be 4
+                    vars_mode[item] = random.choice([i for i in range(1, 4)])
+                else: 
+                    vars_mode[item] = random.choice([1, 2, 4])
             elif vars_mode[freordered_vars[idx - 1]] == 3: # singleton
-                vars_mode[item] = random.choice([0, 1, 2])
+                vars_mode[item] = random.choice([1, 2])
             elif vars_mode[freordered_vars[idx - 1]] == 4: # un_singleton
-                vars_mode[item] = random.choice([i for i in range(5)])
+                # only last axis can contain singleton followed un_sparse.
+                if idx == len(freordered_vars) - 1: 
+                    # Notice last one cant be 4
+                    vars_mode[item] = random.choice([i for i in range(1, 4)])
+                else: 
+                    vars_mode[item] = random.choice([1, 2, 4])
+        if check_mode(freordered_vars, vars_mode, dimensions) == False:
+            continue
         i1f = vars_mode['i1'] 
         i0f = vars_mode['i0'] 
         k1f = vars_mode['k1'] 
@@ -88,7 +158,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
 
         i1_lsplit = random.choice([1<<p for p in range(int(math.log(i1, 2)) + 1)])
         i0_lsplit = random.choice([1<<p for p in range(int(math.log(i0, 2)) + 1)])
-        if vars_mode['i1'] < 3 and i1_lsplit > 1:
+        if vars_mode['i1'] < 2 and i1_lsplit > 1:
             dimensions['i11'] = math.ceil(i1 / i1_lsplit)
             dimensions['i10'] = math.ceil(i1_lsplit)
             # lreordered_vars += ['i11', 'i10']
@@ -99,7 +169,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
             dimensions['i1'] = i1
             # lreordered_vars.append('i1')
             i1_lsplit = 0
-        if vars_mode['i0'] < 3 and i0_lsplit > 1:
+        if vars_mode['i0'] < 2 and i0_lsplit > 1:
             dimensions['i01'] = math.ceil(i0 / i0_lsplit)
             dimensions['i00'] = math.ceil(i0_lsplit)
             # lreordered_vars += ['i01', 'i00']
@@ -113,7 +183,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
 
         k1_lsplit = random.choice([1<<p for p in range(int(math.log(k1, 2)) + 1)])
         k0_lsplit = random.choice([1<<p for p in range(int(math.log(k0, 2)) + 1)])
-        if vars_mode['k1'] < 3 and k1_lsplit > 1:
+        if vars_mode['k1'] < 2 and k1_lsplit > 1:
             dimensions['k11'] = math.ceil(k1 / k1_lsplit)
             dimensions['k10'] = math.ceil(k1_lsplit)
             # lreordered_vars += ['k11', 'k10']
@@ -124,7 +194,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
             dimensions['k1'] = k1
             # lreordered_vars.append('k1')
             k1_lsplit = 0
-        if vars_mode['k0'] < 3 and k0_lsplit > 1:
+        if vars_mode['k0'] < 2 and k0_lsplit > 1:
             dimensions['k01'] = math.ceil(k0 / k0_lsplit)
             dimensions['k00'] = math.ceil(k0_lsplit)
             # lreordered_vars += ['k01', 'k00']

@@ -15,5 +15,5 @@ gcctest_kernel :
 icctest_kernel :	
 	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} test_kernel.cc -o test_kernel -lm -ldl
 
-gcc : gccspmm gcctest_kernel gccwacospmm
-icc : iccspmm icctest_kernel iccwacospmm
+gcc : gccspmm gccwacospmm
+icc : iccspmm iccwacospmm

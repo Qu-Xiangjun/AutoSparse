@@ -285,12 +285,18 @@ WACO 只使用dense compressed 两种其他的没什么可以用的？
 - 但在Format abstract 这篇问斩各种，如COO格式就需要 Compressed(!U)
 - 各种属性轴的存储方案：
   - dense 不需要辅助数组，直接存在当前位置的vals
-    - 可以放在任意的位置，也可以放在任意的轴属性后面
+    - 注意放在 Sparse 轴之后，计算坐标的使用的是sparse 的pos数组结果，而真实坐标却是 crd数组的结果，如果中间有全0的行这样看起来是错误的，其生成的代码对于sd组合为`for (int32_t iB = B1_pos[0]; iB < B1_pos[1]; iB++) {
+    int32_t i = B1_crd[iB];
+    for (int32_t k = 0; k < C1_dimension; k++) {
+      int32_t kB = iB * B2_dimension + k;`
+      但为什么不发生错误呢，因为存储的时候也是错位的存储，访问的时候也偏差了，刚好对齐的存储和访问，因此不发生错误，但是注意会不会影响其他的地方(如其他数组C包含了k轴，但使用的是k，而不是kB);
+    - 不可以放在 no_unique_sparse 后面，因为通过pos数组的值作为前一个维度的坐标，这是错误的
+    - 不可以放在 singleton  no_unique_singleton 之后，因为和他们用的crd索引值一样作为前一个维度的坐标，而且一般这两个跟在 no_unique_sparse 之后
   - sparse 只存储非零值的坐标到pos和crd，注意需要排除重合的前缀坐标
     - 区分前一个轴的类型来存储crd数组：
       - 若前一个轴是sparse dense，与waco相同操作
-      - 若前一个轴是no_unique_sparse 时候，当前的pos_idx应该是上一个轴的un_crd的size大小，然后以这个pos_idx push_back crd和pos[pos_idx+1]++;
-      - 若前一个轴是 singleton，处理和sparse的一样来
+      - 若前一个轴是 no_unique_sparse 时候，当前的pos_idx应该是上一个轴的un_crd的size大小，然后以这个pos_idx push_back crd和pos[pos_idx+1]++;
+      - 若前一个轴是 singleton ，处理和sparse的一样来
       - 若前一个轴是 no_unique_singleton, 处理和 no_unique_sparse 的一样来
     - 使用规则：
       - 可以放在任何位置和任何轴之后
@@ -300,28 +306,32 @@ WACO 只使用dense compressed 两种其他的没什么可以用的？
     - 区分前一个轴的类型来存储crd数组：
       - 前一个轴不存在时候，即第0个轴是singleton，则只需要存一个数在当前数组，除非当前
       - 若前一个轴是sparse 时候，当前crd数组和前一个轴的crd数组对齐，pos_idx来源于前一个数组crd的大小
-      - 若前一个轴是no_unique_sparse 时候，当前crd数组以前一个轴计算出来的的pos_idx为接下来的pos_idx，使用unique的前缀判断是否push_back
+      - 若前一个轴是 no_unique_sparse 时候，当前crd数组以前一个轴计算出来的的pos_idx为接下来的pos_idx，使用unique的前缀判断是否push_back, 但是注意此时只能是在最后一个轴，否则 no_unique_sparse crd数组长度大于 singleton的crd
       - 若前一个轴是dense轴，前一个轴计算出的pos_idx 应该是当前crd数组的idnex存入，而不是push_back; 然后当前轴再计算pos_idx应该不变
       - 若前一个轴是singleton, 则和前一周的crd数组对齐即可，和sparse轴的情况处理一样，pos_idx来源于前面的一样，不变
-      - 若前一个轴是no_unique_singleton, 和 non_unique_sparse的一样处理
+      - 若前一个轴是no_unique_singleton, 和 non_unique_sparse的一样处理 (强调：但是注意此时只能是在最后一个轴，否则 no_unique_sparse crd数组长度大于 singleton的crd)
     - 使用singlon的规则: 
       - 不可以接在dense 轴之后，除非该长度为1，否则计算会是错误的结果 `(注意访问方式是按照index索引的)`
       - 除非该长度为1，不可以单独的作为起始的轴，否则计算会是错误的结果
       - 除非轴长度为1，不可以接在 sparse, singleton 后面，否则计算错误
       - 前面可以是 no_unique_sparse 或者 no_unique_singleton，
       - 除非轴长度为1，一般是放在最后一个维度，因为非长度为1的轴肯定不会一次只存储一个crd数
+      - 但是注意如果轴长为1，又不是最后一个轴，如果后面轴长度有大于1，则会出现crd数组存储出错，即会由于重复不存有些crd，导致生成的kernel遍历时候出错（在pack可以想方法支持，但no_unique_singleton可以在这里替代，因此就不这样用）。
   - no_unique_singleton ,注意其计算出的pos_idx需要排除重合前缀坐标后的crd计算出，这是因为重复的当前轴坐标crd数组长度不等于当前轴所处的index
     - 区分前一个轴的类型来存储crd数组：
       - 前一个轴不存在时候，即第0个轴是no_unique_singleton，则只需要存一个数在当前数组
-      - 若前一个轴是 dense, 注意其crd数组是以 index索引访问的，而不是push_back
-      - 若前一个轴是 sparse, 需要和sparse的pos和crd一一对应，因此无法跟在sparse轴之后，除非和该crd是一一对应的，即该行长度为1
+      - 若前一个轴是 dense, 
+        - 注意其crd数组是以 index索引访问的，而这个index索引总是在不重复的第一个坐标，将crd扩到这个长度后 再 push_back (但是注意，这么计算也应该是错误的，因为no_unique_singleton会`while (kB < pB2_end && B2_crd[kB] == k) {B_val += B_vals[kB];kB++;}` 类似的累加了再去计算，但实际这么是错误的，每一个crd中坐标指向的元素都是独立的与其他进行计算，并不需要累加在计算。)
+        - 还需要注意,pack 的时候第一步crd数组的长度可能是不够dense访问的长度，需要在后面补上reseize。因为在访问的时候dense可能会遍历这一个轴包括0值的地方坐标，而这里会超过第一步pack时候装入crd的坐标范围。
+      - 若前一个轴是 sparse, 需要和sparse的pos和crd一一对应，因此无法跟在sparse轴之后，除非和该crd是一一对应的，即该行长度为1,**且后面所有轴长度都为1**
       - 若前一个轴是 no_unique_sparse, 则和上一个轴的pos 与 crd是一一对应的，在pack的时候确实是如此，因为un_crd会存所有的非零元素坐标
       - 若前一个轴是 singleton, 需要和crd一一对应，因此无法跟在singleton轴之后，除非和该crd是一一对应的,即该行长度为1
       - 若前一个轴是 no_unique_singleton, 可以的
     - 使用规则：
       - 不可以接在dense 轴之后，除非该长度为1，否则计算会是错误的结果 `(注意访问方式是按照index索引的)`
-      - 除非长度为1，不可以作为起始的轴，或者前一个轴不能是sparse 和singleton，否则计算错误
+      - 除非长度为1，不可以作为起始的轴，或者前一个轴不能是sparse 和singleton，**且后面所有轴长度都为1**,否则计算错误
       - 前一个轴可以是 no_unique_sparse，no_unique_singleton
+      - 不可以作为最后一个轴，除非长度为1,因为前面的`{B_val += B_vals[kB];kB++;}`累加问题是错误的计算
 
 
 **Split**
@@ -374,6 +384,3 @@ WACO 并未使用。
 - 随机选择一个轴，然后将该轴最近的子表达式当做目标，轴名称不需要变。
 - 另外也可以只选择reduce的轴或只选择space的轴进行，对比一下看看哪个OK一些作为策略？我理解是reduce的轴更需要缓存结果进行累加。即是否优先选择输出的轴
 - 注意和`sinlgeton` 属性的轴不兼容
-
-
-/home/qxj/AutoSparse/taco/build/bin/taco "C(i1,i0,j1,j0)=A(i1,i0,k1,k0)*B(k1,k0,j1,j0)" -f=C:dddd:0,1,2,3 -f=A:ucdq:0,1,2,3 -f=B:dddd:0,1,2,3 -t=C:float -t=A:float -t=B:float -s="split(j1,j11,j10,8)" -s="bound(j0,j0Bound,1,MaxExact)" -s="bound(j10,j10Bound,8,MaxExact)" -s="bound(j11,j11Bound,32,MaxExact)" -s="bound(k1,k1Bound,32,MaxExact)" -s="reorder(i1,i0,k1Bound,j10Bound,k0,j0Bound,j11Bound)" -write-compute=taco_kernel.c

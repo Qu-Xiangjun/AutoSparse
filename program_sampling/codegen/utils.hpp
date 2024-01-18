@@ -73,6 +73,17 @@ void fwrite2file(vector<int> val, int data_size, string title = "*******")
     outputFile.close();
 }
 
+void fwrite2file(string val, string filename, string title = "*******")
+{
+	ofstream outputFile(filename, ios::app);
+	outputFile << title << endl;
+	outputFile << val << endl;
+	outputFile << endl;
+	outputFile.close();
+	cout<< "[Debug]" << filename << " write successed." << endl;
+    outputFile.close();
+}
+
 /* Safe func to execute shell command. */
 bool executeCommand(const string cmd) {
     FILE* pipe = popen((cmd + " 2>&1").c_str(), "r"); // Open a pipe to execute the command

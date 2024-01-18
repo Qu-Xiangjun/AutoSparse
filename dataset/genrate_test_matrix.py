@@ -21,19 +21,19 @@ def write_matrix_2_csr_file(matirx : np.array, filepath: str, filename: str):
     row_indices, col_indices = np.nonzero(matirx)
     num_nonzero = len(row_indices)
     A_crd = col_indices.tolist()
-    A_val = a[row_indices, col_indices].tolist()
+    A_val = matirx[row_indices, col_indices].tolist()
 
     # 存储到文件
     filename = os.path.join(filepath, filename+'.csr')
     with open(filename, 'wb') as csr_file:
-        num_row, num_col = a.shape
+        num_row, num_col = matirx.shape
         csr_file.write(num_row.to_bytes(4, 'little'))  # 存储行数, 小端存储
         csr_file.write(num_col.to_bytes(4, 'little'))  # 存储列数
         csr_file.write(num_nonzero.to_bytes(4, 'little'))  # 存储非零数量
         
         A_pos = [0]  # 初始位置
         for i in range(1, num_row + 1):
-            A_pos.append(A_pos[i - 1] + A_crd.count(i - 1))  # 计算每行的非零元素数
+            A_pos.append(A_pos[i - 1] + row_indices.tolist().count(i - 1))  # 计算每行的非零元素数
 
         for pos in A_pos:
             csr_file.write(pos.to_bytes(4, 'little'))  # 存储 A_pos
@@ -47,17 +47,21 @@ def write_matrix_2_csr_file(matirx : np.array, filepath: str, filename: str):
 
 # a * b -> c
 random.seed(0)
-a = np.ones((32, 32))
-b = np.ones((32, 256))
+a = np.ones((64, 128))
+b = np.ones((128, 256))
 
 sparsity = 1.0 / (2**2)
-for i in range(32):
-    zero_count = 32 - int(32 * sparsity)
-    index = [x for x in range(32)]
+for i in range(64):
+    zero_count = 128 - int(128 * sparsity) + random.randint(0,5)
+
+    index = [x for x in range(128)]
     random.shuffle(index)
     index = index[:zero_count]
     for j in index:
         a[i, j] = 0
+    if i >= 2 and i <= 5:
+        for j in range(128):
+            a[i, j] = 0
 
     # for j in range(32):
     #     if i != j:
@@ -67,4 +71,4 @@ c = np.matmul(a, b)
 print(c)
 
 # 存下来a
-write_matrix_2_csr_file(a, "./suitsparse", 'test_matrix')
+write_matrix_2_csr_file(a, "/home/qxj/AutoSparse/dataset/suitsparse", '__test_matrix')

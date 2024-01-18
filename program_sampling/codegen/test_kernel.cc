@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	TensorC.push_back({"i", num_row, UNCOMPRESSED}); // {name, dimention, mode_type}
 	TensorC.push_back({"j", N, UNCOMPRESSED});
 	TensorA.push_back({"i", num_row, UNCOMPRESSED});
-	TensorA.push_back({"k", num_col, COMPRESSED});
+	TensorA.push_back({"k", num_col, UNCOMPRESSED});
 	TensorB.push_back({"k", num_col, UNCOMPRESSED});
 	TensorB.push_back({"j", N, UNCOMPRESSED});
 	M.add_tensor("C", TensorC, C, true);
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	float avgtime = M.run(10, 50,verify, verify); // 运行并返回时间，这里不需要验证
 
 
-	// cout << fixedCSR.str() << endl;
+	cout << fixedCSR.str() << endl;
 	cout << "Testing :" << avgtime << " ms" << ",  correct:" << verify << endl;
 
 	return 0;
