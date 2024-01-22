@@ -2,7 +2,6 @@ pretrained
 taco/build
 .vscode/
 __pycache__/
-Debug_data.txt
-*.log
 taco_kernel.c
 taco_kernel.so
+bin/

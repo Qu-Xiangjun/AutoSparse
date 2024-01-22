@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 	stringstream fixedCSR;
 	bool verify = false;
 	double fix_time = -1;
-	fix_time = M.run(10, 50, verify, false, true);
+	// fix_time = M.run(10, 50, verify, false, true);
 	fixedCSR << "FixedCSR : " << fix_time << " ms" << endl;
 	cout << fixedCSR.str() << endl;
 

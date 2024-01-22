@@ -1,19 +1,19 @@
 NUMCORE=$$(nproc --all)
 
 gccspmm :	
-	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} spmm.cc -o spmm -lm -ldl
+	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} spmm.cc -o ./bin/spmm -lm -ldl
 iccspmm :	
-	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} spmm.cc -o spmm -lm -ldl 
+	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} spmm.cc -o ./bin/spmm -lm -ldl 
 
 gccwacospmm :	
-	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} waco_spmm.cc -o waco_spmm -lm -ldl
+	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} waco_spmm.cc -o ./bin/waco_spmm -lm -ldl
 iccwacospmm :	
-	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} waco_spmm.cc -o waco_spmm -lm -ldl 
+	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} waco_spmm.cc -o ./bin/waco_spmm -lm -ldl 
 
 gcctest_kernel :	
-	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} test_kernel.cc -o test_kernel -lm -ldl
+	g++ -std=c++17 -O3 -march=native -fopenmp -DGCC -DNUMCORE=${NUMCORE} test_kernel.cc -o ./bin/test_kernel -lm -ldl
 icctest_kernel :	
-	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} test_kernel.cc -o test_kernel -lm -ldl
+	icpc -std=c++17 -O3 -march=native -qopenmp -DICC -DNUMCORE=${NUMCORE} test_kernel.cc -o ./bin/test_kernel -lm -ldl
 
 gcc : gccspmm gccwacospmm
 icc : iccspmm iccwacospmm

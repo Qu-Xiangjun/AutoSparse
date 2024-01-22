@@ -292,6 +292,7 @@ WACO 只使用dense compressed 两种其他的没什么可以用的？
       但为什么不发生错误呢，因为存储的时候也是错位的存储，访问的时候也偏差了，刚好对齐的存储和访问，因此不发生错误，但是注意会不会影响其他的地方(如其他数组C包含了k轴，但使用的是k，而不是kB);
     - 不可以放在 no_unique_sparse 后面，因为通过pos数组的值作为前一个维度的坐标，这是错误的
     - 不可以放在 singleton  no_unique_singleton 之后，因为和他们用的crd索引值一样作为前一个维度的坐标，而且一般这两个跟在 no_unique_sparse 之后
+    - 如果跟在了 ucq 后面，那么后面所有的轴长都必须是1，或者前面的ucq长度都是1
   - sparse 只存储非零值的坐标到pos和crd，注意需要排除重合的前缀坐标
     - 区分前一个轴的类型来存储crd数组：
       - 若前一个轴是sparse dense，与waco相同操作
@@ -323,15 +324,26 @@ WACO 只使用dense compressed 两种其他的没什么可以用的？
       - 若前一个轴是 dense, 
         - 注意其crd数组是以 index索引访问的，而这个index索引总是在不重复的第一个坐标，将crd扩到这个长度后 再 push_back (但是注意，这么计算也应该是错误的，因为no_unique_singleton会`while (kB < pB2_end && B2_crd[kB] == k) {B_val += B_vals[kB];kB++;}` 类似的累加了再去计算，但实际这么是错误的，每一个crd中坐标指向的元素都是独立的与其他进行计算，并不需要累加在计算。)
         - 还需要注意,pack 的时候第一步crd数组的长度可能是不够dense访问的长度，需要在后面补上reseize。因为在访问的时候dense可能会遍历这一个轴包括0值的地方坐标，而这里会超过第一步pack时候装入crd的坐标范围。
+        - 另外注意到`int32_t k0A = i1A;int32_t pA3_end = i1A + 1;while (k0A < pA3_end) {int32_t k0 = A3_crd[k0A];` 这样的访问，其实是只能存下一个坐标在crd，因此当前轴及之后的轴都需要长度为1,除非遇到dsu就停止要求轴长度为一，换句话说若出现了dc，则后面连续跟着的c或q的轴长必须都是1.
       - 若前一个轴是 sparse, 需要和sparse的pos和crd一一对应，因此无法跟在sparse轴之后，除非和该crd是一一对应的，即该行长度为1,**且后面所有轴长度都为1**
       - 若前一个轴是 no_unique_sparse, 则和上一个轴的pos 与 crd是一一对应的，在pack的时候确实是如此，因为un_crd会存所有的非零元素坐标
       - 若前一个轴是 singleton, 需要和crd一一对应，因此无法跟在singleton轴之后，除非和该crd是一一对应的,即该行长度为1
       - 若前一个轴是 no_unique_singleton, 可以的
     - 使用规则：
-      - 不可以接在dense 轴之后，除非该长度为1，否则计算会是错误的结果 `(注意访问方式是按照index索引的)`
-      - 除非长度为1，不可以作为起始的轴，或者前一个轴不能是sparse 和singleton，**且后面所有轴长度都为1**,否则计算错误
+      - 不可以接在dense 轴之后，除非该长度为1，否则计算会是错误的结果 `(注意访问方式是按照index索引的)`；若出现了dc，同时后面连续跟着的c或q的轴长必须都是1.
+      - 不可以作为起始的轴，区别于`singleton` 本来就只需要存一个，而这里实际是需要存所有非零值在crd，而在生成代码里面 `int32_t iB = 0;
+        int32_t pB1_end = 1;
+        while (iB < pB1_end) {
+          int32_t i = B1_crd[iB];
+          int32_t B1_segend = iB + 1;
+          while (B1_segend < pB1_end && B1_crd[B1_segend] == i) {
+            B1_segend++;
+          }` 这里值会访问crd数组的第一个位置，而crd数组其他元素并未被访问到，因此错误；但是若起始轴后面跟着dense就不会发生问题了，因为dense的轴只关注un_crd的大小来作为pos_idx，但必须保证 no_unique_singleton 长度为1才行，因为起始轴生成的代码为pB1_end,(此外可以是连续长度为1的c or q 跟着之后，然后才是dense，这也是没问题的；若这个区间是 与到了长度为1的s，只有长度为1的s可以利用该pos值，那么也是可以的，并且可以替代d作为结束； 区间中不能是u，因为un_crd数组一直在增加，而c给出的pos实际访问不到这么大的区间，除非长度为1，则可以充当和s一样的作用)
+      - 除非长度为1，前一个轴不能是sparse 和singleton，**且后面所有轴长度都为1**,否则计算错误
       - 前一个轴可以是 no_unique_sparse，no_unique_singleton
       - 不可以作为最后一个轴，除非长度为1,因为前面的`{B_val += B_vals[kB];kB++;}`累加问题是错误的计算
+  - 基于错误case的格式规则：
+    - 
 
 
 **Split**

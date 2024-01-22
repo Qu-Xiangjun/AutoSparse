@@ -586,7 +586,7 @@ public:
                     if (format[rank - 1].mode == SINGLETON_NU or 
                         format[rank - 1].mode == COMPRESSED_NU)
                     {
-                        pos_size = T_crd[rank - 1].size() - 1; // Real pos_size.
+                        pos_size = T_crd[rank - 1].size(); // Real pos_size.
                     }
                 }
                 pos_size *= format[rank].dimension;

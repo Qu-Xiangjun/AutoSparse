@@ -12,6 +12,30 @@ sys.argv = [current_filepath,
             os.path.join(work_dir, 'dataset', 'total.txt')]
 
 def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
+    # c can't put in first axis, only if first axis length is 1 and second axis
+    # is dense or length 1 sparse axis or length 1 u axis. 
+    # Moreover, the axes between c and dense also can have q or c mode of length 1.
+    first_item = freordered_vars[0]
+    if vars_mode[first_item] == 4:
+        if dimensions[first_item] != 1:
+            return False
+        dsu1_flag = False
+        for idx, item in enumerate(freordered_vars[1:]):
+            if vars_mode[item] == 0: # find dense axis
+                dsu1_flag = True
+                break
+            elif vars_mode[item] <= 2 and dimensions[item] == 1:
+                dsu1_flag = True
+                break
+            elif vars_mode[item] <= 2:
+                return False
+            elif vars_mode[item] > 2 and dimensions[item] == 1:
+                continue
+            elif vars_mode[item] > 2:
+                return False
+        if dsu1_flag == False: # No d or length 1 of s or u endding.
+            return False
+        
     # q must be last one, only if all the axis followed by q is 1 of dimension.
     q_flag = False 
     for idx, item in enumerate(freordered_vars):
@@ -19,6 +43,21 @@ def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
             return False
         if vars_mode[item] == 3 and dimensions[item] == 1:
             q_flag = True
+    # If dense follow the continuous q or c axes, all the axes length must be 1. 
+    dc_flag = False
+    for idx, item in enumerate(freordered_vars):
+        if idx == 0:
+            continue
+        last_item = freordered_vars[idx - 1]
+        if vars_mode[last_item] == 0 and vars_mode[item] > 2:
+            dc_flag = True
+        if dc_flag:
+            if vars_mode[item] < 3:
+                dc_flag = False
+            elif dimensions[item] != 1:
+                return False
+            else:
+                continue
     # The previous axis of c can't be dense axis, unless c axis' length is 1.
     # If there are some axes separated in between c and dense axis, all the axes 
     # can't be c axes of length 1.
@@ -32,6 +71,7 @@ def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
                 return False
         if vars_mode[item] == 4 and dimensions[item] != 1:
             c_flag = True
+    
     # Last axis of 4 will cause error if its length is't 1.
     last_item = freordered_vars[-1]
     if vars_mode[last_item] == 4 and dimensions[last_item] != 1:
@@ -51,6 +91,29 @@ def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
         if (vars_mode[item] == 4 and dimensions[item] == 1 and \
             (vars_mode[last_item] == 1 or vars_mode[last_item] == 3)):
             sqc_flag = True
+    # Dense can't follow u c q, only if all the axis followed u length is 1,
+    # or if all the axis behind dense length is 1.
+    u_flag = False
+    ud_flag = True
+    for idx, item in enumerate(freordered_vars):
+        if vars_mode[item] == 2: # u
+            u_flag = True
+        if u_flag:
+            if vars_mode[item] == 0:
+                # All the item follow ud must be length 1.
+                for item2 in freordered_vars[idx:]:
+                    if dimensions[item2] != 1:
+                        ud_flag = False
+                        break
+            elif vars_mode[item] == 1:
+                u_flag = False
+            else:
+                continue
+            if ud_flag == False: 
+                # All the behind d axes length must be 1.
+                for item2 in freordered_vars[:idx+1]:
+                    if dimensions[item2] != 1:
+                        return False
     # Return
     return True
 
@@ -90,7 +153,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
         mtx_filepath, count=3, dtype = '<i4'
     )
     configs = set()
-    while(len(configs) <= 10000):
+    while(len(configs) <= 100000):
         dimensions = {}
         ### Set format
         i_fsplit = random.choice([1<<p for p in range(int(math.log(num_row,2)))])

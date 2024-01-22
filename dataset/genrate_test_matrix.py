@@ -47,10 +47,21 @@ def write_matrix_2_csr_file(matirx : np.array, filepath: str, filename: str):
 
 # a * b -> c
 random.seed(0)
-a = np.ones((64, 128))
 b = np.ones((128, 256))
 
 sparsity = 1.0 / (2**2)
+
+# a = np.ones((64* 128))
+# zero_count = int(64*128*(1-sparsity))
+# index = [x for x in range(64*128)]
+# random.shuffle(index)
+# index = index[:zero_count]
+# for idx in index:
+#     a[idx] = 0
+# a = a.reshape(64, 128)
+
+a = np.ones((64, 128))
+# set row with same sparsity
 for i in range(64):
     zero_count = 128 - int(128 * sparsity) + random.randint(0,5)
 

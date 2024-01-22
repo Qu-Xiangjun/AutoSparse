@@ -12,6 +12,8 @@
 
 using namespace std;
 
+string log_prefix = "./log";
+
 int roundup(int num, int multiple)
 {
 	return ((num + multiple - 1) / multiple) * multiple;
@@ -47,7 +49,8 @@ bool is_power_of_2(int n) { return (n > 0) && ((n & (n - 1)) == 0); }
 /* Debug func. */
 void fwrite2file(float* val, int data_size, string title = "*******")
 {
-	ofstream outputFile("Debug_data.txt");
+	string filename = log_prefix + "/Debug_data.txt";
+	ofstream outputFile(filename);
 	outputFile << title << endl;
 	for(int tt = 0; tt < data_size; tt++) 
 	{
@@ -61,7 +64,8 @@ void fwrite2file(float* val, int data_size, string title = "*******")
 
 void fwrite2file(vector<int> val, int data_size, string title = "*******")
 {
-	ofstream outputFile("Debug_data.txt");
+	string filename = log_prefix + "/Debug_data.txt";
+	ofstream outputFile(filename);
 	outputFile << title << endl;
 	for(int tt = 0; tt < data_size; tt++) 
 	{
@@ -75,6 +79,7 @@ void fwrite2file(vector<int> val, int data_size, string title = "*******")
 
 void fwrite2file(string val, string filename, string title = "*******")
 {
+	filename = log_prefix + "/" + filename;
 	ofstream outputFile(filename, ios::app);
 	outputFile << title << endl;
 	outputFile << val << endl;
