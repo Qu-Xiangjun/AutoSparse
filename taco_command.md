@@ -343,7 +343,7 @@ WACO 只使用dense compressed 两种其他的没什么可以用的？
       - 前一个轴可以是 no_unique_sparse，no_unique_singleton
       - 不可以作为最后一个轴，除非长度为1,因为前面的`{B_val += B_vals[kB];kB++;}`累加问题是错误的计算
   - 基于错误case的格式规则：
-    - 
+  - `"C(i1,i0,j1,j0)=A(i1,k1,k0,i0)*B(k1,k0,j1,j0)" -f=A:sdcd:64,128,1,1` 
 
 
 **Split**

@@ -996,8 +996,8 @@ public:
             // fwrite2file((float *)T[0]->vals, T[0]->vals_size, "******* T0 *******");
             // fwrite2file((float *)T[1]->vals, T[1]->vals_size, "******* T1 *******");
             // fwrite2file((float *)T[2]->vals, T[2]->vals_size, "******* T2 *******");
-            compute_(T[0], T[1], T[2], T[0], T[1], T[2]);
-            // compute_func.func2(T[0], T[1], T[2]);
+            // compute_(T[0], T[1], T[2], T[0], T[1], T[2]);
+            compute_func.func2(T[0], T[1], T[2]);
             break;
         case 3:
             compute_func.func3(T[0], T[1], T[2], T[3]);
@@ -1009,10 +1009,10 @@ public:
             break;
         }
         
-        if (verify)
+        if (verify && corret_val.size())
         {
             vector<float> &res = lh_tensor->get_vals();
-            fwrite2file((float*)res.data(), res.size(), "******* T0 *******");
+            // fwrite2file((float*)res.data(), res.size(), "******* T0 *******");
             bool flag = true;
             for (int i = 0; i < res.size(); i++)
             {
