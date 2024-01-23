@@ -13,8 +13,9 @@ sys.argv = [current_filepath,
 
 def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
     # c can't put in first axis, only if first axis length is 1 and second axis
-    # is dense or length 1 sparse axis or length 1 u axis. 
-    # Moreover, the axes between c and dense also can have q or c mode of length 1.
+    # is dense, and also the second axis can be a sequence of end by length 1 sparse axis. 
+    # Moreover, the axes sequence between c and dense also can have q or c or u mode of length 1.
+    cds_flag = False
     first_item = freordered_vars[0]
     if vars_mode[first_item] == 4:
         if dimensions[first_item] != 1:
@@ -24,14 +25,14 @@ def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
             if vars_mode[item] == 0: # find dense axis
                 dsu1_flag = True
                 break
-            elif vars_mode[item] <= 2 and dimensions[item] == 1:
+            elif vars_mode[item] == 1 and dimensions[item] == 1:
                 dsu1_flag = True
                 break
-            elif vars_mode[item] <= 2:
+            elif vars_mode[item] == 1:
                 return False
-            elif vars_mode[item] > 2 and dimensions[item] == 1:
+            elif vars_mode[item] > 1 and dimensions[item] == 1:
                 continue
-            elif vars_mode[item] > 2:
+            elif vars_mode[item] > 1:
                 return False
         if dsu1_flag == False: # No d or length 1 of s or u endding.
             return False
@@ -114,6 +115,36 @@ def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
                 for item2 in freordered_vars[:idx+1]:
                     if dimensions[item2] != 1:
                         return False
+    # There can't be d*d condition, and the * indicate continous q or c, which
+    # c at least occur 1 times. Moreover, the sequence can't be head of mode 
+    # sequence, and can't follow axes sequence which all length is 1.
+    dcd_d_flag = False
+    dcd_cd_flag = False
+    for idx, item in enumerate(freordered_vars[::-1]):
+        if dcd_cd_flag: # find first d
+            if vars_mode[item] == 0:
+                # all the item behind must be length 1.
+                if idx < len(freordered_vars) - 1:
+                    for item2 in freordered_vars[::-1][idx+1:]:
+                        if dimensions[item2] > 1:
+                            return False
+            elif vars_mode[item] > 2:
+                continue
+            else:
+                dcd_cd_flag = False
+                dcd_d_flag = False
+                continue
+        if dcd_d_flag: # find c
+            if vars_mode[item] == 3:
+                continue
+            elif vars_mode[item] == 4:
+                dcd_cd_flag = True
+            else:
+                dcd_d_flag = False
+        if vars_mode[item] == 0: # find last d
+            dcd_d_flag = True
+        
+
     # Return
     return True
 
@@ -121,16 +152,17 @@ def test_check_mode():
     freordered_vars = ['i0', 'k0', 'k1', 'i1']
     vars_mode = {}
     dimensions = {}
-    vars_mode['k1'] = 3
-    vars_mode['i1'] = 3
-    vars_mode['i0'] = 0
+    vars_mode['i0'] = 4
     vars_mode['k0'] = 2
-    dimensions['k1'] = 16
-    dimensions['i1'] = 32
+    vars_mode['k1'] = 1
+    vars_mode['i1'] = 2
     dimensions['i0'] = 1
-    dimensions['k0'] = 2
+    dimensions['k0'] = 1
+    dimensions['k1'] = 64
+    dimensions['i1'] = 128
     a = check_mode(freordered_vars, vars_mode, dimensions)
     print(a)
+test_check_mode()
 
 def check_lreorder(vars_mode : dict, freordered_vars_lsplit : list, lreordered_vars : list):
     # The order between sparse array axes is fixed.

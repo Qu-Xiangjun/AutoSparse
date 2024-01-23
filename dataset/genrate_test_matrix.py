@@ -78,6 +78,8 @@ for i in range(64):
     #     if i != j:
     #         a[i, j] = 0
 
+a[31:,60:] = 0
+
 c = np.matmul(a, b) 
 print(c)
 
