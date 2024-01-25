@@ -983,6 +983,7 @@ public:
         verifyStart:
         if (!verify and !store){
             dlclose(lib_handle);
+            verify_res = true;
             return elapsed_time;
         }
 

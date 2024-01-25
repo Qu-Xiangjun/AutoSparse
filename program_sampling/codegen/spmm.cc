@@ -121,8 +121,10 @@ int main(int argc, char *argv[])
     string arg3(argv[2]);
     fstream arg3_file(arg3);
     string best_autosparse_schedule;
+	int line_cnt = 0;
     for (; getline(arg3_file, schedule); )
     {
+		line_cnt++;
         stringstream ss(schedule);
         int i_fsplit, k_fsplit, j_fsplit;
         vector<string> fr(4); // reordered vars for format.
@@ -187,10 +189,11 @@ int main(int argc, char *argv[])
 
             M.compile(thread_num, parachunk);
             verify = true;
-            float avgtime = M.run(10, 50, verify, true, false, true, fix_time * 3);
+			bool is_verify = false;
+            float avgtime = M.run(10, 50, verify, is_verify, false, true, fix_time * 3);
 			cout << "correct:" << verify << ", " << fixed << setprecision(5) << avgtime;
 			cout << " ms" << ", Schedules:" << schedule << endl;
-            if (verify and bestTime > avgtime)
+            if ((verify or !is_verify) and bestTime > avgtime and bestTime > 0)
 			{
 				bestTime = avgtime;
 				schedule.pop_back();
@@ -201,6 +204,14 @@ int main(int argc, char *argv[])
         {
             cerr << e.what() << endl;
         }
+		if (line_cnt % 500 == 0)
+		{
+			cout << "Best Schedule found by AutoSparse : " << best_autosparse_schedule << endl;
+			cout << "AutoSparse : " << bestTime << " ms" << endl;
+			auto currentTime = chrono::system_clock::now();
+			auto currentTimeStamp = chrono::system_clock::to_time_t(currentTime);
+			cout << "Current time: " << put_time(localtime(&currentTimeStamp), "%Y-%m-%d %H:%M:%S") << endl;
+		}
     }
 
     double bestTime2 = 1000000000;

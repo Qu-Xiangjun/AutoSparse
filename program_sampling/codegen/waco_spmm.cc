@@ -112,12 +112,15 @@ int main(int argc, char *argv[])
 	// 首先用固定值并行化 chunk = 48的干净csr进行执行
 	M.reset_all();
 	M.parallelize("i"); // 为什么不使用NUMCORE 而是48？
+	// M.vectorize("j");
+	// M.unroll("i", num_row);
 	M.compile(48, 32);
 	stringstream fixedCSR;
 	bool verify = false;
 	double fixed_time = 0.;
 	fixed_time = M.run(10, 50, verify, false, true);
 	fixedCSR << "FixedCSR : " << fixed_time << " ms" << endl;
+	cout<<fixedCSR.str()<<endl;
 
 	string arg(argv[2]);	// 调度文件地址
 	fstream arg_file(arg);

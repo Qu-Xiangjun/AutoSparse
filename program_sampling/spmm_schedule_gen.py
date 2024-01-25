@@ -175,6 +175,26 @@ def check_lreorder(vars_mode : dict, freordered_vars_lsplit : list, lreordered_v
             return False
     return True
 
+
+def filter_order(reordered_vars, split_pair):
+    """
+    Filter split pair order, which indicate that i split to outer axis i1 
+    and inner axis i0, so that i1 must be outer loop index in reorder_vars.
+    Parameter
+    ---------
+    @reordered_vars : list
+        The vars string list of the axis order.
+    @split_pair: list
+        A list storage all the split information, which is a pair of list,
+        first item is outer axis var and second item is inner axis.
+    """
+    for pair in split_pair:
+        index_outer = reordered_vars.index(pair[0])
+        index_inner = reordered_vars.index(pair[1])
+        if index_outer > index_inner:
+            return False
+    return True
+
 def random_generate_config(mtx_name, autosparse_prefix):
     mtx_name += ".csr"
     mtx_filepath = os.path.join(
@@ -185,12 +205,12 @@ def random_generate_config(mtx_name, autosparse_prefix):
         mtx_filepath, count=3, dtype = '<i4'
     )
     configs = set()
-    while(len(configs) <= 100000):
+    while(len(configs) <= 20000):
         dimensions = {}
         ### Set format
-        i_fsplit = random.choice([1<<p for p in range(int(math.log(num_row,2)))])
-        j_fsplit = random.choice([1<<p for p in range(int(math.log(256,2)))])
-        k_fsplit = random.choice([1<<p for p in range(int(math.log(num_col,2)))])
+        i_fsplit = random.choice([1<<p for p in range(int(math.log(min(512,num_row),2)))])
+        j_fsplit = random.choice([1<<p for p in range(int(math.log(min(512,256),2)))])
+        k_fsplit = random.choice([1<<p for p in range(int(math.log(min(512,num_col),2)))])
         i1 = math.ceil(num_row / i_fsplit)
         i0 = i_fsplit
         k1 = math.ceil(num_col / k_fsplit)
@@ -205,6 +225,9 @@ def random_generate_config(mtx_name, autosparse_prefix):
         dimensions['j0'] = j0
         freordered_vars = ['i1', 'i0', 'k1', 'k0'] # reorder all the axis for sparse axes.
         random.shuffle(freordered_vars)
+        split_pair = [['i1', 'i0'], ['k1', 'k0']]
+        if filter_order(freordered_vars, split_pair) == False:
+            continue
         vars_mode = {}
         for item in (freordered_vars + ['j1', 'j0']):
             vars_mode[item] = 0
@@ -247,13 +270,15 @@ def random_generate_config(mtx_name, autosparse_prefix):
 
         ### Set schedule
         ### lsplit
+        split_pair = []
         freordered_vars_lsplit = freordered_vars.copy()
         lreordered_vars = []
         lreordered_vars_temp = []
 
-        i1_lsplit = random.choice([1<<p for p in range(int(math.log(i1, 2)) + 1)])
-        i0_lsplit = random.choice([1<<p for p in range(int(math.log(i0, 2)) + 1)])
-        if vars_mode['i1'] < 2 and i1_lsplit > 1:
+        i1_lsplit = random.choice([1<<p for p in range(int(math.log(min(512,i1), 2)) + 1)])
+        i0_lsplit = random.choice([1<<p for p in range(int(math.log(min(512,i0), 2)) + 1)])
+        if vars_mode['i1'] < 2 and i1_lsplit > 1 and 0:
+            split_pair.append(['i11', 'i10'])
             dimensions['i11'] = math.ceil(i1 / i1_lsplit)
             dimensions['i10'] = math.ceil(i1_lsplit)
             # lreordered_vars += ['i11', 'i10']
@@ -264,7 +289,8 @@ def random_generate_config(mtx_name, autosparse_prefix):
             dimensions['i1'] = i1
             # lreordered_vars.append('i1')
             i1_lsplit = 0
-        if vars_mode['i0'] < 2 and i0_lsplit > 1:
+        if vars_mode['i0'] < 2 and i0_lsplit > 1 and 0:
+            split_pair.append(['i01', 'i00'])
             dimensions['i01'] = math.ceil(i0 / i0_lsplit)
             dimensions['i00'] = math.ceil(i0_lsplit)
             # lreordered_vars += ['i01', 'i00']
@@ -276,9 +302,10 @@ def random_generate_config(mtx_name, autosparse_prefix):
             # lreordered_vars.append('i0')
             i0_lsplit = 0
 
-        k1_lsplit = random.choice([1<<p for p in range(int(math.log(k1, 2)) + 1)])
-        k0_lsplit = random.choice([1<<p for p in range(int(math.log(k0, 2)) + 1)])
-        if vars_mode['k1'] < 2 and k1_lsplit > 1:
+        k1_lsplit = random.choice([1<<p for p in range(int(math.log(min(512,k1), 2)) + 1)])
+        k0_lsplit = random.choice([1<<p for p in range(int(math.log(min(512,k0), 2)) + 1)])
+        if vars_mode['k1'] < 2 and k1_lsplit > 1 and 0:
+            split_pair.append(['k11', 'k10'])
             dimensions['k11'] = math.ceil(k1 / k1_lsplit)
             dimensions['k10'] = math.ceil(k1_lsplit)
             # lreordered_vars += ['k11', 'k10']
@@ -289,7 +316,8 @@ def random_generate_config(mtx_name, autosparse_prefix):
             dimensions['k1'] = k1
             # lreordered_vars.append('k1')
             k1_lsplit = 0
-        if vars_mode['k0'] < 2 and k0_lsplit > 1:
+        if vars_mode['k0'] < 2 and k0_lsplit > 1 and 0:
+            split_pair.append(['k01', 'k00'])
             dimensions['k01'] = math.ceil(k0 / k0_lsplit)
             dimensions['k00'] = math.ceil(k0_lsplit)
             # lreordered_vars += ['k01', 'k00']
@@ -301,9 +329,10 @@ def random_generate_config(mtx_name, autosparse_prefix):
             # lreordered_vars.append('k0')
             k0_lsplit = 0
 
-        j1_lsplit = random.choice([1<<p for p in range(int(math.log(j1, 2)) + 1)])
-        j0_lsplit = random.choice([1<<p for p in range(int(math.log(j0, 2)) + 1)])
+        j1_lsplit = random.choice([1<<p for p in range(int(math.log(min(512,j1), 2)) + 1)])
+        j0_lsplit = random.choice([1<<p for p in range(int(math.log(min(512,j0), 2)) + 1)])
         if j1_lsplit > 1:
+            split_pair.append(['j11', 'j10'])
             dimensions['j11'] = math.ceil(j1 / j1_lsplit)
             dimensions['j10'] = math.ceil(j1_lsplit)
             lreordered_vars_temp += ['j11', 'j10']
@@ -312,6 +341,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
             lreordered_vars_temp.append('j1')
             j1_lsplit = 0
         if j0_lsplit > 1:
+            split_pair.append(['j01', 'j00'])
             dimensions['j01'] = math.ceil(j0 / j0_lsplit)
             dimensions['j00'] = math.ceil(j0_lsplit)
             lreordered_vars_temp += ['j01', 'j00']
@@ -323,6 +353,8 @@ def random_generate_config(mtx_name, autosparse_prefix):
         ### lreorder
         lreordered_vars = freordered_vars_lsplit.copy()
         random.shuffle(lreordered_vars_temp)
+        if filter(lreordered_vars, split_pair) == False:
+            continue
         for item in lreordered_vars_temp:
             idx = random.randint(0, len(lreordered_vars))
             lreordered_vars.insert(idx, item)
@@ -335,27 +367,34 @@ def random_generate_config(mtx_name, autosparse_prefix):
         ### prallel and vectorize
         # Notice only apply for dense axis
         parallel = "None"
-        # for item in lreordered_vars:
-        #     if (vars_mode[item] == 0):
-        #         parallel = item
-        #         break
+        for item in lreordered_vars:
+            if (vars_mode[item] <= 2 and 'k' not in item and 
+                random.randint(0, len(lreordered_vars)) != 0
+            ):
+                parallel = item
+                break
         vectorize = "None"
-        # for item in lreordered_vars[::-1]:
-        #     if (vars_mode[item] == 0):
-        #         vectorize = item
-        #         break
-        
+        last_item = lreordered_vars[-1]
+        if (vars_mode[last_item] == 0 and 'k' not in last_item
+            and last_item != parallel
+        ): # Can't over parallel axis.
+            vectorize = last_item
+        if random.randint(0, len(lreordered_vars)) == 0:
+            vectorize = "None"
+
         ### unroll
         unroll_candidate = []
-        # for item in lreordered_vars:
-        #     if (item != parallel and parallel != vectorize and dimensions[item] > 1 and vars_mode[item] == 0):
-        #         unroll_candidate.append(item)
+        for item in lreordered_vars:
+            if (item != parallel and item != vectorize and dimensions[item] > 1 and vars_mode[item] == 0):
+                unroll_candidate.append(item)
         if (len(unroll_candidate)):
             unroll = random.choice(unroll_candidate)
             unroll_factor = random.choice([dimensions[unroll]>>p for p in range(int(math.log(dimensions[unroll], 2)))])
         else:
             unroll = "None"
             unroll_factor = 0
+        if random.randint(0, len(lreordered_vars)) == len(lreordered_vars) - 1:
+            unroll = "None"
         
         ### Precompute. 
         # Notiece can't apply for `singletone` related axis.
@@ -373,7 +412,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
 
         ### print
         num_cores = multiprocessing.cpu_count()
-        thread_num = random.choice([int(num_cores), int(num_cores * 2), int(num_cores / 2)])
+        thread_num = num_cores
         parchunk = random.choice([1 << p for p in range(9)])
         configs.add("{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
             i_fsplit, k_fsplit, j_fsplit, " ".join(freordered_vars), i1f, i0f, k1f, k0f,
