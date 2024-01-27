@@ -7,7 +7,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 def download_data():
     selected_matrix = ssgetpy.search(
-        rowbounds=(0, 131072), nzbounds=(0, 10_000_000),
+        rowbounds=(0, 131072), colbounds=(0, 131072), nzbounds=(0, 10_000_000),
         is2d3d = False, limit = 10000
     )
 
@@ -35,6 +35,11 @@ def download_data():
     format = "MAT"
     destpath = os.path.join(current_dir, "mat_data")
     selected_matrix.download(format = format, destpath = destpath, extract = True)
+    # for idx, matrix in enumerate(selected_matrix):
+    #     filepath = os.path.join(destpath, matrix.name + ".mat")
+    #     if os.path.exists(filepath) == False:
+    #         matrix.download(format = format, destpath = destpath, extract = True)
+    #         print(str(idx) + "/" + str(len(selected_matrix)), "Successed Download ", matrix.name + ".mat")
     print("Successed Download MAT data.")
 
     # Save info of matirx

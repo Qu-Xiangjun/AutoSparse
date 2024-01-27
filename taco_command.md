@@ -398,3 +398,11 @@ WACO 并未使用。
 - 随机选择一个轴，然后将该轴最近的子表达式当做目标，轴名称不需要变。
 - 另外也可以只选择reduce的轴或只选择space的轴进行，对比一下看看哪个OK一些作为策略？我理解是reduce的轴更需要缓存结果进行累加。即是否优先选择输出的轴
 - 注意和`sinlgeton` 属性的轴不兼容
+
+
+**augmented**
+ we have augmented the Suitesparse dataset using the following steps:
+1. Downsampled the matrix to 256x256.
+2. Upsampled the 256x256 matrix to an arbitrary size of rows and columns. (e.g. 256x256 -> 16384x2048)
+3. During the upsample, we randomly selected the dense block size, then fill the matrix with the dense blocks. (e.g., 2x1, 4x4, 8x2, etc.).
+So If you examine each .csr file, you'll notice that the filename format is "<original matrix name>_<blocksize>_<uniqueID>.csr."
