@@ -1,0 +1,8 @@
+NUMROW : 4096 / NUMCOL : 8192 / NNZ : 701760 
+Use 12 Threads
+/home/qxj/AutoSparse/taco/build/bin/taco "C(i,j)=A(i,k)*B(k,j)" -f=C:dd:0,1 -f=A:ds:0,1 -f=B:dd:0,1 -t=C:float -t=A:float -t=B:float -s="bound(i,iBound,4096,MaxExact)" -s="bound(j,jBound,256,MaxExact)" -s="unroll(iBound,4096)" -write-compute=taco_kernel.c
+FixedCSR : 24.9356 ms
+
+/home/qxj/AutoSparse/taco/build/bin/taco "C(i,j)=A(i,k1,k0)*B(k1,k0,j)" -f=C:dd:0,1 -f=A:dds:0,1,2 -f=B:ddd:0,1,2 -t=C:float -t=A:float -t=B:float -s="bound(i,iBound,4096,MaxExact)" -s="bound(j,jBound,256,MaxExact)" -s="bound(k1,k1Bound,512,MaxExact)" -s="reorder(iBound,k1Bound,k0,jBound)" -s="parallelize(iBound,CPUThread,NoRaces)" -write-compute=taco_kernel.c
+correct:1, 5.45456 ms, Schedules:1 16 1 i1 i0 k1 k0 j1 j0 1 0 1 0 i1 48 8
+/home/qxj/AutoSparse/taco/build/bin/taco "C(i1,i0,j1,j0)=A(k1,k0,i1,i0)*B(k1,k0,j1,j0)" -f=C:dddd:0,1,2,3 -f=A:dsss:0,1,2,3 -f=B:dddd:0,1,2,3 -t=C:float -t=A:float -t=B:float -s="bound(j0,j0Bound,32,MaxExact)" -s="bound(j1,j1Bound,8,MaxExact)" -s="bound(k1,k1Bound,2048,MaxExact)" -s="reorder(k1Bound,k0,i1,j1Bound,i0,j0Bound)" -s="parallelize(i1,CPUThread,NoRaces)" -write-compute=taco_kernel.c

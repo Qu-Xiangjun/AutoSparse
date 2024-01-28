@@ -67,6 +67,7 @@ if __name__ == "__main__":
         file_path = os.path.join(mat_data_path, file_name)
         output_file_path = os.path.join(csr_data_path, file_name.split(".")[0] + ".csr")
         if os.path.exists(output_file_path):
+            exists_files.append(file_name) # Correct mat file.
             continue
         try:
             num_rows, num_cols, num_nonzero, pos, crd, _ = mtx_2_csr(file_path)
