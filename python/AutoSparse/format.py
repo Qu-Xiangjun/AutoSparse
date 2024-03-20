@@ -1,6 +1,6 @@
 """ Define sparse format. """
 import copy
-from typing import List, Optional, Tuple, Union
+from typing import *
 from enum import Enum
 
 FormatMode = [
@@ -19,7 +19,7 @@ global_name_set = set()
 auto_name_set = set()
 
 
-class Axis:
+class Axis(object):
     """Define the axis."""
     name: str
     size: int
@@ -70,7 +70,7 @@ class Axis:
         """Only need size and name are equal."""
         return self.name == other.name and self.size == other.size
 
-class Format:
+class Format(object):
     """Define format constructed by axes."""
     shape: Tuple
     axes: Tuple["Axis"]

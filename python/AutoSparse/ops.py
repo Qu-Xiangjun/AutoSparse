@@ -5,7 +5,6 @@ from typing import List, Optional, Tuple, Union, Any
 from .tensor import Operator, Value
 from .format import *
 
-
 class EWiseMul(Operator):
     "Element-wise Multiplication"
     def Compute(self, a: Value, b: Value):
@@ -106,6 +105,8 @@ class Summation(Operator):
             if i in self.axes:
                 continue
             axes.append(Axis(a.format.axes[i].size, name = a.format.axes[i].name))
+        if len(axes) == 0:
+            axes.append(Axis(1))
         return Format(tuple(axes)), (a), a.dtype
 
 class Matmul(Operator):

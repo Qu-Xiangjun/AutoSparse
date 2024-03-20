@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from typing import *
 
 import AutoSparse
@@ -12,7 +13,7 @@ DtypeSet = [
     "complexfloat", "complexdouble"
 ]          
 
-class Operator:
+class Operator(object):
     def __init__(self) -> None:
         pass
 
@@ -32,10 +33,10 @@ class Operator:
     
     def __str__(self):
         """ Get einsum expression. """
-        raise NotImplementedError()
+        return ""
     
 
-class Value:
+class Value(object):
     """ A value in computation graph """
     op: Optional[Operator] # Need to get EinsumExpr from op
     inputs: List["Value"] # trace of computation graph
@@ -153,6 +154,10 @@ class Tensor(Value):
             is_sparse = is_sparse
         )
     
+    def __str__(self) -> str:
+        return "AutoSparse.Tensor(" + str(self.format)[11:] + ", dtype = " + \
+            self.dtype + ", is_saprse = " + str(self.is_sparse) + ")"
+    
     def LoadData(self):
         """ Init cached_data from other tensor or numpy or local file. """
         raise NotImplementedError()
@@ -160,6 +165,7 @@ class Tensor(Value):
 
 class ComputeTensor(Value):
     """ The tensor is computed by operators from other Tensor. """
+
     def __init__(
         self,
         format: Union[Format, Tuple["Axis"]],
@@ -177,10 +183,60 @@ class ComputeTensor(Value):
             dtype = dtype,
             is_sparse = is_sparse
         )
+
+    @property
+    def origin_inputs_list(self):
+        tensors = FindTopoSort(self)
+        ret_lst = []
+        for tensor in tensors:
+            if isinstance(tensor, Tensor):
+                ret_lst.append(tensor)
+        return ret_lst
+
+    @property
+    def reduce_axes(self):
+        ret_axes = {}
+        tensors = FindTopoSort(self)
+        origin_inputs_list = []
+        left_axes = {axis.name: False for axis in self.format.axes}
+        for tensor in tensors:
+            if isinstance(tensor, Tensor):
+                origin_inputs_list.append(tensor)
+        for tensor in origin_inputs_list:
+            for axis in tensor.format.axes:
+                if axis.name in self.format.axes_name.keys():
+                    left_axes[axis.name] = True
+                else:
+                    if ret_axes.get(axis.name, None) == None:
+                        ret_axes[axis.name] = [copy.deepcopy(axis)]
+                    else:
+                        ret_axes[axis.name].append(copy.deepcopy(axis))
+        for key, value in left_axes:
+            if value == False:
+                ret_axes[key] = [copy.deepcopy(self.format.axes_name[key])]
+        return ret_axes
+
+
+    @property
+    def spatial_axes(self):
+        ret_axes = {}
+        tensors = FindTopoSort(self)
+        origin_inputs_list = []
+        for tensor in tensors:
+            if isinstance(tensor, Tensor):
+                origin_inputs_list.append(tensor)
+        for tensor in origin_inputs_list:
+            for axis in tensor.format.axes:
+                if axis.name in self.format.axes_name.keys():
+                    if ret_axes.get(axis.name, None) == None:
+                        ret_axes[axis.name] = [copy.deepcopy(axis)]
+                    else:
+                        ret_axes[axis.name].append(copy.deepcopy(axis))
+        return ret_axes
     
     def __str__(self) -> str:
         return "AutoSparse.ComputeTensor("+ str(self.format)[11:] + ", dtype = " + \
-            self.dtype + ", is_saprse = " + str(self.is_sparse) + ", "\
+            self.dtype + ", is_saprse = " + str(self.is_sparse) + ", op = "\
             + str(self.op) + ")"
     
     @staticmethod
@@ -257,9 +313,9 @@ def Compute(*args: Any, **kwds: Any):
     format = kwds.get("format", None)
     is_sparse = kwds.get("is_sparse", False)
     if (len(args) == 1):
-        ComputeHelp1(args[0], format, is_sparse)
+        return ComputeHelp1(args[0], format, is_sparse)
     elif (len(args) == 2):
-        ComputeHelp2(args[0], args[1], format, is_sparse)
+        return ComputeHelp2(args[0], args[1], format, is_sparse)
     else:
         assert False, \
             "[AutoSparse.Compute] Error input args."

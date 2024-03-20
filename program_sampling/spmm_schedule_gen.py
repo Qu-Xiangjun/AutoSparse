@@ -148,21 +148,21 @@ def check_mode(freordered_vars : list, vars_mode : dict, dimensions : dict):
     # Return
     return True
 
-def test_check_mode():
-    freordered_vars = ['i0', 'k0', 'k1', 'i1']
-    vars_mode = {}
-    dimensions = {}
-    vars_mode['i0'] = 4
-    vars_mode['k0'] = 2
-    vars_mode['k1'] = 1
-    vars_mode['i1'] = 2
-    dimensions['i0'] = 1
-    dimensions['k0'] = 1
-    dimensions['k1'] = 64
-    dimensions['i1'] = 128
-    a = check_mode(freordered_vars, vars_mode, dimensions)
-    print(a)
-test_check_mode()
+# def test_check_mode():
+#     freordered_vars = ['i0', 'k0', 'k1', 'i1']
+#     vars_mode = {}
+#     dimensions = {}
+#     vars_mode['i0'] = 4
+#     vars_mode['k0'] = 2
+#     vars_mode['k1'] = 1
+#     vars_mode['i1'] = 2
+#     dimensions['i0'] = 1
+#     dimensions['k0'] = 1
+#     dimensions['k1'] = 64
+#     dimensions['i1'] = 128
+#     a = check_mode(freordered_vars, vars_mode, dimensions)
+#     print(a)
+# test_check_mode()
 
 def check_lreorder(vars_mode : dict, freordered_vars_lsplit : list, lreordered_vars : list):
     # The order between sparse array axes is fixed.
