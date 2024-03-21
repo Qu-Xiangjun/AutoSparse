@@ -1,0 +1,3 @@
+/home/qxj/AutoSparse/python/codegen/build/CMakeFiles/rebuild_cache.dir
+/home/qxj/AutoSparse/python/codegen/build/CMakeFiles/edit_cache.dir
+/home/qxj/AutoSparse/python/codegen/build/CMakeFiles/AutoSparseBackend.dir

@@ -1,0 +1,1 @@
+icpc -fPIC  -std=c++17 -O3 -march=native -qopenmp -DICC -Wextra -fPIC  -shared  -o /home/qxj/AutoSparse/python/AutoSparse/backend/AutoSparseBackend.cpython-39-x86_64-linux-gnu.so CMakeFiles/AutoSparseBackend.dir/backend_api_bindings.cpp.o -lm -ldl -flto 

@@ -745,7 +745,7 @@ public:
      *   Excution times (ms).
      */
     double run(
-        int warm, int round, bool &verify_res, bool verify = true, 
+        int warm, int round,bool &verify_res, bool verify = true, 
         bool store = false, bool avg_test = true, double time_limit = 1000000.0
     )
     {

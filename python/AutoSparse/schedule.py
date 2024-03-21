@@ -466,7 +466,8 @@ class Schedule(object):
         ------
         command: List[str]
             [tensor_count, 
-            tensor_list[tensor_name, axes_count, axes_list[axis_name, size, mode]],
+            tensor_list[tensor_name, is_sparse, axes_count, 
+                        axes_list[axis_name, size, mode]],
             dtype, fsplit_count, 
             fsplit_list[axis_name, new_axes_count, new_axes_list[axis_name, size]],
             sparse_tensor_count, 
@@ -488,6 +489,7 @@ class Schedule(object):
         command.append(str(tensor_count))
         for idx, tensor in enumerate(self.origin_input_tensors + [self.compute_tensor]):
             command.append(self.tensor_name_lst[idx])
+            command.append(str(int(tensor.is_sparse)))
             command.append(str(len(tensor.shape)))
             for axis in tensor.format.axes:
                 command.append(axis.name)

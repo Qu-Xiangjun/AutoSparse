@@ -1,0 +1,1 @@
+icpc -fPIC  -std=c++17 -O3 -march=native -qopenmp -DICC -Wextra -fPIC  -shared  -o /home/qxj/AutoSparse/python/AutoSparse/backend/BackEndAPI.cpython-39-x86_64-linux-gnu.so CMakeFiles/BackEndAPI.dir/backend_api_bindings.cpp.o -lm -ldl -flto 
