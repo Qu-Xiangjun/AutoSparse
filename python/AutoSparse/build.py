@@ -29,7 +29,16 @@ class Build(object):
         """Excute new schedule
         Parameters
         ----------
-        
+        sch: Union[Schedule, ComputeTensor] optinal(None)
+            if Schedule is None will run without schedule computation.
+        warm: int optional(10)
+            Warm run times.
+        round: int optinal(50)
+            Test times.
+        time_policy: str optinal("avg")
+            "avg" mean return average test time set.
+            "mid" mean return middile number of test time set.
+            "best mean return best one of test time set.
         Return
         ------
         excution_time: float
