@@ -187,7 +187,7 @@ public:
         M.reset_all();
         // Excute to save correct result
         M.parallelize(M.lh_tensor->format[0].var);
-        M.compile(48, 32);
+        M.compile(NUMCORE, 32);
         bool verify = false;
         origin_time = M.run(100, 100, verify, false, true);
 #ifdef __DEBUG__

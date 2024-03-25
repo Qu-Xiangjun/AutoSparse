@@ -23,6 +23,10 @@ class Build(object):
         self.device = auto_sparse_backend.BackEndAPI(
             self.pure_comp_desc, self.filepaths
         )
+
+    @property
+    def origin_time(self):
+        return self.device.origin_time
     
     def Run(self, sch: Union[Schedule, ComputeTensor] = None, 
             warm = 10, round = 50, time_policy = "avg"):
