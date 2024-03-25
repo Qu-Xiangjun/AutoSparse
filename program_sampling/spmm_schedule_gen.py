@@ -198,7 +198,7 @@ def filter_order(reordered_vars, split_pair):
 def random_generate_config(mtx_name, autosparse_prefix):
     mtx_name += ".csr"
     mtx_filepath = os.path.join(
-        autosparse_prefix, "dataset", "suitsparse", mtx_name
+        autosparse_prefix, "dataset", "demo_dataset", mtx_name
     )
     # 从文件读3个数据，数据的类型为小端法（<）的4字节整数（i4）
     num_row, num_col, num_nonezero = np.fromfile(

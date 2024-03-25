@@ -40,7 +40,7 @@ class Value(object):
     """ A value in computation graph """
     op: Optional[Operator] # Need to get EinsumExpr from op
     inputs: List["Value"] # trace of computation graph
-    cached_data: np.ndarray # ndarray of dense or CSR of sparse
+    cached_data: Union[np.ndarray, str] # ndarray of dense or CSR of sparse
     dtype : str 
     format : Format
     is_sparse : bool
@@ -95,6 +95,20 @@ class Value(object):
     @data.setter
     def data(self, value):
         raise NotImplementedError()
+    
+    def LoadData(self, CSR_filepath, dataset_type = '2D'):
+        """ Init cached_data from other tensor or numpy or local file. """
+        if dataset_type == '2D':
+            num_row, num_col, num_nonezero = np.fromfile(
+            CSR_filepath, count=3, dtype = '<i4'
+            )
+            assert (num_row, num_col) == self.shape, \
+                f"[AutoSparse.LoadData] Shape of csr file data is different from {self.shape}."
+            self.cached_data = CSR_filepath
+        else:
+            assert False,\
+                f"[AutoSparse.LoadData] Pnly support 2D data load in now."
+            raise NotImplementedError()
     
     def __add__(self, other):
         if isinstance(other, Value):
@@ -156,11 +170,8 @@ class Tensor(Value):
     
     def __str__(self) -> str:
         return "AutoSparse.Tensor(" + str(self.format)[11:] + ", dtype = " + \
-            self.dtype + ", is_saprse = " + str(self.is_sparse) + ")"
-    
-    def LoadData(self):
-        """ Init cached_data from other tensor or numpy or local file. """
-        raise NotImplementedError()
+            self.dtype + ", is_saprse = " + str(self.is_sparse) +  \
+            ", data = " + str(self.cached_data) + ")"
 
 
 class ComputeTensor(Value):
@@ -237,7 +248,7 @@ class ComputeTensor(Value):
     def __str__(self) -> str:
         return "AutoSparse.ComputeTensor("+ str(self.format)[11:] + ", dtype = " + \
             self.dtype + ", is_saprse = " + str(self.is_sparse) + ", op = "\
-            + str(self.op) + ")"
+            + str(self.op) + ", data = " + str(self.cached_data) + ")"
     
     @staticmethod
     def make_from_op(
@@ -333,7 +344,7 @@ def FindTopoSort(node_list: Union[List[Value], Value]) -> List[Value]:
     topo_order = list()
     for node in node_list:
         topo_sort_dfs(node, visited, topo_order)
-    return reversed(topo_order)
+    return topo_order
 
 
 def topo_sort_dfs(node: Value, visited: set, topo_order: List):

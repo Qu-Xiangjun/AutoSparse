@@ -378,6 +378,7 @@ WACO 目前只对i1轴，即i轴最外层轴进行并行化，单独选择num_th
 - **注意sparse的轴无法Parallel**。
 - 是否可以改变Parallel 随机选择一个lsplit后的轴，或者每次只对最外层的轴进行变换呢？
 - 只能选一个
+- 注意不要是规约轴，因为无法bound，就不能使用
 
 **Unroll**
 WACO并未使用这个

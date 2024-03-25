@@ -149,7 +149,7 @@ public:
 	{
 		for (int rank = 0; rank < format.size(); rank++)
 		{
-			if (format[rank].var == var)
+			if (format[rank].var == var.substr(0, format[rank].var.size()))
 			{
 				return true;
 			}

@@ -84,4 +84,4 @@ c = np.matmul(a, b)
 print(c)
 
 # 存下来a
-write_matrix_2_csr_file(a, "/home/qxj/AutoSparse/dataset/suitsparse", '__test_matrix')
+write_matrix_2_csr_file(a, "/home/qxj/AutoSparse/dataset/demo_dataset", '__test_matrix')

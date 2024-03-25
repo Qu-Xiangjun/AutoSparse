@@ -28,7 +28,7 @@ uniform_real_distribution<float> uniform(-1.0, 1.0);
  */
 int main(int argc, char *argv[])
 {
-	if (argc != 3)
+	if (argc < 3)
 	{
 		cout << "Wrong arguments" << endl;
 		exit(-1);

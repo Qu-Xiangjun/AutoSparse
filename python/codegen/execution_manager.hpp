@@ -18,6 +18,8 @@
 using namespace std;
 using namespace std::chrono_literals;
 
+// #define __DEBUG__
+
 
 /* Define aliases for function Pointers. */
 typedef int (*compute1)(taco_tensor_t *A, taco_tensor_t *B);
@@ -704,9 +706,13 @@ public:
                         "  return lowerBound;\\n"
                         "}\\n";
 		string taco_header_command = "sed -i '1s/^/" + header + "/' taco_kernel.c";
+#ifdef __DEBUG__
         cout << taco_command << endl;
+#endif
 		compile_success = executeCommand(taco_command);
+#ifdef __DEBUG__
         // cout<<taco_header_command<<endl;
+#endif
 		compile_success = executeCommand(taco_header_command);
 
         // Compile kernel.c
@@ -735,8 +741,8 @@ public:
 	 * 	 Whether verify the excution result.
 	 * arg5 : store
 	 * 	 Whether store current excution result as correct result.
-	 * arg6 : avg_test
-     *   The test time select average or middle number.
+	 * arg6 : time_policy optional("avg", "mid", "best")
+     *   The test time select average or middle number or best . 
      * arg7 : time_limit
      *   Execution program time limit.
 	 * Return
@@ -746,7 +752,7 @@ public:
      */
     double run(
         int warm, int round,bool &verify_res, bool verify = true, 
-        bool store = false, bool avg_test = true, double time_limit = 1000000.0
+        bool store = false, string time_policy = "avg", double time_limit = 1000000.0
     )
     {
         verify_res = false;
@@ -863,16 +869,21 @@ public:
                 break;
             }
         }
-        if (avg_test)
+        if (time_policy == "avg")
         {
             for(int tt = 0; tt < elapsed.size(); tt++)
 				elapsed_time += elapsed[tt];
 			elapsed_time /= elapsed.size();
         }
-        else // Middle number of time.
+        else if (time_policy == "mid") // Middle number of time.
         {
             sort(elapsed.begin(), elapsed.end());
 			elapsed_time = elapsed[elapsed.size() / 2];
+        }
+        else // select best one;
+        {
+            sort(elapsed.begin(), elapsed.end());
+            elapsed_time = elapsed[0];
         }
 
         // Verify and Store

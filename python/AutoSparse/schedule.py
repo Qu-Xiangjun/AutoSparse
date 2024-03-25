@@ -167,7 +167,7 @@ class Schedule(object):
                         [tensor.format.order[axis_idx] + j 
                         for j in range(len(axes_size_lst))]
                     )
-                if tensor.format.order[i] > tensor.format.order[axis_idx]:
+                elif tensor.format.order[i] > tensor.format.order[axis_idx]:
                     new_format_order.append(
                         tensor.format.order[i] + len(axes_size_lst) - 1
                     )
@@ -464,11 +464,10 @@ class Schedule(object):
         Describe Schedule and format information.
         Return
         ------
-        command: List[str]
-            [tensor_count, 
-            tensor_list[tensor_name, is_sparse, axes_count, 
-                        axes_list[axis_name, size, mode]],
-            dtype, fsplit_count, 
+        (pure_comp_desc, schedules)
+            ("tensor_count, tensor_list[tensor_name, is_sparse, axes_count, 
+            axes_list[axis_name, size, mode]],dtype", 
+            "fsplit_count, 
             fsplit_list[axis_name, new_axes_count, new_axes_list[axis_name, size]],
             sparse_tensor_count, 
             freorder_list[tensor_name, axes_size, axes_list[axis_name]], 
@@ -477,39 +476,40 @@ class Schedule(object):
             lsplit_list[axis_name, new_axes_count, new_axes_list[axis_name, size]],
             lreorder_vars_count, lreorder_list[axis_name]
             parallize_axis_name, vectorize_axis_name, unroll_axis_name, unroll_factor, 
-            thread_num, parchunk]
+            thread_num, parchunk")
             Notice: If the item of 'x_count' is 0, there will no next item of 
                 'x_list'. 'dtype' can't be none. 'parallize' and 'vectorize'
                 'unroll' item will fill None string if there have not action. 
                  And 'unroll_factor' will be ignored if 'unroll' is None.
         """
-        command = []
+        pure_comp_desc = []
+        schedules = []
         # Tensor describe
         tensor_count = len(self.origin_input_tensors) + 1
-        command.append(str(tensor_count))
+        pure_comp_desc.append(str(tensor_count))
         for idx, tensor in enumerate(self.origin_input_tensors + [self.compute_tensor]):
-            command.append(self.tensor_name_lst[idx])
-            command.append(str(int(tensor.is_sparse)))
-            command.append(str(len(tensor.shape)))
+            pure_comp_desc.append(self.tensor_name_lst[idx])
+            pure_comp_desc.append(str(int(tensor.is_sparse)))
+            pure_comp_desc.append(str(len(tensor.shape)))
             for axis in tensor.format.axes:
-                command.append(axis.name)
-                command.append(str(axis.size))
-                command.append(str(axis.mode.value))
+                pure_comp_desc.append(axis.name)
+                pure_comp_desc.append(str(axis.size))
+                pure_comp_desc.append(str(axis.mode.value))
         
         # dtype
-        command.append(self.compute_tensor.dtype)
+        pure_comp_desc.append(self.compute_tensor.dtype)
 
         # fsplit
         fsplit_count = len(self.fsplit_record)
-        command.append(str(fsplit_count))
+        schedules.append(str(fsplit_count))
         for key, value in self.fsplit_record.items():
-            command.append(key) # axis_name
+            schedules.append(key) # axis_name
             new_axes_count = int(len(value) / 2)
             assert new_axes_count * 2 == len(value)
-            command.append(str(new_axes_count))
+            schedules.append(str(new_axes_count))
             for i in range(new_axes_count):
-                command.append(value[i])
-                command.append(str(value[i + new_axes_count]))
+                schedules.append(value[i])
+                schedules.append(str(value[i + new_axes_count]))
         
         # Notice maybe origin tensor have format config
         # freorder and fmode
@@ -532,39 +532,38 @@ class Schedule(object):
                 for axis in tensor.format.axes:
                     fmode_lst.append(axis.name)
                     fmode_lst.append(str(axis.mode.value))
-        command.append(str(sparse_tensor_count))
-        command.extend(freorder_lst)
-        command.extend(fmode_lst)
+        schedules.append(str(sparse_tensor_count))
+        schedules.extend(freorder_lst)
+        schedules.extend(fmode_lst)
 
         # lsplit
         lsplit_count = len(self.lsplit_record)
-        command.append(str(lsplit_count))
+        schedules.append(str(lsplit_count))
         for key, value in self.lsplit_record.items():
-            command.append(key) # axis_name
+            schedules.append(key) # axis_name
             new_axes_count = int(len(value) / 2)
             assert new_axes_count * 2 == len(value)
-            command.append(str(new_axes_count))
+            schedules.append(str(new_axes_count))
             for i in range(new_axes_count):
-                command.append(value[i])
-                command.append(str(value[i + new_axes_count]))
+                schedules.append(value[i])
+                schedules.append(str(value[i + new_axes_count]))
         
         # lreordered_vars
-        command.append(str(len(self.lreordered_vars)))
-        command.extend(self.lreordered_vars)
+        schedules.append(str(len(self.lreordered_vars)))
+        schedules.extend(self.lreordered_vars)
 
         # parallel
-        command.append(str(self.parallel_var))
+        schedules.append(str(self.parallel_var))
         # vectorize
-        command.append(str(self.vectorize_var))
+        schedules.append(str(self.vectorize_var))
         # unroll
-        command.append(str(self.unroll_args[0]))
-        command.append(str(self.unroll_args[1]))
+        schedules.append(str(self.unroll_args[0]))
+        schedules.append(str(self.unroll_args[1]))
         # OpenMP thread and chunk
-        command.append(str(self.thread_num))
-        command.append(str(self.parchunk))
+        schedules.append(str(self.thread_num))
+        schedules.append(str(self.parchunk))
     
-        result_command = ' '.join(command)
-        return result_command
+        return (' '.join(pure_comp_desc), ' '.join(schedules))
 
 
 def CreateSchedule(ctensor: ComputeTensor):

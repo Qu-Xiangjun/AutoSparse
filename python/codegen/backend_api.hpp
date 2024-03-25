@@ -16,6 +16,8 @@
 #include "time.hpp"
 #include "utils.hpp"
 
+// #define __DEBUG__
+
 using namespace std;
 
 default_random_engine generator(
@@ -36,6 +38,13 @@ void ReadCSR2D(string filepath, Compressed_Coo& coo)
 	csr.read((char *)&num_row, sizeof(int));
 	csr.read((char *)&num_col, sizeof(int));
 	csr.read((char *)&num_nonzero, sizeof(int));
+
+#ifdef __DEBUG__
+    cout << "Read csr file from " << filepath << " with matirx ";
+    cout << "NUMROW: " << num_row << " / NUMCOL: " << num_col;
+    cout << " / NNZ: " << num_nonzero << endl;
+#endif
+
     // Load matrix
 	vector<int> A_crd(num_nonzero);
 	vector<int> A_pos(num_row + 1);
@@ -54,8 +63,6 @@ void ReadCSR2D(string filepath, Compressed_Coo& coo)
 		A_val[i] = 1.0; // TODO: Now only consider sparse matrix layout.
 	}
 	csr.close();
-	// cerr << "NUMROW : " << num_row << " / NUMCOL : " << num_col << " / NNZ : " << num_nonzero << " ";
-	// cerr << endl;
 
 	coo.resize(num_nonzero);
 	int col_digit2 = (int)(ceil(log2(num_col)));
@@ -85,6 +92,11 @@ void MSplitHelp(ExecutionManager& M, bool is_fsplit, string axis_name,
     assert (new_axes_name.size() == new_axes_size.size());
     assert (new_axes_name.size() > 1);
 
+#ifdef __DEBUG__
+    cout << "In [MSplitHelp] " << (is_fsplit ? "format split" : "loop split");
+    cout << " for axis " << axis_name << endl;
+#endif
+
     int num = new_axes_name.size();
     string current_axis = axis_name;
     for (int i = 1; i < num; i++)
@@ -94,10 +106,14 @@ void MSplitHelp(ExecutionManager& M, bool is_fsplit, string axis_name,
         for (int j = i; j < num; j++)
         {
             factor *= new_axes_size[j];
-            new_axis_name += new_axis_name[j];
+            new_axis_name += new_axes_name[j];
         }
         SPLIT(M, is_fsplit, current_axis,
                 new_axes_name[i-1], new_axis_name, factor);
+#ifdef __DEBUG__
+    cout << "Split " << current_axis << " to " << new_axes_name[i-1];
+    cout << " and " << new_axis_name << " with factor " << factor << endl; 
+#endif
         current_axis = new_axis_name;
     }
     assert(current_axis == new_axes_name[num-1]);
@@ -164,12 +180,19 @@ public:
             }
         }
 
+#ifdef __DEBUG__
+        M.print_all();
+#endif
+
         M.reset_all();
         // Excute to save correct result
         M.parallelize(M.lh_tensor->format[0].var);
         M.compile(48, 32);
         bool verify = false;
-        origin_time = M.run(0, 1, verify, false, true);
+        origin_time = M.run(100, 100, verify, false, true);
+#ifdef __DEBUG__
+        cout << "Origin test time = " << origin_time << endl;
+#endif
     }
 
     /**
@@ -191,12 +214,13 @@ public:
      *           And 'unroll_factor' will be ignored if 'unroll' is None.
      * @param warm Warm times
      * @param round Test times.
-     * @param avg_time Using average time test or middle time.
+     * @param time_policy Using average time test or middle or best time.
      * @return the function excution time
      */
     double Compute(string schedule, int warm = 10, 
-                    int round = 50, bool avg_time = true)
+                    int round = 50, string time_policy = "avg")
     {
+        M.reset_all();
         stringstream ss(schedule);
 
         // fsplit
@@ -207,6 +231,10 @@ public:
             string axis_name;
             int new_axes_count;
             ss >> axis_name >> new_axes_count;
+#ifdef __DEBUG__
+            cout << "Format split axis " << axis_name << " to ";
+            cout << new_axes_count << "new axis" << endl;
+#endif
             vector<string> new_axes_name(new_axes_count);
             vector<int> new_axes_size(new_axes_count);
             for (int j = 0 ; j < new_axes_count; j++)
@@ -225,6 +253,11 @@ public:
             vector<string> freordered_vars(axes_size);
             for (int j = 0; j < axes_size; j++) ss >> freordered_vars[j];
             M.freorder(tensor_name, freordered_vars);
+#ifdef __DEBUG__
+            cout << "Format reorder " << tensor_name << ": ";
+            for (int j = 0; j < axes_size; j++) cout << freordered_vars[j] << " ";
+            cout << endl;
+#endif
         }
 
         // fmode
@@ -233,13 +266,22 @@ public:
             string tensor_name;
             int axes_size;
             ss >> tensor_name >> axes_size;
+#ifdef __DEBUG__
+            cout << "Format axis mode set for " << tensor_name << ": ";
+#endif
             for (int j = 0; j < axes_size; j++)
             {
                 string axis_name;
                 int mode;
                 ss >> axis_name >> mode;
                 M.fmode(tensor_name, axis_name, mode_type_array[mode]);
+#ifdef __DEBUG__
+                cout << axis_name << "=" << mode << ", ";
+#endif
             }
+#ifdef __DEBUG__
+            cout << endl;
+#endif
         }
 
         // lsplit
@@ -250,6 +292,10 @@ public:
             string axis_name;
             int new_axes_count;
             ss >> axis_name >> new_axes_count;
+#ifdef __DEBUG__
+            cout << "Loop split axis " << axis_name << " to ";
+            cout << new_axes_count << "new axis" << endl;
+#endif
             vector<string> new_axes_name(new_axes_count);
             vector<int> new_axes_size(new_axes_count);
             for (int j = 0 ; j < new_axes_count; j++)
@@ -260,38 +306,64 @@ public:
         // lreorder
         int lreorder_vars_count;
         ss >> lreorder_vars_count;
-        vector<string> lreordered_vars(lreorder_vars_count);
-        for (int i = 0; i < lreorder_vars_count; i++) ss >> lreordered_vars[i];
-        M.lreorder(lreordered_vars);
+        if (lreorder_vars_count)
+        {
+            vector<string> lreordered_vars(lreorder_vars_count);
+            for (int i = 0; i < lreorder_vars_count; i++) ss >> lreordered_vars[i];
+            M.lreorder(lreordered_vars);
+#ifdef __DEBUG__
+            cout << "Loop reorder: ";
+            for (int i = 0; i < lreorder_vars_count; i++) 
+                cout << lreordered_vars[i] << " ";
+            cout << endl;
+#endif
+        }
+
 
         // parallel
         string parallize_axis_name;
         ss >> parallize_axis_name;
         if (parallize_axis_name != "None") M.parallelize(parallize_axis_name);
+#ifdef __DEBUG__
+        cout << "Parallel axis: " << parallize_axis_name << endl;
+#endif
 
         // vectorize
         string vectorize_axis_name;
         ss >> vectorize_axis_name;
         if (vectorize_axis_name != "None") M.vectorize(vectorize_axis_name);
+#ifdef __DEBUG__
+        cout << "Vectorize axis: " << vectorize_axis_name << endl;
+#endif
 
         // unroll
         string unroll_axis_name;
         int unroll_factor;
         ss >> unroll_axis_name >> unroll_factor;
         if (unroll_axis_name != "None") M.unroll(unroll_axis_name, unroll_factor);
+#ifdef __DEBUG__
+        cout << "Unrool axis: " << unroll_axis_name << endl;
+#endif
 
         // OpenMP parameters
         int thread_num;
         int parchunk;
         ss >> thread_num >> parchunk;
+#ifdef __DEBUG__
+        cout << "OpenMP thread_num=" << thread_num << ", parchunk=" << parchunk << endl;
+#endif
 
         // Compile
         M.compile(thread_num, parchunk);
 
         // Run
         bool verify_res = true;
-        float test_time = M.run(warm, round, verify_res, true, false, avg_time, origin_time*3);
-        
+        float test_time = M.run(warm, round, verify_res, true, false, time_policy, origin_time*2);
+
+#ifdef __DEBUG__
+        cout << "---------------- Run " << " -----------------" << endl;
+        cout << "Excution time = " << test_time << ", Correct = " << verify_res << endl;
+#endif
         if (verify_res) return test_time;
         return -1.0;
     }
