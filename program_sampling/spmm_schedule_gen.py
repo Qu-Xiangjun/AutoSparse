@@ -401,13 +401,16 @@ def random_generate_config(mtx_name, autosparse_prefix):
         precompute_candidate = []
         # for c1 in ['i', 'j']:
         #     for c2 in ['1', '0']:
-        #         if(vars_mode.get(c1 + c2, 0) < 3):
+        #         if(vars_mode.get(c1 + c2) == 0):
         #             for c3 in ['', '1', '0']:
         #                 if c1 + c2 + c3 in lreordered_vars:
         #                     precompute_candidate.append(c1 + c2 + c3)
-        if len(precompute_candidate):
-            precompute = random.choice(precompute_candidate)
-        else:
+        # precompute = precompute_candidate[0]
+        # for idx, item in enumerate(lreordered_vars):
+        #     if item in precompute_candidate:
+        #         if (lreordered_vars.index(precompute) > idx):
+        #             precompute = item
+        if len(precompute_candidate) == 0:
             precompute = "None"
 
         ### print
