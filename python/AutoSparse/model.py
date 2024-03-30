@@ -161,7 +161,8 @@ class DQNAgent(object):
 
     def Train(self, save_model = True):
         batch_size = min(self.memory_size, self.train_batch_size)
-        batch_data = np.random.choice(
+        # TODO: Can there only store least recently recorded data?
+        batch_data = np.random.choice( 
             self.memory, size=batch_size, replace=False)
         pre_states, actions, post_states, rewards = zip(*batch_data)
         pre_states = torch.FloatTensor(pre_states).to(device)
@@ -257,7 +258,10 @@ class DQNAgentGroup(object):
                 agent_group_name + "_" + name, subspace, space.dim,
                 decay, lr, epochs, train_batch_size
             )
-        self.memory = [] # Keep track of the data as it appears
+        # Keep track of the data as it appears and used by heap to get topK.
+        # TODO: Record all the data as it appears will take too many memory?
+        # TODO: But note the list will be used to create test data set?
+        self.memory = [] 
         self.memory_size = 0
         self.visits_set = set()
     
@@ -490,6 +494,20 @@ class DQNAgentGroup(object):
         for _, agent in self.agent_group.items():
             agent.UpdateTargetModel()
     
-    def SaveTotalPerformanceData(self):
+    def SavePerformanceData(self, filepath: str):
         """Save data for all the pair of (space config, performance)."""
+        assert "pth" in filepath.split(".")
+        torch.save(self.memory, filepath)
+    
+    @staticmethod
+    def LoadPerformanceData(filepath: str):
+        """From filepath load pth file path.
+        
+        Returns
+        -------
+        data List[(indices, performance)]
+        """
+        assert "pth" in filepath.split(".")
+        data = torch.load(filepath)
+        return data
 
