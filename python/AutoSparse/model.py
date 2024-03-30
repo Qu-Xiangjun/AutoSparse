@@ -65,6 +65,7 @@ class DQNAgent(object):
         self.train_batch_size = train_batch_size
         self.epochs = epochs
         self.loss_fn = nn.MSELoss()
+        
     
     def RandomBatch(self, batch_size):
         """
@@ -186,18 +187,35 @@ class DQNAgent(object):
             
             print(f"[cur/total]=[{epoch+1}/{self.epochs}],"
                   f" loss = {float(loss):.4f}")
-
     
     def AddData(self, pre_state, action, post_state, reward):
         self.memory.append((pre_state, action, post_state, reward))
         self.memory_size += 1
+    
+    def GetModelPath(self):
+        return self.model_path
+    
+    def GetDataPath(self):
+        return self.data_path
 
     def SaveModel(self):
-        torch.save(self.major_model.state_dict(), self.model_path)
+        other_params = {
+            'decay': self.decay,
+            'lr': self.lr,
+            'epochs': self.epochs,
+        }
+        model_state = self.major_model.state_dict()
+
+        torch.save({'model_state': model_state, 'other_params': other_params}, 
+                    self.model_path)
     
     def LoadModel(self):
-        self.major_model.load_state_dict(torch.load(self.model_path))
+        checkpoint = torch.load(self.model_path)
+        self.major_model.load_state_dict(checkpoint['model_state'])
         self.target_model.load_state_dict(self.major_model.state_dict())
+        self.decay = checkpoint['other_params']['decay']
+        self.lr = checkpoint['other_params']['lr']
+        self.epochs = checkpoint['other_params']['epochs']
     
     def SaveData(self):
         with open(self.data_path, "a") as fout:
@@ -261,7 +279,7 @@ class DQNAgentGroup(object):
         # Keep track of the data as it appears and used by heap to get topK.
         # TODO: Record all the data as it appears will take too many memory?
         # TODO: But note the list will be used to create test data set?
-        self.memory = [] 
+        self.memory = []
         self.memory_size = 0
         self.visits_set = set()
     
@@ -481,6 +499,18 @@ class DQNAgentGroup(object):
     def LoadorCreateAgentModel(self):
         for _, agent in self.agent_group.items():
             agent.LoadOrCreateModel()
+
+    def GetAgentModelsPath(self):
+        model_path_lst = []
+        for _, agent in self.agent_group.items():
+            model_path_lst.append(agent.GetModelPath())
+        return model_path_lst
+    
+    def GetAgentDatasPath(self):
+        data_path_lst = []
+        for _, agent in self.agent_group.items():
+            data_path_lst.append(agent.GetDataPath())
+        return data_path_lst
     
     def LoadAgentModel(self):
         for _, agent in self.agent_group.items():
