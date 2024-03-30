@@ -50,7 +50,7 @@ def test_schedule():
 
     func = AS.Build(sch)
 
-    print(func.Run())
+    print(func.Run(warm=1, round=100))
 
 if __name__ == "__main__":
     test_schedule()

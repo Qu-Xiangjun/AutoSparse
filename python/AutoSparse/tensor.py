@@ -310,6 +310,7 @@ def ComputeHelp2(
 
 def Compute(*args: Any, **kwds: Any):
     """Construct ComputeTensor by operator.
+    
     Parameters
     ----------
     args : List of arg

@@ -183,6 +183,7 @@ class Schedule(object):
     
     def FormatReorder(self, tensor: Value, axes_name_lst: List[str]):
         """Reorder storage format axis
+
         Parameters
         ----------
         tensor: Value
@@ -229,6 +230,7 @@ class Schedule(object):
 
     def FormatMode(self, tensor: Value, axis_name: str, mode: ModeType):
         """Change storage format axis mode.
+
         Parameters
         ----------
         tensor: Value
@@ -263,6 +265,7 @@ class Schedule(object):
     def LoopSplit(self, axis_name: str, axes_size_lst: List[int]):
         """Split loop axism, and notice only using once for every axis of 
         fsplited or origin tensor.
+
         Parameters
         ----------
         axis_name: str
@@ -344,6 +347,7 @@ class Schedule(object):
     
     def LoopVectorize(self, axis_name: str):
         """Vectorize loop axis.
+
         Parameters
         ----------
         axis_name: str
@@ -377,6 +381,7 @@ class Schedule(object):
     
     def LoopParallel(self, axis_name: str):
         """Parallelize loop axis
+        
         Parameters
         ----------
         axis_name: str
@@ -410,6 +415,7 @@ class Schedule(object):
         
     def LoopUnroll(self, axis_name: str, factor: int):
         """Unroll loop axis with factor
+        
         Parameters
         ----------
         axis_name: str

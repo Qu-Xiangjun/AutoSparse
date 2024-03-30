@@ -31,6 +31,7 @@ class Build(object):
     def Run(self, sch: Union[Schedule, ComputeTensor] = None, 
             warm = 10, round = 50, time_policy = "avg"):
         """Excute new schedule
+        
         Parameters
         ----------
         sch: Union[Schedule, ComputeTensor] optinal(None)
