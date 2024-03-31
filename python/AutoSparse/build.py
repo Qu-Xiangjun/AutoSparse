@@ -41,9 +41,9 @@ class Build(object):
         round: int optinal(50)
             Test times.
         time_policy: str optinal("avg")
-            "avg" mean return average test time set.
-            "mid" mean return middile number of test time set.
-            "best mean return best one of test time set.
+            "avg" mean to return average test time set.
+            "mid" mean to return middile number of test time set.
+            "best mean to return best one of test time set.
         Return
         ------
         excution_time: float
@@ -61,6 +61,41 @@ class Build(object):
         pure_comp_desc, schedules = sch.GenConfigCommand()
         assert pure_comp_desc == self.pure_comp_desc, \
             "[AutoSparse.Build] New Schedule is different builded computation."
+        
+        test_time = self.device.Compute(
+            schedules, warm = warm, round = round, time_policy = time_policy
+        )
+
+        return test_time
+    
+    def RunWithScheduleCommand(self, pure_comp_desc: str, schedules: str,
+                                warm = 10, round = 50, time_policy = "avg"):
+        """Excute new schedule
+        
+        Parameters
+        ----------
+        pure_comp_desc: 
+            Describe origin computation.
+        schedules: 
+            Describe the shcedules for computation.
+        warm: int optional(10)
+            Warm run times.
+        round: int optinal(50)
+            Test times.
+        time_policy: str optinal("avg")
+            "avg" mean to return average test time set.
+            "mid" mean to return middile number of test time set.
+            "best mean to return best one of test time set.
+
+        Return
+        ------
+        excution_time: float
+            -1 mean error schedule
+            correct computation and schedule will return excution time 
+            with millisecond unit.
+        """
+        assert pure_comp_desc == self.pure_comp_desc, \
+            "[AutoSparce.Build] New Schedule is different builded computation."
         
         test_time = self.device.Compute(
             schedules, warm = warm, round = round, time_policy = time_policy

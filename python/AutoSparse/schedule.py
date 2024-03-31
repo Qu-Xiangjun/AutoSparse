@@ -1,6 +1,7 @@
 from typing import *
 from copy import deepcopy
 import multiprocessing
+import torch
 
 from .tensor import Value, Tensor, ComputeTensor, FindTopoSort
 from .format import Axis, Format, ModeType
@@ -47,6 +48,21 @@ class Schedule(object):
         self.tensor_name_lst = []
         for i in range(len(self.all_tensors_bk)):
             self.tensor_name_lst.append(GetAlphabet26BaseNumber(i, is_upper=True))
+
+    def SaveScheduleConfigCommand(self, filepath):
+        # Save all the tensor format order.
+        pure_comp_desc, schedules = self.GenConfigCommand()
+        params = {
+            "pure_comp_desc" : pure_comp_desc,
+            "schedules" : schedules
+        }
+        torch.save(params, filepath)
+    
+    def LoadScheduleConfigCommand(self, filepath):
+        checkpoint = torch.load(self.filepath)
+        pure_comp_desc = checkpoint['pure_comp_desc']
+        schedules = checkpoint['schedules']
+        return pure_comp_desc, schedules
 
     @property
     def all_axes(self) -> Dict[str, List["Axis"]]:
