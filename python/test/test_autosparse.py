@@ -23,6 +23,11 @@ def test_schedule():
     print(new_k_axes)
     new_j_axes = sch.FormatSplit('j', [32, 8])
     print(new_k_axes)
+
+    # new_i1_axes = sch.LoopSplit(new_i_axes[1], [2, 8])
+    # print(new_i1_axes)
+    new_j0_axes = sch.LoopSplit(new_j_axes[0], [4, 8])
+    print(new_j0_axes)
     
     # i1, k0, i0, k1
     sch.FormatReorder(A, [new_k_axes[1], new_i_axes[1], new_k_axes[0], new_i_axes[0]])
@@ -32,10 +37,7 @@ def test_schedule():
     sch.FormatMode(A, new_k_axes[0], ModeType.COMPRESSED_UN)
     sch.FormatMode(A, new_k_axes[1], ModeType.COMPRESSED)
 
-    # new_i1_axes = sch.LoopSplit(new_i_axes[1], [2, 8])
-    # print(new_i1_axes)
-    new_j0_axes = sch.LoopSplit(new_j_axes[0], [4, 8])
-    print(new_j0_axes)
+    
 
     # k1 i1 k0 i0 j00 j01 j1
     sch.LoopReorder([new_k_axes[1], new_i_axes[1], new_k_axes[0], new_i_axes[0], *new_j0_axes, new_j_axes[1]])
@@ -49,6 +51,8 @@ def test_schedule():
     print(A)
 
     func = AS.Build(sch)
+
+    print(sch.GenConfigCommand())
 
     print(func.Run(warm=1, round=100))
 

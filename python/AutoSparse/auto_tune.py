@@ -1,12 +1,497 @@
 from typing import Union
+import signal
+import time
 
 from .tensor import ComputeTensor
-from .schedule import Schedule
+from .schedule import Schedule, CreateSchedule
+from .space import *
+from .model import *
+from .build import Build
 
+def timeout_handler(signum, frame):
+    raise TimeoutError("Function call timed out")
+
+def call_with_timeout(func, timeout, *args, **kwargs):
+    # Set timer
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(timeout)
+    try:
+        # invoking
+        result = func(*args, **kwargs)
+    finally:
+        # Close timer
+        signal.alarm(0)
+    return result
+
+def _Excute(func, timeout, *args, **kwargs):
+    try:
+        result = call_with_timeout(func, timeout, args, kwargs)
+    except TimeoutError as e:
+        result = float("inf")
+    return result
+
+def CheckMode(new_ordered_axes, tensor_all_axes_size, format_modes):
+    return True
+
+def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
+    sch = CreateSchedule(compute_tensor)
+
+    origin_axes_dict = sch.origin_axes
+    sparse_axes_names = set()
+    for tensor in sch.all_tensors_bk:
+        if tensor.is_sparse == False:
+            continue
+        for axis in tensor.format.axes:
+            sparse_axes_names.add(axis.name)
+
+    # FSplit
+    fsplited_axes_names = {} # {Splited_axis_name: (new_axes, axes_size)}
+    for axis_name in list(sparse_axes_names):
+        split_subspace_name = "splite_{}".format(axis_name)
+        if config.get(split_subspace_name, None) == None: # It did not FSplit.
+            fsplited_axes_names[axis_name] = \
+                (axis_name, origin_axes_dict[axis_name][0].size)
+        else:
+            split_subspace_entry = config[split_subspace_name]
+            new_axes = sch.FormatSplit(axis_name, split_subspace_entry)
+            fsplited_axes_names[axis_name] = (new_axes, split_subspace_entry)
+    
+    # LSplit
+    only_dense_axes_names = set(origin_axes_dict.keys()) - sparse_axes_names
+    lsplited_axes_names = {} # {Splited_axis_name: (new_axes, axes_size)}
+    for axis_name in list(only_dense_axes_names):
+        split_subspace_name = "splite_{}".format(axis_name)
+        if config.get(split_subspace_name, None) == None:
+            lsplited_axes_names[axis_name] = \
+                (axis_name, origin_axes_dict[axis_name][0].size)
+        else:
+            split_subspace_entry = config[split_subspace_name]
+            new_axes = sch.LoopSplit(axis_name, split_subspace_entry)
+            lsplited_axes_names[axis_name] = (new_axes, split_subspace_entry)
+    
+    # Reorder
+    sorted_splited_axes_names = []
+    for value in fsplited_axes_names.values():
+        sorted_splited_axes_names.extend(value[0])
+    for value in lsplited_axes_names.values():
+        sorted_splited_axes_names.extend(value[0])
+    sorted_splited_axes_names = sorted(sorted_splited_axes_names)
+
+    reordered_vars_indices = config.get("reorder", None)
+    if reordered_vars_indices:
+        assert len(sorted_splited_axes_names) == len(reordered_vars_indices), \
+            "[AutoSparse.AddSimpleSchedule] Reorder dim error in config."
+        reordered_vars = [sorted_splited_axes_names[i] for i in reordered_vars_indices]
+        sch.LoopReorder(reordered_vars)
+    else:
+        reordered_vars = sorted_splited_axes_names
+
+    # FormatReorder && Mode setting and checking
+    axes_mode = {} # {axis_name: mode}
+    for idx, tensor in enumerate(sch.all_tensors_bk):
+        if tensor.is_sparse == False:
+            continue
+        tensor_all_axes_name = []
+        tensor_all_axes_size = dict() # {axis_name: axis_size}
+        for axis_name in tensor.format.axes_name.keys():
+            tensor_all_axes_name.extend(fsplited_axes_names[axis_name][0])
+            for i in range(len(fsplited_axes_names[axis_name][0])):
+                tensor_all_axes_size[fsplited_axes_names[axis_name][0][i]] = \
+                    fsplited_axes_names[axis_name][1][i]
+        assert len(tensor.shape) == len(tensor_all_axes_name), \
+                "[AutoSparse.AddSimpleSchedule] Splited axes shape don't changed."
+        
+        new_ordered_axes = []
+        for axis_name in reordered_vars:
+            if axis_name in tensor_all_axes_name:
+                new_ordered_axes.append(axis_name)
+
+        format_mode_subspace_name = "format_mode_{}".format(sch.tensor_name_lst[idx])
+        format_modes = config.get(format_mode_subspace_name, None)
+        if format_modes != None:
+            assert len(tensor.shape) == len(format_modes), \
+                    "[AutoSparse.AddSimpleSchedule] Format mode count differ from tensor."
+            if CheckMode(new_ordered_axes, tensor_all_axes_size, format_modes) == False:
+                raise ValueError()
+        
+        if config.get("reorder", None) != None:
+            new_tensor = sch.FormatReorder(tensor, new_ordered_axes)
+        else:
+            new_tensor = tensor
+        if format_modes != None:
+            for i, axis_name in enumerate(new_ordered_axes):
+                sch.FormatMode(new_tensor, axis_name, format_modes[i])
+                axes_mode = max(axes_mode.get(axis_name, 0), format_modes[i])
+    
+    # Parallel
+    is_parallel = config.get("parallel", [])
+    parallel_var = None
+    vectorize_var = None
+    unroll_var = None
+    if len(is_parallel) and is_parallel[0] == 1: # parallel
+        for axis_name in reordered_vars:
+            is_reduce = False
+            for reduce_axis_name in sch.reduce_axes.keys():
+                if reduce_axis_name in axis_name:
+                    is_reduce = True
+            if axes_mode.get(axis_name, 0) <= 2 and is_reduce == False:
+                parallel_var = axis_name
+                break
+        if parallel_var != None:
+            sch.LoopParallel(parallel_var)
+        
+    if len(is_parallel) >= 2 and is_parallel[1] == 1: # vectorize
+        candidate_var = reordered_vars[-1]
+        is_reduce = False
+        for reduce_axis_name in sch.reduce_axes.keys():
+            if reduce_axis_name in candidate_var:
+                is_reduce = True
+        if (axes_mode.get(candidate_var, 0) == 0 and is_reduce == False \
+            and candidate_var != parallel_var):
+            vectorize_var = candidate_var
+        if vectorize_var != None:
+            sch.LoopVectorize(vectorize_var)
+    
+    all_axes_size = {} # Static axes size.
+    for value in fsplited_axes_names.values():
+        for axis_name, axis_size in zip(value[0], value[1]):
+            all_axes_size[axis_name] = axis_size
+    if len(is_parallel) >= 3 and is_parallel[2] == 1: # unroll
+        unroll_candidate = []
+        for axis_name in reordered_vars:
+            assert axis_name in all_axes_size
+            if (axis_name != parallel_var and axis_name != vectorize_var \
+                and axes_mode.get(axis_name, 0)):
+                unroll_candidate.append(axis_name)
+        if len(unroll_candidate):
+            unroll_var = unroll_candidate[0]
+            for axis_name in unroll_candidate: # Pick the max size one to unroll
+                if all_axes_size[axis_name] > all_axes_size[unroll_var]:
+                    unroll_var = axis_name
+            sch.LoopUnroll(unroll_var, all_axes_size[unroll_var])
+
+    # Omp arguments
+    import multiprocessing
+    sch.SetThreadNum(multiprocessing.cpu_count())
+    if config.get("omp", None) != None:
+        sch.SetParallelChunk(config["omp"])
+    else:
+        sch.SetParallelChunk(32) # Default
+
+    return sch
+
+def Evaluate(
+    schedule: Schedule,
+    config: Dict,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+):
+    """Evaluate a config performance.
+    
+    Parameters
+    ----------
+    schedule: Schedule
+    config: Dict[subspace name, subspace entry]
+    """
+    try:
+        sch = AddSimpleSchedule(schedule.compute_tensor, config)
+    except ValueError:
+        return -1.0
+    func = Build(sch)
+    res = _Excute(
+        func.Run, timeout=eval_timeout,
+        sch=sch,
+        warm=eval_warm_times,
+        round=eval_round,
+        time_policy=eval_policy
+    )
+    return res
+
+
+def _Warm(
+    schedule: Schedule,
+    agent_group: DQNAgentGroup,
+    use_performance_model: bool = False,
+    warm_trial: int = 10,
+    population_size: int = 10,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+):
+    """Warm find have there good program schedules."""
+    warm_ok = False
+    count_repeat = 0
+    while not warm_ok:
+        for tri in range(warm_trial):
+            # Get batch random config 
+            configs_dict = agent_group.RandomBatch(population_size)
+            configs_entries = [{} for i in range(population_size)]
+            configs_indicse = [{} for i in range(population_size)]
+            for subspace_name, val in configs_dict.items(): 
+                # every sub space item
+                entries, indices = val[0], val[1]
+                for i in range(population_size):
+                    configs_entries[i][subspace_name] = entries[i]
+                    configs_indicse[i][subspace_name] = indices[i]
+            # Get config performance
+            configs_performances = []
+            for i in range(population_size):
+                if use_performance_model:
+                    configs_performances.append('inf') # Future todo.
+                else:
+                    configs_performances.append(
+                        Evaluate(schedule, configs_entries[i],
+                        eval_warm_times, eval_round,
+                        eval_timeout, eval_policy)
+                    )
+                    
+
+
+
+
+def RandomSearching(
+    schedule: Schedule,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    use_performance_model: bool = False,
+    trial: int = 50,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    **kwargs
+):
+    """"""
+    _Warm(
+        schedule=schedule,
+        agent_group = agent_group,
+        eval_warm_times = eval_warm_times,
+        eval_round = eval_round,
+        eval_timeout = eval_timeout,
+        eval_policy = eval_policy,
+    )
+
+
+
+def QSearching(
+    schedule: Schedule,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    use_performance_model: bool = False,
+    trial: int = 50,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    **kwargs
+):
+    """Only using DQN method"""
+    pass
+
+def SASearching(
+    schedule: Schedule,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    use_performance_model: bool = False,
+    trial: int = 50,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    **kwargs
+):
+    """Only using SA method"""
+    pass
+
+def QSASearching(
+    schedule: Schedule,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    use_performance_model: bool = False,
+    trial: int = 50,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    **kwargs
+):
+    """Using DQN and SA mixing method"""
+    pass
 
 def AutoTune(
-    input: Union[ComputeTensor, Schedule],
+    input: ComputeTensor,
     method: str = "random_searching",
-    use_cost_model: bool = False
+    population_size: int = 50,
+    agent_model_paths: Dict[str, str] = None,
+    agent_data_paths: Dict[str, str] = None,
+    use_performance_model: bool = False,
+    performance_model_path: str = None,
+    save_performance_model: bool = False,
+    save_performance_data: bool = False,
+    save_performance_data_filepath: str = None,
+    trial: int = 50,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    save_searching: bool = True, 
+    **kwargs
 ):
-    pass
+    """
+    Parameters
+    ----------
+    input: ComputeTensor
+    method: str optinal("random_searching)
+        method include:
+        "random_searching", "q_searching", "sa_searching", "q_sa_searching"
+    population_size: int optinal(50)
+        The size of the population during the search.
+    agent_model_paths: Dict[str, str]
+        Every agent's model path. The model have train in last searching.
+    agent_data_paths: Dict[str, str]
+        Every agent's data which is apper in last searching.
+    use_performance_model: boll optinal(False)
+        Wheather using cost model to predict program performance.
+    performance_model_path: str
+        Load the off line performance model path.
+    save_performance_model: bool
+    save_performance_data: bool
+    save_performance_data_filepath: str
+    trial:
+        search trails.
+    eval_round:
+        Warm times when run a program to test excution time.
+    test_round:
+        Evaluating excution time will run round times program.
+    eval_timeout: float
+        Evaluation timeout for every program.
+    eval_policy: str optinal("avg")
+        "avg" mean return average test time set.
+        "mid" mean return middile number of test time set.
+        "best mean return best one of test time set.
+    save_searching: bool optinal(True) 
+        Is save the tune result, which include searching state and 
+        schedule result.
+
+    Return
+    ------
+    best_sch: Schedule
+    """
+    sch = None
+    if isinstance(input, ComputeTensor):
+        sch = CreateSchedule(input)
+    elif isinstance(input, Schedule):
+        sch = input
+    else:
+        raise ValueError("Input argument type error.")
+    
+    # Step1: Init schedule design space with all the subspace
+    tune_space = Space()
+
+    origin_axes = sch.origin_axes
+    for name, axis in origin_axes.items():
+        split_subspace = SplitSubSpace(axis[0].size, 2, policy="power2")
+        tune_space.add_subspace(
+            "splite_{}".format(name), split_subspace, "split"
+        )
+    
+    reorder_subspace = ReorderSubSpace(len(origin_axes) * 2)
+    tune_space.add_subspace(
+        "reorder", reorder_subspace, "reorder"
+    )
+
+    for i, tensor in enumerate(sch.all_tensors_bk):
+        if tensor.is_sparse:
+            format_mode_subspace = FModeSubSpace(len(tensor.shape) * 2)
+            tune_space.add_subspace(
+                "format_mode_{}".format(sch.tensor_name_lst[i]),
+                format_mode_subspace, "format_mode"
+            )
+
+    # Include parallel vecorize unroll
+    parallel_subspace = ParallelSubspace(3) 
+    tune_space.add_subspace(
+        "parallel", parallel_subspace, "parallel"
+    )
+
+    omp_subspace = OpenMPSubspace()
+    tune_space.add_subspace("omp", omp_subspace, "omp")
+
+    # Step2: Create Agent Group.
+    agent_group = DQNAgentGroup(
+        sch.GetScheduleName, tune_space, decay = 0.9,
+        lr = 0.02, epochs=20, train_batch_size=1000
+    )
+
+    # Step3: Tuning with searching
+    if eval_timeout == None:
+        func = Build(sch)
+        eval_timeout = func.origin_time * 5
+
+    # if use_performance_model:
+        # Load performance model
+    
+    for name, filepath in agent_model_paths.items():
+        agent_group.agent_group[name].model_path = filepath
+        agent_group.agent_group[name].LoadModel()
+    for name, filepath in agent_data_paths.items():
+        agent_group.agent_group[name].data_path = filepath
+        agent_group.agent_group[name].LoadData()
+
+    if method == "random_searching":
+        sch = RandomSearching(
+            schedule = sch,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy
+        )
+    elif method == "sa_searching":
+        sch = SASearching(
+            schedule = sch,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy
+        )
+    elif method == "q_searching":
+        sch = QSearching(
+            schedule = sch,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy
+        )
+    elif method == "q_sa_searching":
+        sch = QSASearching(
+            schedule = sch,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy
+        )
+    else:
+        assert False, \
+            "[AutoSparse.AutoTune] Error search method。"
+
+    if save_performance_data:
+        agent_group.SavePerformanceData(save_performance_data_filepath)
+
+    if save_searching:
+        for name, filepath in agent_model_paths.items():
+            agent_group.agent_group[name].SaveModel()
+        for name, filepath in agent_data_paths.items():
+            agent_group.agent_group[name].SaveData()
+
+    return sch

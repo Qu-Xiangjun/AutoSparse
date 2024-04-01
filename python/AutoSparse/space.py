@@ -231,12 +231,34 @@ class ParallelSubspace(SubSpace):
         next_pos = self.all_entries_dict.get(tuple(ret), -1)
         assert next_pos >= 0
         return next_pos
+
+class OpenMPSubspace(SubSpace):
+    """Set OpenMP argument of `parchunk` sub space"""
+    def __init__(self) -> None:
+        super(OpenMPSubspace, self).__init__()
+        self.all_entries = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
+        self.directions = [(-1), (0), (1)]
+        self.type_key = "omp"
     
+    def NextEntry(self, pos: int, direction: Tuple):
+        """
+        Return
+        ------
+        next_pos: int
+            The next entry position in all entries.
+        """ 
+        assert len(direction) == 1, \
+            "[AutoSparse.Space][Error] direction shape dimensions error."
+        next_pos = pos + direction[0]
+        next_pos %= self.size
+        return next_pos
+
+
 class Space(object):
     def __init__(self) -> None:
         self.subspaces = {} # all the subspace object, name: object
         self.valid_type_keys = [
-            "parallel", "format_mode", "split", "reorder"
+            "parallel", "format_mode", "split", "reorder", "omp"
         ]
         # Record all the subspace with it's schedule type 
         self.types = {key: [] for key in self.valid_type_keys}
@@ -251,7 +273,8 @@ class Space(object):
         subspace SubSpace
             Object for SubSpace
         type_key 
-            space type name in ["parallel", "format_mode", "split", "reorder"]
+            space type name in 
+            ["parallel", "format_mode", "split", "reorder", "omp"]
         """
         assert name in self.subspaces, \
             f"[AutoSparce.Space][Error] The space already exist the subspace {name}."

@@ -26,7 +26,6 @@ class Schedule(object):
     # having completed the format modification?
     flag_in_loop_schedule: bool
 
-
     def __init__(self, compute_tensor: ComputeTensor) -> None:
         self.compute_tensor = compute_tensor
         self.origin_input_tensors = compute_tensor.origin_inputs_list
@@ -49,21 +48,6 @@ class Schedule(object):
         for i in range(len(self.all_tensors_bk)):
             self.tensor_name_lst.append(GetAlphabet26BaseNumber(i, is_upper=True))
 
-    def SaveScheduleConfigCommand(self, filepath):
-        # Save all the tensor format order.
-        pure_comp_desc, schedules = self.GenConfigCommand()
-        params = {
-            "pure_comp_desc" : pure_comp_desc,
-            "schedules" : schedules
-        }
-        torch.save(params, filepath)
-    
-    def LoadScheduleConfigCommand(self, filepath):
-        checkpoint = torch.load(self.filepath)
-        pure_comp_desc = checkpoint['pure_comp_desc']
-        schedules = checkpoint['schedules']
-        return pure_comp_desc, schedules
-
     @property
     def all_axes(self) -> Dict[str, List["Axis"]]:
         """Axis name point to Axis object in all_tensors_bk and it don't
@@ -77,6 +61,37 @@ class Schedule(object):
                 else:
                     all_axes[axis.name].append(axis)
         return all_axes
+    
+    @property
+    def origin_axes(self) -> Dict[str, List["Axis"]]:
+        """Get all axes in origin axes, which don't contain splited axes."""
+        all_axes = dict()
+        for tensor in self.origin_input_tensors + [self.compute_tensor]:
+            for axis in tensor.format.axes:
+                if all_axes.get(axis.name, None) == None:
+                    all_axes[axis.name] = [axis]
+                else:
+                    all_axes[axis.name].append(axis)
+        return all_axes
+    
+    @property
+    def spatial_axes(self) -> Dict[str, "Axis"]:
+        """Get all spatial axes in origin axes, which don't contain splited axes."""
+        axes = dict()
+        for axis in ComputeTensor.format.axes:
+            axes[axis.name] = axis
+        return axes
+    
+    @property
+    def reduce_axes(self) -> Dict[str, "Axis"]:
+        """Get all reduce axes in origin axes, which don't contain splited axes."""
+        spatial_axes_name_lst = self.spatial_axes.keys()
+        axes = dict()
+        for tensor in self.origin_input_tensors:
+            for axis in tensor.format.axes:
+                axes[axis.name] = axis
+        return axes
+
 
     def GetAllAxeAfterSplited(self) -> Tuple[List[str], List[int]]:
         """Get all the axis name, which contain loop splited axis."""
@@ -277,6 +292,7 @@ class Schedule(object):
             return None
         
         ret_tensor.format.axes_name[axis_name].mode = mode
+        return ret_tensor
     
     def LoopSplit(self, axis_name: str, axes_size_lst: List[int]):
         """Split loop axism, and notice only using once for every axis of 
@@ -481,6 +497,22 @@ class Schedule(object):
         """Set OpenMP parallel chunk size"""
         self.parchunk = num
 
+    def GetScheduleName(self):
+        """"""
+        pure_comp_desc = []
+        # Tensor describe
+        tensor_count = len(self.origin_input_tensors) + 1
+        pure_comp_desc.append(str(tensor_count))
+        for idx, tensor in enumerate(self.origin_input_tensors + [self.compute_tensor]):
+            pure_comp_desc.append(self.tensor_name_lst[idx])
+            pure_comp_desc.append(str(int(tensor.is_sparse)))
+            pure_comp_desc.append(str(len(tensor.shape)))
+            for axis in tensor.format.axes:
+                pure_comp_desc.append(axis.name)
+                pure_comp_desc.append(str(axis.size))
+                pure_comp_desc.append(str(axis.mode.value))
+        return '_'.join(pure_comp_desc)
+
     def GenConfigCommand(self):
         """Describe computation einsum expression of origin tensor.
         Describe Schedule and format information.
@@ -586,6 +618,21 @@ class Schedule(object):
         schedules.append(str(self.parchunk))
     
         return (' '.join(pure_comp_desc), ' '.join(schedules))
+
+    def SaveScheduleConfigCommand(self, filepath):
+        # Save all the tensor format order.
+        pure_comp_desc, schedules = self.GenConfigCommand()
+        params = {
+            "pure_comp_desc" : pure_comp_desc,
+            "schedules" : schedules
+        }
+        torch.save(params, filepath)
+    
+    def LoadScheduleConfigCommand(self, filepath):
+        checkpoint = torch.load(self.filepath)
+        pure_comp_desc = checkpoint['pure_comp_desc']
+        schedules = checkpoint['schedules']
+        return pure_comp_desc, schedules
 
 
 def CreateSchedule(ctensor: ComputeTensor):

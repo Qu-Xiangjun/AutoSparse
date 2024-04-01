@@ -353,7 +353,7 @@ def random_generate_config(mtx_name, autosparse_prefix):
         ### lreorder
         lreordered_vars = freordered_vars_lsplit.copy()
         random.shuffle(lreordered_vars_temp)
-        if filter(lreordered_vars, split_pair) == False:
+        if filter_order(lreordered_vars, split_pair) == False:
             continue
         for item in lreordered_vars_temp:
             idx = random.randint(0, len(lreordered_vars))

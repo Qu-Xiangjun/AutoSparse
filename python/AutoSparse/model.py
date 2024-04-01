@@ -10,12 +10,10 @@ from .space import *
 from .utils import Flatten
 
 if torch.cuda.is_available():
-    # 获取 GPU 设备数量
     num_gpus = torch.cuda.device_count()
     print("Number of available GPUs:", num_gpus)
 
-    # 选择特定的 GPU 设备
-    device_id = 0  # 选择编号为 0 的 GPU 设备
+    device_id = 0
     device = torch.device("cuda:" + str(device_id))
     print("Using GPU device:", device)
 else:
@@ -373,7 +371,7 @@ class DQNAgentGroup(object):
                     )
         return ret_data_lst
         
-    def RandomBacth(self, batch_size):
+    def RandomBatch(self, batch_size):
         """Get a batch size data from all the sub space config.
         Return
         ------
@@ -386,6 +384,7 @@ class DQNAgentGroup(object):
         for name, agent in self.agent_group.items():
             ret_entries, batch_indices = agent.RandomBatch(batch_size)
             ret[name] = (ret_entries, batch_indices)
+        return ret
 
     def EverMeet(self, indices):
         """Have ever meet the indices in space.
