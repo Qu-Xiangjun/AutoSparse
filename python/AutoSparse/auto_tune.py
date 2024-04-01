@@ -25,13 +25,211 @@ def call_with_timeout(func, timeout, *args, **kwargs):
 
 def _Excute(func, timeout, *args, **kwargs):
     try:
-        result = call_with_timeout(func, timeout, args, kwargs)
+        result = call_with_timeout(func, timeout, *args, **kwargs)
     except TimeoutError as e:
         result = float("inf")
     return result
 
-def CheckMode(new_ordered_axes, tensor_all_axes_size, format_modes):
+def Evaluate(
+    schedule: Schedule,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+):
+    """Evaluate a config performance.
+    
+    Parameters
+    ----------
+    schedule: Schedule
+    config: Dict[subspace name, subspace entry]
+    """
+    func = Build(schedule)
+    res = _Excute(
+        func.Run, timeout=eval_timeout,
+        sch=schedule,
+        warm=eval_warm_times,
+        round=eval_round,
+        time_policy=eval_policy
+    )
+    return res
+
+
+def CheckModeHelp(freordered_vars : list, vars_mode : dict, dimensions : dict):
+    # c can't put in first axis, only if first axis length is 1 and second axis
+    # is dense, and also the second axis can be a sequence of end by length 1 sparse axis. 
+    # Moreover, the axes sequence between c and dense also can have q or c or u mode of length 1.
+    cds_flag = False
+    first_item = freordered_vars[0]
+    if vars_mode[first_item] == 4:
+        if dimensions[first_item] != 1:
+            return False
+        dsu1_flag = False
+        for idx, item in enumerate(freordered_vars[1:]):
+            if vars_mode[item] == 0: # find dense axis
+                dsu1_flag = True
+                break
+            elif vars_mode[item] == 1 and dimensions[item] == 1:
+                dsu1_flag = True
+                break
+            elif vars_mode[item] == 1:
+                return False
+            elif vars_mode[item] > 1 and dimensions[item] == 1:
+                continue
+            elif vars_mode[item] > 1:
+                return False
+        if dsu1_flag == False: # No d or length 1 of s or u endding.
+            return False
+        
+    # q must be last one, only if all the axis followed by q is 1 of dimension.
+    q_flag = False 
+    for idx, item in enumerate(freordered_vars):
+        if q_flag and dimensions[item] != 1:
+            return False
+        if vars_mode[item] == 3 and dimensions[item] == 1:
+            q_flag = True
+    # If dense follow the continuous q or c axes, all the axes length must be 1. 
+    dc_flag = False
+    for idx, item in enumerate(freordered_vars):
+        if idx == 0:
+            continue
+        last_item = freordered_vars[idx - 1]
+        if vars_mode[last_item] == 0 and vars_mode[item] > 2:
+            dc_flag = True
+        if dc_flag:
+            if vars_mode[item] < 3:
+                dc_flag = False
+            elif dimensions[item] != 1:
+                return False
+            else:
+                continue
+    # The previous axis of c can't be dense axis, unless c axis' length is 1.
+    # If there are some axes separated in between c and dense axis, all the axes 
+    # can't be c axes of length 1.
+    c_flag = False
+    for idx, item in enumerate(freordered_vars[::-1]):
+        if c_flag:
+            if ((vars_mode[item] == 4 or vars_mode[item] == 3 ) \
+                and dimensions[item] == 1):
+                continue
+            elif vars_mode[item] == 0:
+                return False
+        if vars_mode[item] == 4 and dimensions[item] != 1:
+            c_flag = True
+    
+    # Last axis of 4 will cause error if its length is't 1.
+    last_item = freordered_vars[-1]
+    if vars_mode[last_item] == 4 and dimensions[last_item] != 1:
+        return False
+    # If previous axis of `c` is sparse or singleton, all the length of `c` and
+    # axis followed by `c` must be 1.
+    sqc_flag = False
+    for idx, item in enumerate(freordered_vars):
+        if idx == 0:
+            continue
+        if sqc_flag:
+            if dimensions[item] == 1:
+                continue
+            else:
+                return False
+        last_item = freordered_vars[idx - 1]
+        if (vars_mode[item] == 4 and dimensions[item] == 1 and \
+            (vars_mode[last_item] == 1 or vars_mode[last_item] == 3)):
+            sqc_flag = True
+    # Dense can't follow u c q, only if all the axis followed u length is 1,
+    # or if all the axis behind dense length is 1.
+    u_flag = False
+    ud_flag = True
+    for idx, item in enumerate(freordered_vars):
+        if vars_mode[item] == 2: # u
+            u_flag = True
+        if u_flag:
+            if vars_mode[item] == 0:
+                # All the item follow ud must be length 1.
+                for item2 in freordered_vars[idx:]:
+                    if dimensions[item2] != 1:
+                        ud_flag = False
+                        break
+            elif vars_mode[item] == 1:
+                u_flag = False
+            else:
+                continue
+            if ud_flag == False: 
+                # All the behind d axes length must be 1.
+                for item2 in freordered_vars[:idx+1]:
+                    if dimensions[item2] != 1:
+                        return False
+    # There can't be d*d condition, and the * indicate continous q or c, which
+    # c at least occur 1 times. Moreover, the sequence can't be head of mode 
+    # sequence, and can't follow axes sequence which all length is 1.
+    dcd_d_flag = False
+    dcd_cd_flag = False
+    for idx, item in enumerate(freordered_vars[::-1]):
+        if dcd_cd_flag: # find first d
+            if vars_mode[item] == 0:
+                # all the item behind must be length 1.
+                if idx < len(freordered_vars) - 1:
+                    for item2 in freordered_vars[::-1][idx+1:]:
+                        if dimensions[item2] > 1:
+                            return False
+            elif vars_mode[item] > 2:
+                continue
+            else:
+                dcd_cd_flag = False
+                dcd_d_flag = False
+                continue
+        if dcd_d_flag: # find c
+            if vars_mode[item] == 3:
+                continue
+            elif vars_mode[item] == 4:
+                dcd_cd_flag = True
+            else:
+                dcd_d_flag = False
+        if vars_mode[item] == 0: # find last d
+            dcd_d_flag = True
+
+    # Return
     return True
+
+def CheckMode(freordered_vars, tensor_all_axes_size, vars_mode):
+    for idx, item in enumerate(freordered_vars):
+        if tensor_all_axes_size[item] == 1:
+            continue # Size 1 can select all the mode
+        elif idx == 0:
+            # The condition make level mode can't be singleton.
+            # Only if the dimensions is 1, the mode can be singleton.
+            if vars_mode[item] > 2:
+                return False
+        elif vars_mode[freordered_vars[idx - 1]] == 0: # dense
+            # (un_)singleton follow dense level will make computation error, 
+            # only if dimensions is 1.
+            if vars_mode[item] > 2:
+                return False
+        elif vars_mode[freordered_vars[idx - 1]] == 1:
+            if vars_mode[item] > 2:
+                return False
+        elif vars_mode[freordered_vars[idx - 1]] == 2: # un_sparse
+            # only last axis can contain singleton followed un_sparse.
+            if idx == len(freordered_vars) - 1: 
+                # Notice last one can't be 4
+                if vars_mode[item] not in [1, 2, 3]:
+                    return False
+            elif vars_mode[item] not in [1, 2, 4]:
+                return False
+        elif vars_mode[freordered_vars[idx - 1]] == 3: # singleton
+            if vars_mode[item] not in [1, 2]:
+                return False
+        elif vars_mode[freordered_vars[idx - 1]] == 4: # un_singleton
+            # only last axis can contain singleton followed un_sparse.
+            if idx == len(freordered_vars) - 1: 
+                # Notice last one cant be 4
+                if vars_mode[item] not in [1, 2, 3]:
+                    return False
+            elif vars_mode[item] not in [1, 2, 4]:
+                return False
+    
+    return CheckModeHelp(freordered_vars, vars_mode, tensor_all_axes_size)
+
 
 def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
     sch = CreateSchedule(compute_tensor)
@@ -179,35 +377,6 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
         sch.SetParallelChunk(32) # Default
 
     return sch
-
-def Evaluate(
-    schedule: Schedule,
-    config: Dict,
-    eval_warm_times: int = 10,
-    eval_round: int = 100,
-    eval_timeout: float = None,
-    eval_policy: str = "avg",
-):
-    """Evaluate a config performance.
-    
-    Parameters
-    ----------
-    schedule: Schedule
-    config: Dict[subspace name, subspace entry]
-    """
-    try:
-        sch = AddSimpleSchedule(schedule.compute_tensor, config)
-    except ValueError:
-        return -1.0
-    func = Build(sch)
-    res = _Excute(
-        func.Run, timeout=eval_timeout,
-        sch=sch,
-        warm=eval_warm_times,
-        round=eval_round,
-        time_policy=eval_policy
-    )
-    return res
 
 
 def _Warm(
