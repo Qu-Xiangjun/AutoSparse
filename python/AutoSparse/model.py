@@ -74,10 +74,10 @@ class DQNAgent(object):
         batch_indices: List
             All the entires indices.
         """
-        assert batch_size > 0 and batch_size <= self.subspace.size
+        assert batch_size > 0
         # Sampling without replacement was performed.
         batch_indices = np.random.choice(
-            self.subspace.size, size=batch_size, replace=False)
+            self.subspace.size, size=batch_size)
         ret_entries = self.subspace.GetBatchEntry(batch_indices)
         return ret_entries, batch_indices
     
@@ -396,15 +396,15 @@ class DQNAgentGroup(object):
         """
         return str(indices) in self.visits_set
     
-    def Record(self, indices, value, use_sa = True, gamma = 0.05):
+    def Record(self, indices: Dict, value: float, use_sa = True, gamma = 0.05):
         """
         Record the config data with SA algorithm.
 
         Parameters
         ----------
-        indices: List
+        indices: Dict
             A config position set in all subspace. 
-        value: List
+        value: float
             The config's performance.
         use_sa: bool optional(True)
             A simulated annealing algorithm is used to decide recording.
@@ -428,6 +428,12 @@ class DQNAgentGroup(object):
         for name, index in indices.items():
             ret.extend(self.agent_group[name].subspace.GetEntry(index))
         return ret
+    
+    def GetConfigFfromIndices(self, indices: Dict):
+        config = {}
+        for name, index in indices.items():
+            config[name] = self.agent_group[name].subspace.GetEntry(index)
+        return config
     
     def AddData(self, pre_state_indices: Dict, subspace_name:str, action: int, 
                 next_states_indices: Dict, reward: float):

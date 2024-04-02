@@ -1,6 +1,9 @@
 from typing import Union
 import signal
 import time
+import torch
+import threading
+from torch.utils.tensorboard import SummaryWriter
 
 from .tensor import ComputeTensor
 from .schedule import Schedule, CreateSchedule
@@ -32,6 +35,7 @@ def _Excute(func, timeout, *args, **kwargs):
 
 def Evaluate(
     schedule: Schedule,
+    func: Build,
     eval_warm_times: int = 10,
     eval_round: int = 100,
     eval_timeout: float = None,
@@ -44,7 +48,6 @@ def Evaluate(
     schedule: Schedule
     config: Dict[subspace name, subspace entry]
     """
-    func = Build(schedule)
     res = _Excute(
         func.Run, timeout=eval_timeout,
         sch=schedule,
@@ -52,6 +55,8 @@ def Evaluate(
         round=eval_round,
         time_policy=eval_policy
     )
+    if res < 0:
+        res = float("inf")
     return res
 
 
@@ -267,12 +272,18 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
             new_axes = sch.LoopSplit(axis_name, split_subspace_entry)
             lsplited_axes_names[axis_name] = (new_axes, split_subspace_entry)
     
-    # Reorder
     sorted_splited_axes_names = []
+    all_axes_size = {} # Static axes size.
     for value in fsplited_axes_names.values():
         sorted_splited_axes_names.extend(value[0])
+        for axis_name, axis_size in zip(value[0], value[1]):
+            all_axes_size[axis_name] = axis_size
     for value in lsplited_axes_names.values():
         sorted_splited_axes_names.extend(value[0])
+        for axis_name, axis_size in zip(value[0], value[1]):
+            all_axes_size[axis_name] = axis_size
+
+    # Reorder
     sorted_splited_axes_names = sorted(sorted_splited_axes_names)
 
     reordered_vars_indices = config.get("reorder", None)
@@ -283,21 +294,14 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
         sch.LoopReorder(reordered_vars)
     else:
         reordered_vars = sorted_splited_axes_names
+    
 
     # FormatReorder && Mode setting and checking
     axes_mode = {} # {axis_name: mode}
     for idx, tensor in enumerate(sch.all_tensors_bk):
         if tensor.is_sparse == False:
             continue
-        tensor_all_axes_name = []
-        tensor_all_axes_size = dict() # {axis_name: axis_size}
-        for axis_name in tensor.format.axes_name.keys():
-            tensor_all_axes_name.extend(fsplited_axes_names[axis_name][0])
-            for i in range(len(fsplited_axes_names[axis_name][0])):
-                tensor_all_axes_size[fsplited_axes_names[axis_name][0][i]] = \
-                    fsplited_axes_names[axis_name][1][i]
-        assert len(tensor.shape) == len(tensor_all_axes_name), \
-                "[AutoSparse.AddSimpleSchedule] Splited axes shape don't changed."
+        tensor_all_axes_name = tensor.format.axes_name.keys()
         
         new_ordered_axes = []
         for axis_name in reordered_vars:
@@ -309,7 +313,10 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
         if format_modes != None:
             assert len(tensor.shape) == len(format_modes), \
                     "[AutoSparse.AddSimpleSchedule] Format mode count differ from tensor."
-            if CheckMode(new_ordered_axes, tensor_all_axes_size, format_modes) == False:
+            format_modes_dict = {}
+            for i in range(len(new_ordered_axes)):
+                format_modes_dict[new_ordered_axes[i]] = format_modes[i]
+            if CheckMode(new_ordered_axes, all_axes_size, format_modes_dict) == False:
                 raise ValueError()
         
         if config.get("reorder", None) != None:
@@ -319,7 +326,8 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
         if format_modes != None:
             for i, axis_name in enumerate(new_ordered_axes):
                 sch.FormatMode(new_tensor, axis_name, format_modes[i])
-                axes_mode = max(axes_mode.get(axis_name, 0), format_modes[i])
+                # If there are multiple tensors with the same axis, take the largest mode. 
+                axes_mode[axis_name] = max(axes_mode.get(axis_name, 0), format_modes[i])
     
     # Parallel
     is_parallel = config.get("parallel", [])
@@ -350,16 +358,11 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
         if vectorize_var != None:
             sch.LoopVectorize(vectorize_var)
     
-    all_axes_size = {} # Static axes size.
-    for value in fsplited_axes_names.values():
-        for axis_name, axis_size in zip(value[0], value[1]):
-            all_axes_size[axis_name] = axis_size
     if len(is_parallel) >= 3 and is_parallel[2] == 1: # unroll
         unroll_candidate = []
         for axis_name in reordered_vars:
-            assert axis_name in all_axes_size
             if (axis_name != parallel_var and axis_name != vectorize_var \
-                and axes_mode.get(axis_name, 0)):
+                and axes_mode.get(axis_name, 0) == 0):
                 unroll_candidate.append(axis_name)
         if len(unroll_candidate):
             unroll_var = unroll_candidate[0]
@@ -379,20 +382,32 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
     return sch
 
 
-def _Warm(
+def Warm(
     schedule: Schedule,
+    func: Build,
     agent_group: DQNAgentGroup,
     use_performance_model: bool = False,
     warm_trial: int = 10,
     population_size: int = 10,
+    repeat_count:int = 5,
     eval_warm_times: int = 10,
     eval_round: int = 100,
     eval_timeout: float = None,
     eval_policy: str = "avg",
 ):
-    """Warm find have there good program schedules."""
+    """Warm find have there good program schedules.
+    
+    Parameters
+    ----------
+    schedule: Schedule
+        It is pure object without any schedules.
+    agent_group: DQNAgentGroup
+    use_performance_model: bool
+
+    """
+
     warm_ok = False
-    count_repeat = 0
+    best_value = float("inf")
     while not warm_ok:
         for tri in range(warm_trial):
             # Get batch random config 
@@ -408,45 +423,93 @@ def _Warm(
             # Get config performance
             configs_performances = []
             for i in range(population_size):
+                try:
+                    schedule = AddSimpleSchedule(schedule.compute_tensor, configs_entries[i])
+                except ValueError:
+                    configs_performances.append(float('inf'))
+                    continue
                 if use_performance_model:
-                    configs_performances.append('inf') # Future todo.
+                    configs_performances.append(float('inf')) # Future todo.
                 else:
                     configs_performances.append(
-                        Evaluate(schedule, configs_entries[i],
-                        eval_warm_times, eval_round,
-                        eval_timeout, eval_policy)
+                        Evaluate(schedule, func, eval_warm_times,
+                        eval_round, eval_timeout, eval_policy)
                     )
-                    
-
-
+                if configs_performances[-1] < float("inf"):
+                    agent_group.Record(configs_indicse[i], 
+                                       configs_performances[-1], use_sa=False)
+            
+            best_per = min(configs_performances)
+            print (f"[Autosparse.AutoTune] Warm in {tri} trial best: {best_per:.8f}, "
+                   f"history best: {agent_group.Top1()[1]}")
+            best_value = max(best_value, best_per)
+            
+        if not (agent_group.Top1()[1] < float("inf")):
+            warm_trial += 1
+            repeat_count -= 1
+            # Can't find a solution
+            print ("[AutoSparse.AutoTune] Warming: No valid schedule in warm up.")
+            if repeat_count < 0:
+                warm_ok = True
+        else:
+            warm_ok = True
+    return best_value
 
 
 def RandomSearching(
     schedule: Schedule,
+    func: Build,
     agent_group: DQNAgentGroup,
-    population_size: int = 10,
+    population_size: int = 100,
     use_performance_model: bool = False,
-    trial: int = 50,
+    trial: int = 100,
     eval_warm_times: int = 10,
     eval_round: int = 100,
     eval_timeout: float = None,
     eval_policy: str = "avg",
     **kwargs
 ):
-    """"""
-    _Warm(
-        schedule=schedule,
-        agent_group = agent_group,
-        eval_warm_times = eval_warm_times,
-        eval_round = eval_round,
-        eval_timeout = eval_timeout,
-        eval_policy = eval_policy,
-    )
+    """Ramdom search.
 
+    Returns
+    -------
+    indices: Dict {subspace_name: subspace_entry_index}
+    value: float
+        performance.
+    
+    """
+    print("**************** Start Random Search ****************")
+    print(f"use_performance_model   ={use_performance_model}")
+    print(f"trial                   ={trial}")
+    print(f"population_size         ={population_size}")
+    print(f"eval_warm_times         ={eval_warm_times}")
+    print(f"eval_round              ={eval_round}")
+    print(f"eval_policy             ={eval_policy}")
+    print()
+
+    writer = SummaryWriter('runs/random_search_complex_continue')
+    for tri in range(trial):
+        local_best = Warm(
+            schedule=schedule,
+            func=func,
+            agent_group = agent_group,
+            use_performance_model=use_performance_model,
+            warm_trial=1,
+            population_size=population_size,
+            repeat_count=0,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+        )
+        writer.add_scalar('Local Best Score', local_best, tri)
+        writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
+    return agent_group.Top1()
 
 
 def QSearching(
     schedule: Schedule,
+    func: Build,
     agent_group: DQNAgentGroup,
     population_size: int = 10,
     use_performance_model: bool = False,
@@ -462,6 +525,7 @@ def QSearching(
 
 def SASearching(
     schedule: Schedule,
+    func: Build,
     agent_group: DQNAgentGroup,
     population_size: int = 10,
     use_performance_model: bool = False,
@@ -477,6 +541,7 @@ def SASearching(
 
 def QSASearching(
     schedule: Schedule,
+    func: Build,
     agent_group: DQNAgentGroup,
     population_size: int = 10,
     use_performance_model: bool = False,
@@ -493,17 +558,17 @@ def QSASearching(
 def AutoTune(
     input: ComputeTensor,
     method: str = "random_searching",
-    population_size: int = 50,
-    agent_model_paths: Dict[str, str] = None,
-    agent_data_paths: Dict[str, str] = None,
+    population_size: int = 100,
+    agent_model_paths: Dict[str, str] = {},
+    agent_data_paths: Dict[str, str] = {},
     use_performance_model: bool = False,
-    performance_model_path: str = None,
     save_performance_model: bool = False,
+    performance_model_path: str = None,
     save_performance_data: bool = False,
     save_performance_data_filepath: str = None,
-    trial: int = 50,
+    trial: int = 100,
     eval_warm_times: int = 10,
-    eval_round: int = 100,
+    eval_round: int = 50,
     eval_timeout: float = None,
     eval_policy: str = "avg",
     save_searching: bool = True, 
@@ -589,16 +654,13 @@ def AutoTune(
     omp_subspace = OpenMPSubspace()
     tune_space.add_subspace("omp", omp_subspace, "omp")
 
+    print(f"[AutoSparse.AutoTuing] Space size = {len(tune_space)}")
+
     # Step2: Create Agent Group.
     agent_group = DQNAgentGroup(
-        sch.GetScheduleName, tune_space, decay = 0.9,
+        sch.GetScheduleName(), tune_space, decay = 0.9,
         lr = 0.02, epochs=20, train_batch_size=1000
     )
-
-    # Step3: Tuning with searching
-    if eval_timeout == None:
-        func = Build(sch)
-        eval_timeout = func.origin_time * 5
 
     # if use_performance_model:
         # Load performance model
@@ -609,10 +671,20 @@ def AutoTune(
     for name, filepath in agent_data_paths.items():
         agent_group.agent_group[name].data_path = filepath
         agent_group.agent_group[name].LoadData()
+    
+    # Step3: Tuning with searching
+    func = Build(sch)
+    print(f"[AutoSparse.AutoTuing] Origin format run time = {func.origin_time:.8f}")
+    if eval_timeout == None:
+        eval_timeout = math.ceil(
+            func.origin_time * 2 * (eval_warm_times + eval_round))
 
     if method == "random_searching":
-        sch = RandomSearching(
+        indices, value = RandomSearching(
             schedule = sch,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
             eval_warm_times = eval_warm_times,
@@ -621,8 +693,11 @@ def AutoTune(
             eval_policy = eval_policy
         )
     elif method == "sa_searching":
-        sch = SASearching(
+        indices, value = SASearching(
             schedule = sch,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
             eval_warm_times = eval_warm_times,
@@ -631,8 +706,11 @@ def AutoTune(
             eval_policy = eval_policy
         )
     elif method == "q_searching":
-        sch = QSearching(
+        indices, value = QSearching(
             schedule = sch,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
             eval_warm_times = eval_warm_times,
@@ -641,8 +719,11 @@ def AutoTune(
             eval_policy = eval_policy
         )
     elif method == "q_sa_searching":
-        sch = QSASearching(
+        indices, value = QSASearching(
             schedule = sch,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
             eval_warm_times = eval_warm_times,
@@ -651,6 +732,7 @@ def AutoTune(
             eval_policy = eval_policy
         )
     else:
+        indices, value = {}, None
         assert False, \
             "[AutoSparse.AutoTune] Error search method。"
 
@@ -662,5 +744,5 @@ def AutoTune(
             agent_group.agent_group[name].SaveModel()
         for name, filepath in agent_data_paths.items():
             agent_group.agent_group[name].SaveData()
-
-    return sch
+    config = agent_group.GetConfigFfromIndices(indices)
+    return AddSimpleSchedule(sch.compute_tensor, config)

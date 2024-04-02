@@ -155,6 +155,8 @@ class ReorderSubSpace(SubSpace):
         self.dim = dim
         self.all_entries = Permute([i for i in range(dim)])
         self.all_entries_dict = {tuple(val): idx for idx, val in enumerate(self.all_entries)}
+        # TODO: 内层循环一定不能跨过外层循环
+        
         # 2D indicate selecting id i and j of axes to exchange position.
         for i in range(self.dim):
             for j in range(i+1, self.dim):
@@ -264,7 +266,7 @@ class Space(object):
         self.types = {key: [] for key in self.valid_type_keys}
         self.dim = 0 # Toatal space dimension
     
-    def add_subspace(self, name: str, subspace: SubSpace, type_key):
+    def add_subspace(self, name: str, subspace: SubSpace, type_key: str):
         """
         Parameters
         ----------
@@ -276,7 +278,7 @@ class Space(object):
             space type name in 
             ["parallel", "format_mode", "split", "reorder", "omp"]
         """
-        assert name in self.subspaces, \
+        assert name not in self.subspaces, \
             f"[AutoSparce.Space][Error] The space already exist the subspace {name}."
         assert type_key in self.valid_type_keys, \
             f"[AutoSparce.Space][Error] Type key is invalid for {type_key}."

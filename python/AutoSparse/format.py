@@ -3,17 +3,17 @@ import copy
 from typing import *
 from enum import Enum
 
-FormatMode = [
-    "DENSE", "COMPRESSED", "COMPRESSED_UN", 
-    "SINGLETON", "SINGLETON_UN"
-]
-
 class ModeType(Enum):
     DENSE = 0
     COMPRESSED = 1
     COMPRESSED_UN = 2
     SINGLETON = 3
     SINGLETON_UN = 4
+
+FormatMode = [
+    ModeType.DENSE, ModeType.COMPRESSED, ModeType.COMPRESSED_UN, 
+    ModeType.SINGLETON, ModeType.SINGLETON_UN
+]
 
 global_name_set = set()
 auto_name_set = set()

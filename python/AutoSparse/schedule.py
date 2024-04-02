@@ -5,6 +5,7 @@ import torch
 
 from .tensor import Value, Tensor, ComputeTensor, FindTopoSort
 from .format import Axis, Format, ModeType
+from . import format
 from .utils import GetAlphabet26BaseNumber
 
 class Schedule(object):
@@ -78,7 +79,7 @@ class Schedule(object):
     def spatial_axes(self) -> Dict[str, "Axis"]:
         """Get all spatial axes in origin axes, which don't contain splited axes."""
         axes = dict()
-        for axis in ComputeTensor.format.axes:
+        for axis in self.compute_tensor.format.axes:
             axes[axis.name] = axis
         return axes
     
@@ -89,7 +90,8 @@ class Schedule(object):
         axes = dict()
         for tensor in self.origin_input_tensors:
             for axis in tensor.format.axes:
-                axes[axis.name] = axis
+                if axis.name not in spatial_axes_name_lst:
+                    axes[axis.name] = axis
         return axes
 
 
@@ -259,7 +261,7 @@ class Schedule(object):
         return ret_tensor
 
 
-    def FormatMode(self, tensor: Value, axis_name: str, mode: ModeType):
+    def FormatMode(self, tensor: Value, axis_name: str, mode: Union[ModeType, int]):
         """Change storage format axis mode.
 
         Parameters
@@ -291,6 +293,10 @@ class Schedule(object):
             )
             return None
         
+        if isinstance(mode, int):
+            assert mode < len(format.FormatMode)
+            mode = format.FormatMode[mode]
+
         ret_tensor.format.axes_name[axis_name].mode = mode
         return ret_tensor
     

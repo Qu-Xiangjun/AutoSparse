@@ -65,6 +65,8 @@ class Value(object):
             self.format = format
         elif isinstance(format, Tuple):
             self.format = Format(format)
+        elif isinstance(format, Axis):
+            self.format = Format((format,))
         else:
             assert False, \
                 "[AutoSparse.Value] format data type dosen't meet the requirements."
