@@ -2,6 +2,7 @@ from typing import Union
 import signal
 import time
 import torch
+import datetime
 import threading
 from torch.utils.tensorboard import SummaryWriter
 
@@ -30,6 +31,7 @@ def _Excute(func, timeout, *args, **kwargs):
     try:
         result = call_with_timeout(func, timeout, *args, **kwargs)
     except TimeoutError as e:
+        print("TimeoutError -------------------------")
         result = float("inf")
     return result
 
@@ -505,6 +507,9 @@ def RandomSearching(
         )
         writer.add_scalar('Local Best Score', local_best, tri)
         writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(f"Random Search: Current time: {current_time} in trial {tri}", flush=True)
+
     return agent_group.Top1()
 
 
@@ -675,10 +680,10 @@ def AutoTune(
     
     # Step3: Tuning with searching
     func = Build(sch)
-    print(f"[AutoSparse.AutoTuing] Origin format run time = {func.origin_time:.8f}")
+    print(f"[AutoSparse.AutoTuing] Origin format run time = {func.origin_time:.8f}", flush = True)
     if eval_timeout == None:
         eval_timeout = math.ceil(
-            func.origin_time * 2 * (eval_warm_times + eval_round))
+            func.origin_time * 2 * (eval_warm_times + eval_round) / 1000)
 
     if method == "random_searching":
         indices, value = RandomSearching(
