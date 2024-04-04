@@ -1,6 +1,5 @@
 pretrained
 taco/build
-.vscode/
 __pycache__/
 taco_kernel.c
 taco_kernel.so

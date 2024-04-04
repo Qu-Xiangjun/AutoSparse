@@ -12,6 +12,8 @@
 
 using namespace std;
 
+typedef vector<pair<uint64_t, float>> Compressed_Coo;
+
 string log_prefix = "./log";
 
 int roundup(int num, int multiple)
@@ -59,7 +61,6 @@ void fwrite2file(float* val, int data_size, string title = "*******")
 	outputFile << endl;
 	outputFile.close();
 	cout<< "[Debug] Debug data write successed." <<endl;
-    outputFile.close();
 }
 
 void fwrite2file(vector<int> val, int data_size, string title = "*******")
@@ -70,6 +71,20 @@ void fwrite2file(vector<int> val, int data_size, string title = "*******")
 	for(int tt = 0; tt < data_size; tt++) 
 	{
 		outputFile << fixed << setprecision(2) << val[tt] << endl;
+	}
+	outputFile << endl;
+	outputFile.close();
+	cout<< "[Debug] Debug data write successed." <<endl;
+}
+
+void fwrite2file(Compressed_Coo val, int data_size, string title = "*******")
+{
+	string filename = log_prefix + "/Debug_data.txt";
+	ofstream outputFile(filename);
+	outputFile << title << endl;
+	for(int tt = 0; tt < data_size; tt++) 
+	{
+		outputFile << fixed << setprecision(2) << val[tt].first << endl;
 	}
 	outputFile << endl;
 	outputFile.close();
@@ -86,7 +101,6 @@ void fwrite2file(string val, string filename, string title = "*******")
 	outputFile << endl;
 	outputFile.close();
 	cout<< "[Debug]" << filename << " write successed." << endl;
-    outputFile.close();
 }
 
 /* Safe func to execute shell command. */

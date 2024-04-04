@@ -407,3 +407,9 @@ WACO 并未使用。
 2. Upsampled the 256x256 matrix to an arbitrary size of rows and columns. (e.g. 256x256 -> 16384x2048)
 3. During the upsample, we randomly selected the dense block size, then fill the matrix with the dense blocks. (e.g., 2x1, 4x4, 8x2, etc.).
 So If you examine each .csr file, you'll notice that the filename format is "<original matrix name>_<blocksize>_<uniqueID>.csr."
+
+
+**Trick**
+- 热身次数越多，得出的时间越好，热身至少100次，甚至可以500次更好，实际跑50~100次即可。。。
+- 选择vag 还是 mid 策略差不多
+- 发生format overleaf, 实际是装得下的，这里只是尽可能的排除需要运行时间长的设计。 

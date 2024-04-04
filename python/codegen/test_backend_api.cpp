@@ -9,10 +9,10 @@
 
 // int main()
 // {
-//     string computation_desc = "3 A 1 2 i 64 0 k 128 1 B 0 2 k 128 0 j 256 0 C 0 2 i 64 0 j 256 0 float";
-//     string schedule = "3 i 2 i0 8 i1 8 k 2 k0 2 k1 64 j 2 j0 32 j1 8 1 A 4 k1 i1 k0 i0 A 4 i0 3 i1 2 k0 2 k1 1 1 j0 2 j00 4 j01 8 7 k1 i1 k0 i0 j00 j01 j1 i1 None None 0 12 64";
+//     string computation_desc = "3 A 1 2 i 4096 0 k 8192 1 B 0 2 k 8192 0 j 256 0 C 0 2 i 4096 0 j 256 0 float";
+//     string schedule = "2 k 2 k0 32 k1 256 i 2 i0 128 i1 32 1 A 4 i1 k1 i0 k0 A 4 i0 1 i1 2 k0 0 k1 2 1 j 2 j0 32 j1 8 6 i1 j1 k1 i0 j0 k0 i1 None None 0 12 32";
 //     vector<string> filepaths;
-//     filepaths.push_back("/home/qxj/AutoSparse/dataset/demo_dataset/__test_matrix.csr");
+//     filepaths.push_back("/home/qxj/AutoSparse/dataset/demo_dataset/nemspmm1_16x4_0.csr");
 
 //     BackEndAPI device(computation_desc, filepaths);
 //     double excute_time = device.Compute(schedule, 100, 200);

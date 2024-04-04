@@ -195,6 +195,7 @@ public:
 #endif
     }
 
+
     /**
      * Add format and schedule command. Run computation.
      * @param scheudle
@@ -354,11 +355,35 @@ public:
 #endif
 
         // Compile
-        M.compile(thread_num, parchunk);
+        try{
+            M.compile(thread_num, parchunk);
+        }
+        catch (const invalid_argument& e)
+        {
+            string errorMsg = e.what();
+            if (errorMsg.find("[ERROR][Tensor] Format storage size overleaf when pack.") != string::npos) {
+#ifdef __DEBUG__
+                cout << "[ERROR][Tensor] Format storage size overleaf when pack." << endl;
+#endif
+                return -1.0;
+            }
+            else{
+                cout << schedule << endl;
+                
+            }
+        }
 
         // Run
+        float test_time = -1;
         bool verify_res = true;
-        float test_time = M.run(warm, round, verify_res, true, false, time_policy, origin_time*2);
+        try{
+            test_time = M.run(warm, round, verify_res, true, false, time_policy, origin_time*2);
+        }
+        catch (const runtime_error& e)
+        {
+            cout << schedule << endl;
+            throw;
+        }
 
 #ifdef __DEBUG__
         cout << "---------------- Run " << " -----------------" << endl;

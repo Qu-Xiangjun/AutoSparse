@@ -1,6 +1,7 @@
 """Test for SpMM"""
 
 import os, sys
+import pytest
 current = os.path.join(os.getcwd(), "python")
 sys.path.append(current)
 
@@ -25,12 +26,21 @@ def test_spmv_randomsearching():
     time = func.Run()
     print(time)
 
-
-def test_spmm_randomsearching():
+@pytest.mark.parametrize("filename", ['__test_matrix.csr', 
+                        'nemspmm1_16x4_0.csr', 'NACA0015_16x8_9.csr'])
+def test_spmm_randomsearching(filename: str):
+    autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
+    mtx_filepath = os.path.join(
+        autosparse_prefix, "dataset", "demo_dataset", filename
+    )
+    num_row, num_col, num_nonezero = np.fromfile(
+        mtx_filepath, count=3, dtype = '<i4'
+    )
+    print(f"num_row={num_row}, num_col={num_col}, num_nonezero={num_nonezero}")
     """Axis declarations"""
-    i = Axis(64, ModeType.DENSE, "i")
-    k = Axis(128, ModeType.COMPRESSED, "k")
-    k_ = Axis(128, ModeType.DENSE, "k")
+    i = Axis(int(num_row), ModeType.DENSE, "i")
+    k = Axis(int(num_col), ModeType.COMPRESSED, "k")
+    k_ = Axis(int(num_col), ModeType.DENSE, "k")
     j = Axis(256, ModeType.DENSE, "j")
     """Tensor declaration"""
     A = Tensor((i, k), is_sparse=True)
@@ -38,7 +48,8 @@ def test_spmm_randomsearching():
     """Calculation declaration"""
     C = Compute(A@B)
     """Auto-Tune and excute"""
-    A.LoadData("/home/qxj/AutoSparse/dataset/demo_dataset/__test_matrix.csr")
+    A.LoadData(mtx_filepath)
+    print(CreateSchedule(C).GenConfigCommand()[0])
 
     sch = AutoTune(C, method = "random_searching", population_size=100,
                    performance_model_path = True, trial = 100)
@@ -69,4 +80,4 @@ def test_sddmm_randomsearching():
     time = func.Run()
     print(time)
 
-test_spmm_randomsearching()
+test_spmm_randomsearching('nemspmm1_16x4_0.csr')

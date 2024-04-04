@@ -479,11 +479,12 @@ def RandomSearching(
     
     """
     print("**************** Start Random Search ****************")
-    print(f"use_performance_model   ={use_performance_model}")
-    print(f"trial                   ={trial}")
     print(f"population_size         ={population_size}")
+    print(f"trial                   ={trial}")
+    print(f"use_performance_model   ={use_performance_model}")
     print(f"eval_warm_times         ={eval_warm_times}")
     print(f"eval_round              ={eval_round}")
+    print(f"eval_timeout            ={eval_timeout}")
     print(f"eval_policy             ={eval_policy}")
     print()
 

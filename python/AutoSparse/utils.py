@@ -67,6 +67,8 @@ def SplitWithFactorizationRecursiveHelp(
     policy: str = "power2"
 ):
     if number == 1:
+        if value > 256: # Note: May bad condition.
+            return
         ret.append(cur + [value])
         return 
     factor_lst = []
