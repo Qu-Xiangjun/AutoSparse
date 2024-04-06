@@ -5,6 +5,7 @@ import numpy as np
 import copy
 import json
 import heapq
+import random
 
 from .space import *
 from .utils import Flatten
@@ -37,6 +38,7 @@ class SimpleQNN(nn.Module):
             self.net.add_module(
                 f"hidden_{count}_activate", nn.Linear(width, width))
         self.net.add_module("output", nn.Linear(width, action_dim))
+        self.to(device) 
     
     def forward(self, state: torch.FloatTensor):
         return self.net(state)
@@ -118,14 +120,14 @@ class DQNAgent(object):
         -------
         ret_indices: List
             Next states indecies in subspace.
-        ret_directions_indices: List
-            Current walk directions indeice in subspace direction list.
+        ret_directions: List
+            Directions set from the current state set to the next state set.
         """
         inputs = [Flatten(x) for x in inputs_lst]
         inputs = torch.FloatTensor(inputs).to(device)
         q_values_lst = self.major_model(inputs)
         ret_indices = []
-        ret_directions_indices  = []
+        ret_directions  = []
         for i, q_value in enumerate(q_values_lst):
             p = np.random.random()
             # As the number of runs increases, the probability of 
@@ -140,8 +142,8 @@ class DQNAgent(object):
             new_index = self.subspace.NextEntry(
                 pos = indices_lst[i], direction = direction)
             ret_indices.append(new_index)
-            ret_directions_indices.append(int(direction_pos))
-        return ret_indices, ret_directions_indices
+            ret_directions.append(direction)
+        return ret_indices, ret_directions
 
     def SelectionFull(self, index):
         """Get all next states with all directions in subspace.
@@ -150,19 +152,22 @@ class DQNAgent(object):
         -------
         ret_indices: List
             Next states indecies in subspace.
-        ret_directions_indices: List
-            Current walk directions indeice in subspace direction list.
+        ret_directions: List
+            Directions set from the current state to all next states.
         """
         new_indices = []
         for d in self.subspace.directions:
             new_indices.append(self.subspace.NextEntry(index, d))
         return new_indices, copy.deepcopy(self.subspace.directions)
+    
+    def SelectOneAction(self, index, direction):
+        """Get next state by direction from currect state index."""
+        return self.subspace.NextEntry(index, direction)
 
     def Train(self, save_model = True):
         batch_size = min(self.memory_size, self.train_batch_size)
         # TODO: Can there only store least recently recorded data?
-        batch_data = np.random.choice( 
-            self.memory, size=batch_size, replace=False)
+        batch_data = random.sample(self.memory, k = batch_size)
         pre_states, actions, post_states, rewards = zip(*batch_data)
         pre_states = torch.FloatTensor(pre_states).to(device)
         actions = torch.LongTensor(actions).to(device)
@@ -182,12 +187,14 @@ class DQNAgent(object):
 
             if save_model and ((epoch + 1) % 5 == 0):
                 self.SaveModel()
-            
-            print(f"[cur/total]=[{epoch+1}/{self.epochs}],"
-                  f" loss = {float(loss):.4f}")
+            if (epoch + 1) % 4 == 0:
+                print(f"[cur/total]=[{epoch+1}/{self.epochs}],"
+                        f" loss = {float(loss):.4f}")
     
     def AddData(self, pre_state, action, post_state, reward):
-        self.memory.append((pre_state, action, post_state, reward))
+        direction_pos = self.subspace.GetDirectionPos(action)
+        assert direction_pos >= 0
+        self.memory.append((pre_state, direction_pos, post_state, reward))
         self.memory_size += 1
     
     def GetModelPath(self):
@@ -208,12 +215,16 @@ class DQNAgent(object):
                     self.model_path)
     
     def LoadModel(self):
+        if not os.path.exists(self.model_path):
+            print(f"[Warning] {self.model_path} File does not exist.")
+            return
         checkpoint = torch.load(self.model_path)
         self.major_model.load_state_dict(checkpoint['model_state'])
         self.target_model.load_state_dict(self.major_model.state_dict())
         self.decay = checkpoint['other_params']['decay']
         self.lr = checkpoint['other_params']['lr']
         self.epochs = checkpoint['other_params']['epochs']
+        print(f"[INFO] Successfully read model of {self.name} from the {self.model_path}.")
     
     def SaveData(self):
         with open(self.data_path, "a") as fout:
@@ -222,11 +233,15 @@ class DQNAgent(object):
                 fout.write(string + "\n")
     
     def LoadData(self):
+        if not os.path.exists(self.data_path):
+            print(f"[Warning] {self.data_path} File does not exist.")
+            return
         with open(self.data_path, "r") as fin:
             for line in fin:
                 data = tuple(json.loads(line))
                 self.memory.append(data)
                 self.memory_size += 1
+        print(f"[INFO] Successfully read model of {self.name} from the {self.data_path}.")
     
     def LoadOrCreateModel(self):
         if os.path.exists(self.model_path):
@@ -281,6 +296,13 @@ class DQNAgentGroup(object):
         self.memory_size = 0
         self.visits_set = set()
     
+    @property
+    def action_num(self):
+        cnt = 0
+        for _, agent in self.agent_group.items():
+            cnt += agent.subspace.num_directions
+        return cnt
+    
     def SelectAction(self, indices_lst, values_lst, 
                       trial, epsilon = 0.8, gamma = 0.01):
         """
@@ -306,7 +328,7 @@ class DQNAgentGroup(object):
             `pre_state_indices` indicate last state in every subspace.
             `value` indicate last state's performan for program design.
             `subspace.name` indicate which subspace will change.
-            `action` indicate changing direction index in the subspace.
+            `action` indicate changing direction in the subspace.
             `next_state_indices` indicate next state in every subspace when do a action.
         """
         states_lst = [self.ConvertIndices2FeatureVec(indices) 
@@ -316,7 +338,7 @@ class DQNAgentGroup(object):
         for name, agent in self.agent_group.items(): 
             subspace_indices_lst = [indices[name] for indices in indices_lst]
             # Get Next Action
-            next_indices_lst, directions_indices_lst = agent.SelectAction(
+            next_indices_lst, directions_lst = agent.SelectAction(
                 states_lst, subspace_indices_lst, trial, epsilon, gamma
             )
             # Pack return dict. Note that you only change the type of 
@@ -328,7 +350,7 @@ class DQNAgentGroup(object):
                 if not self.EverMeet(next_indices):
                     ret_data_lst.append(
                         (indices_lst[i], values_lst[i], name, 
-                         directions_indices_lst[i], next_indices)
+                         directions_lst[i], next_indices)
                     )
         return ret_data_lst
     
@@ -351,25 +373,48 @@ class DQNAgentGroup(object):
             `pre_state_indices` indicate last state in every subspace.
             `value` indicate last state's performan for program design.
             `subspace.name` indicate which subspace will change.
-            `action` indicate changing direction index in the subspace.
+            `action` indicate changing direction in the subspace.
             `next_state_indices` indicate next state in every subspace when do a action.
         """
         ret_data_lst = []
         for name, index in indices.items(): # Traverse all the sub space.
-            next_index_lst, dir_index_lst = \
-                self.agent_group[name].SelectionFull(index)
-            for next_index, dir_index in zip(next_index_lst, dir_index_lst):
+            next_index_lst, direction_lst = self.agent_group[name].SelectionFull(index)
+            for next_index, direction in zip(next_index_lst, direction_lst):
                 next_indices = copy.deepcopy(indices)
                 next_indices[name] = next_index # Only do action for a subspace.
                 if no_repeat and not self.EverMeet(next_indices):
                     ret_data_lst.append(
-                        (indices, value, name, dir_index, next_indices)
+                        (indices, value, name, direction, next_indices)
                     )
                 elif not no_repeat:
                     ret_data_lst.append(
-                        (indices, value, name, dir_index, next_indices)
+                        (indices, value, name, direction, next_indices)
                     )
         return ret_data_lst
+    
+    def SelectOneAction(self, indices, name, direction, no_repeat=True):
+        """Get next state by direction from currect state index.
+        
+        Parameters
+        ----------
+        indices: Dict
+            A config indices in every subspace.
+        name: str
+            Sub space name.
+        direction: int
+            The action direction in the sub space.
+        no_repeat: Bool 
+            If ever meet the new indices in the space, return None.
+        """
+        new_indices = copy.deepcopy(indices)
+        agent = self.agent_group[name]
+        new_indices[name] = agent.SelectOneAction(indices[name], direction)
+        if no_repeat and not self.EverMeet(new_indices):
+            return new_indices
+        elif not no_repeat:
+            return new_indices
+        return None
+
         
     def RandomBatch(self, batch_size):
         """Get a batch size data from all the sub space config.
@@ -412,13 +457,17 @@ class DQNAgentGroup(object):
             The SA algorithm argument.
         """
         self.visits_set.add(str(indices))
+
         if use_sa:
             p = np.random.random()
+            # The smaller gamma is, the more likely it is that the worse points 
+            # will be selected.
             t = np.exp(-gamma * (value - self.Top1Value()) / self.Top1Value()) 
             if p <= t:
                 # Using heap to rank all the test records.
                 heapq.heappush(self.memory, MemEntry(indices, value))
                 self.memory_size += 1
+                
         else:
             heapq.heappush(self.memory, MemEntry(indices, value))
             self.memory_size += 1
@@ -441,7 +490,7 @@ class DQNAgentGroup(object):
         `pre_state_indices` indicate last state in every subspace.
         `value` indicate last state's performan for program design.
         `subspace.name` indicate which subspace will change.
-        `action` indicate changing direction index in the subspace.
+        `action` indicate changing direction in the subspace.
         `next_state_indices` indicate next state in every subspace when do a action.
         """
         self.agent_group[subspace_name].AddData(
@@ -471,9 +520,9 @@ class DQNAgentGroup(object):
 
     def Top1Value(self):
         if self.memory_size > 0:
-            return self.memory[0].indices, self.memory[0].value
+            return self.memory[0].value
         else:
-            return None, None
+            return float('inf')
     
     def TopK(self, k: int, modify = False):
         if k > self.memory_size:
@@ -517,13 +566,33 @@ class DQNAgentGroup(object):
             data_path_lst.append(agent.GetDataPath())
         return data_path_lst
     
-    def LoadAgentModel(self):
-        for _, agent in self.agent_group.items():
+    def LoadAgentModel(self, save_dirpath: str = ""):
+        for name, agent in self.agent_group.items():
+            agent.model_path = os.path.join(
+                save_dirpath, name+"_model.pth"
+            )
             agent.LoadModel()
     
-    def LoadAgentData(self):
-        for _, agent in self.agent_group.items():
+    def LoadAgentData(self, save_dirpath: str = ""):
+        for name, agent in self.agent_group.items():
+            agent.model_path = os.path.join(
+                save_dirpath, name+"_data.txt"
+            )
             agent.LoadData()
+    
+    def SaveAgentModel(self, save_dirpath: str = ""):
+        for name, agent in self.agent_group.items():
+            agent.model_path = os.path.join(
+                save_dirpath, name+"_model.pth"
+            )
+            agent.SaveModel()
+
+    def SaveAgentData(self, save_dirpath: str = ""):
+        for name, agent in self.agent_group.items():
+            agent.model_path = os.path.join(
+                save_dirpath, name+"_data.txt"
+            )
+            agent.SaveData()
     
     def UpdateAgentTargetModel(self):
         for _, agent in self.agent_group.items():
@@ -534,8 +603,7 @@ class DQNAgentGroup(object):
         assert "pth" in filepath.split(".")
         torch.save(self.memory, filepath)
     
-    @staticmethod
-    def LoadPerformanceData(filepath: str):
+    def LoadPerformanceData(self, filepath: str):
         """From filepath load pth file path.
         
         Returns
@@ -543,6 +611,7 @@ class DQNAgentGroup(object):
         data List[(indices, performance)]
         """
         assert "pth" in filepath.split(".")
-        data = torch.load(filepath)
-        return data
+        self.memory = torch.load(filepath)
+        self.memory_size = len(self.memory)
+        print(f"[INFO] Successfully read performance data from the {filepath}.")
 

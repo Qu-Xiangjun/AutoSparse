@@ -9,17 +9,16 @@ class Build(object):
         """ Build and compile computation function. """
         if isinstance(sch, ComputeTensor):
             sch = CreateSchedule(sch)
-        
-        self.pure_comp_desc, self.schedules = sch.GenConfigCommand()
 
         self.filepaths = []
-        origin_input_tensors = sch.origin_input_tensors
-        for tensor in origin_input_tensors:
+        for tensor in sch.all_tensors_bk:
             if tensor.is_sparse:
                 assert tensor.data, \
                     f"[AutoSparse.Build] Tensor {tensor} have not load data."
                 self.filepaths.append(tensor.data)
         
+        self.pure_comp_desc, self.schedules = sch.GenConfigCommand()
+
         self.device = auto_sparse_backend.BackEndAPI(
             self.pure_comp_desc, self.filepaths
         )

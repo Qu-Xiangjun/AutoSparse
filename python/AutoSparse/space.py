@@ -48,6 +48,9 @@ class SubSpace(object):
         for index in batch_indices:
             ret_entities.append(self.GetEntry(index))
         return ret_entities
+    
+    def GetDirectionPos(self, direction):
+        return self.directions.index(direction)
 
 
 class SplitSubSpace(SubSpace):
@@ -124,16 +127,18 @@ class SplitSubSpace(SubSpace):
             # Reorganization
             candidate_list = SplitWithFactorization(value, 2, self.policy)
             sorted_candidate_list = sorted(candidate_list)
-            for item in sorted_candidate_list[::-1]:
+            for item in sorted_candidate_list:
                 if item[0] > ret[first_pos]: # If all less it, will not change
                     ret[first_pos]  = item[0]
                     ret[second_pos] = item[1]
-            if (len(direction) == 3 and direction[2]):
-                ret[first_pos], ret[second_pos] = ret[second_pos], ret[first_pos]
-            
-            next_pos = self.all_entries_dict.get(tuple(ret), -1)
+                if (len(direction) == 3 and direction[2]):
+                    ret[first_pos], ret[second_pos] = ret[second_pos], ret[first_pos]
+                next_pos = self.all_entries_dict.get(tuple(ret), -1)
+                if (next_pos >= 0):
+                    break
 
-            assert (next_pos >= 0)
+            if (next_pos == -1):
+                next_pos = pos
             return next_pos
         else:
             raise NotImplementedError(
@@ -141,7 +146,7 @@ class SplitSubSpace(SubSpace):
             )
 
 class ReorderSubSpace(SubSpace):
-    def __init__(self, dim: int) -> None:
+    def __init__(self, dim: int, axis_splited_diensions: List) -> None:
         """
         Reorder contain format and loop schedules. There will shuffle
         all axis order.
@@ -149,13 +154,40 @@ class ReorderSubSpace(SubSpace):
         ---------
         dim: int
             The axes number need to reorder.
+        axis_splited_diensions: List
+            Set of number of splits per axis, and the order of list sorted
+            by axis name. 
         """
         super(ReorderSubSpace, self).__init__()
         assert dim >= 2
         self.dim = dim
-        self.all_entries = Permute([i for i in range(dim)])
+        candidate_entries = Permute([i for i in range(dim)])
+        self.all_entries = []
+        # The inner cycle must not cross the outer cycle
+        axes_group = []
+        tmp_idx = 0
+        for cnt in axis_splited_diensions:
+            if cnt == 1:
+                continue
+            axes_group.append([i + tmp_idx for i in range(cnt)])
+            tmp_idx += cnt
+
+        for item in candidate_entries:
+            flag = True
+            for axes in axes_group:
+                for i in range(len(axes)):
+                    for j in range(i+1,len(axes)):
+                        if item.index(axes[i]) > item.index(axes[j]):
+                            flag = False
+                            break
+                    if flag == False:
+                        break
+                if flag == False:
+                    break
+            if flag:
+                self.all_entries.append(item)
+                
         self.all_entries_dict = {tuple(val): idx for idx, val in enumerate(self.all_entries)}
-        # TODO: 内层循环一定不能跨过外层循环
         
         # 2D indicate selecting id i and j of axes to exchange position.
         for i in range(self.dim):
@@ -176,7 +208,8 @@ class ReorderSubSpace(SubSpace):
         second_idx = ret.index(direction[1])
         ret[first_idx], ret[second_idx] = ret[second_idx], ret[first_idx]
         next_pos = self.all_entries_dict.get(tuple(ret), -1)
-        assert next_pos >= 0
+        if next_pos < 0:
+            next_pos = pos
         return next_pos
 
 class FModeSubSpace(SubSpace):
@@ -238,9 +271,10 @@ class OpenMPSubspace(SubSpace):
     """Set OpenMP argument of `parchunk` sub space"""
     def __init__(self) -> None:
         super(OpenMPSubspace, self).__init__()
-        self.all_entries = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
-        self.directions = [(-1), (0), (1)]
+        self.all_entries = [[1], [2], [4], [8], [16], [32], [64], [128], [256], [512]]
+        self.directions = [(-1, ), (0, ), (1, )]
         self.type_key = "omp"
+        self.dim = 1
     
     def NextEntry(self, pos: int, direction: Tuple):
         """

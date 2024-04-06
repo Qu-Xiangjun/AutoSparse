@@ -361,7 +361,7 @@ public:
         catch (const invalid_argument& e)
         {
             string errorMsg = e.what();
-            if (errorMsg.find("[ERROR][Tensor] Format storage size overleaf when pack.") != string::npos) {
+            if (errorMsg.find("Format storage size overleaf") != string::npos) {
 #ifdef __DEBUG__
                 cout << "[ERROR][Tensor] Format storage size overleaf when pack." << endl;
 #endif

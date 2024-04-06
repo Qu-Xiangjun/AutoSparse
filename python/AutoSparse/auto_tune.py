@@ -3,6 +3,7 @@ import signal
 import time
 import torch
 import datetime
+import random
 import threading
 from torch.utils.tensorboard import SummaryWriter
 
@@ -291,7 +292,7 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
     reordered_vars_indices = config.get("reorder", None)
     if reordered_vars_indices:
         assert len(sorted_splited_axes_names) == len(reordered_vars_indices), \
-            "[AutoSparse.AddSimpleSchedule] Reorder dim error in config."
+            "[AutoTune.AddSimpleSchedule] Reorder dim error in config."
         reordered_vars = [sorted_splited_axes_names[i] for i in reordered_vars_indices]
         sch.LoopReorder(reordered_vars)
     else:
@@ -314,7 +315,7 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
         format_modes = config.get(format_mode_subspace_name, None)
         if format_modes != None:
             assert len(tensor.shape) == len(format_modes), \
-                    "[AutoSparse.AddSimpleSchedule] Format mode count differ from tensor."
+                    "[AutoTune.AddSimpleSchedule] Format mode count differ from tensor."
             format_modes_dict = {}
             for i in range(len(new_ordered_axes)):
                 format_modes_dict[new_ordered_axes[i]] = format_modes[i]
@@ -442,15 +443,15 @@ def Warm(
                                        configs_performances[-1], use_sa=False)
             
             best_per = min(configs_performances)
-            print (f"[Autosparse.AutoTune] Warm in {tri} trial best: {best_per:.8f}, "
+            print (f"[AutoTune] Warm in {tri} trial best: {best_per:.8f}, "
                    f"history best: {agent_group.Top1()[1]}")
-            best_value = max(best_value, best_per)
+            best_value = min(best_value, best_per)
             
         if not (agent_group.Top1()[1] < float("inf")):
             warm_trial += 1
             repeat_count -= 1
             # Can't find a solution
-            print ("[AutoSparse.AutoTune] Warming: No valid schedule in warm up.")
+            print ("[AutoTune][Warming] No valid schedule in warm up.")
             if repeat_count < 0:
                 warm_ok = True
         else:
@@ -469,6 +470,7 @@ def RandomSearching(
     eval_round: int = 100,
     eval_timeout: float = None,
     eval_policy: str = "avg",
+    prefix: str = "",
     **kwargs
 ):
     """Ramdom search.
@@ -490,7 +492,7 @@ def RandomSearching(
     print(f"eval_policy             ={eval_policy}")
     print()
 
-    writer = SummaryWriter('runs/random_search_complex_continue')
+    writer = SummaryWriter('runs/random_search_' + prefix)
     for tri in range(trial):
         local_best = Warm(
             schedule=schedule,
@@ -513,6 +515,317 @@ def RandomSearching(
     return agent_group.Top1()
 
 
+def PSearching(
+    schedule: Schedule,
+    func: Build,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    trial: int = 50,
+    early_stop:int = 5,
+    use_performance_model: bool = False,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    prefix: str = "",
+    **kwargs
+):
+    """Only using SA method"""
+
+    print("**************** Start P Search ****************")
+    print(f"population_size         ={population_size}")
+    print(f"trial                   ={trial}")
+    print(f"early_stop              ={early_stop}")
+    print(f"use_performance_model   ={use_performance_model}")
+    print(f"eval_warm_times         ={eval_warm_times}")
+    print(f"eval_round              ={eval_round}")
+    print(f"eval_timeout            ={eval_timeout}")
+    print(f"eval_policy             ={eval_policy}")
+    print()
+
+    warm_trial = 5
+    warm_population_size = int(population_size / 4)
+    print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
+    global_best = float('inf')
+    warm_try= 0
+    while (agent_group.Top1Value() < float('inf')) == False and warm_try < 5:
+        global_best = Warm(
+            schedule=schedule,
+            func=func,
+            agent_group = agent_group,
+            use_performance_model=use_performance_model,
+            warm_trial=warm_trial,
+            population_size=warm_population_size,
+            repeat_count=warm_trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+        )
+        warm_try += 1
+
+    real_populations = agent_group.action_num
+    print(f"[INFO] SAsearching get all {real_populations} directions in one trial.")
+
+    trial = math.ceil(trial * population_size / real_populations)
+    print(f"[INFO] Update to {trial} trial, and each run {real_populations} data.")
+
+    early_stop_count = 0
+    retired_indices = []
+
+    writer = SummaryWriter('runs/p_search_' + prefix)
+
+    for tri in range(trial):
+        # Ramdom get a good point.
+        top_indices, top_value = agent_group.TopRandom(gamma=0.5)
+        # Get all direction population
+        next_data_lst = agent_group.SelectionFull(
+            top_indices, top_value, no_repeat=True
+        )
+        
+        # Evaluation performance
+        configs_performances = [] 
+        for idx, data in enumerate(next_data_lst):
+            indices, _, name, direction, next_indices = data
+            sch = None
+            indices_saw_lst = [str(indices), str(indices)]
+            # Find a ok schedule
+            while True:
+                next_config = agent_group.GetConfigFfromIndices(next_indices)
+                try:
+                    sch = AddSimpleSchedule(schedule.compute_tensor, next_config)
+                    break
+                except ValueError:
+                    # Go on in this direction to get next entry
+                    sch = None
+                    next_indices = agent_group.SelectOneAction(
+                        next_indices, name, direction, no_repeat=True)
+                    if next_indices == None or str(next_indices) in indices_saw_lst: # repeat 
+                        break
+                    else:
+                        indices_saw_lst.append(str(next_indices))
+                        continue
+            
+            # Evaluation
+            if sch is not None:
+                if use_performance_model:
+                    configs_performances.append(float('inf')) # Future todo.
+                else:
+                    configs_performances.append(
+                        Evaluate(sch, func, eval_warm_times,
+                        eval_round, eval_timeout, eval_policy)
+                    )
+                if configs_performances[-1] < float("inf"):
+                    agent_group.Record(next_indices, configs_performances[-1], 
+                                       use_sa=True, gamma=0.05)
+        if len(configs_performances):
+            best_per = min(configs_performances)
+        else:
+            early_stop_count = math.ceil(early_stop_count / 1.5)
+            best_per = float('inf')
+
+        writer.add_scalar('Local Best Score', best_per, tri)
+        writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
+
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print (f"[AutoTune] P searching Current time: {current_time} in {tri}"
+                f" trial best: {best_per:.8f}, "
+                f"history best: {global_best}",
+                flush=True)
+
+        # Can't find more better one, so retire best one to continue explore.
+        if (best_per < global_best):
+            global_best = best_per
+            early_stop_count = 0
+        else:
+            top = agent_group.PopTop()
+            retired_indices.append((top.indices, top.value))
+            early_stop_count += 1
+        
+        # Early stop
+        if early_stop_count > early_stop:
+            print(
+                f"[AutoTune] P searching early stop with repeats {early_stop} times."
+            )
+            break
+    
+    for item in retired_indices:
+        agent_group.Record(item[0], item[1], use_sa=False)
+
+    return agent_group.Top1()
+
+
+# Batch P method
+def SASearching(
+    schedule: Schedule,
+    func: Build,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    trial: int = 50,
+    early_stop:int = 5,
+    use_performance_model: bool = False,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    prefix: str = "",
+    **kwargs
+):
+    """Only using SA method"""
+    print("**************** Start Batch P Search ****************")
+    print(f"population_size         ={population_size}")
+    print(f"trial                   ={trial}")
+    print(f"early_stop              ={early_stop}")
+    print(f"use_performance_model   ={use_performance_model}")
+    print(f"eval_warm_times         ={eval_warm_times}")
+    print(f"eval_round              ={eval_round}")
+    print(f"eval_timeout            ={eval_timeout}")
+    print(f"eval_policy             ={eval_policy}")
+    print()
+
+    warm_trial = 5
+    warm_population_size = int(population_size)
+    print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
+    global_best = float('inf')
+    warm_try= 0
+    while (agent_group.Top1Value() < float('inf')) == False and warm_try < 5:
+        global_best = Warm(
+            schedule=schedule,
+            func=func,
+            agent_group = agent_group,
+            use_performance_model=use_performance_model,
+            warm_trial=warm_trial,
+            population_size=warm_population_size,
+            repeat_count=warm_trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+        )
+        warm_try += 1
+    
+    top_k = math.ceil(population_size * 5 / agent_group.action_num)
+
+    early_stop_count = 0
+    retired_indices = []
+
+    writer = SummaryWriter('runs/p_search_' + prefix)
+
+    for tri in range(trial):
+        # Random get next batch data
+        topk_indices_lst, topk_value_lst = agent_group.TopK(top_k)
+        next_data_lst = []
+        for idx in range(len(topk_indices_lst)):
+            next_data_lst.extend(agent_group.SelectionFull(
+                topk_indices_lst[idx], topk_value_lst[idx], no_repeat=True
+            ))
+        random.shuffle(next_data_lst)
+        
+        # Evaluation performance
+        configs_performances = [] 
+        for idx, data in enumerate(next_data_lst):
+            indices, _, name, direction, next_indices = data
+            sch = None
+            indices_saw_lst = [str(indices), str(indices)]
+            # Find a ok schedule
+            while True:
+                next_config = agent_group.GetConfigFfromIndices(next_indices)
+                try:
+                    sch = AddSimpleSchedule(schedule.compute_tensor, next_config)
+                    break
+                except ValueError:
+                    # Go on in this direction to get next entry
+                    sch = None
+                    next_indices = agent_group.SelectOneAction(
+                        next_indices, name, direction, no_repeat=True)
+                    if next_indices == None or str(next_indices) in indices_saw_lst: # repeat 
+                        break
+                    else:
+                        indices_saw_lst.append(str(next_indices))
+                        continue
+            
+            # Evaluation
+            if sch is not None:
+                if use_performance_model:
+                    configs_performances.append(float('inf')) # Future todo.
+                else:
+                    configs_performances.append(
+                        Evaluate(sch, func, eval_warm_times,
+                        eval_round, eval_timeout, eval_policy)
+                    )
+                if configs_performances[-1] < float("inf"):
+                    agent_group.Record(next_indices, configs_performances[-1], 
+                                       use_sa=True, gamma=0.05)
+            
+            if len(configs_performances) == population_size:
+                break
+
+        if len(configs_performances):
+            best_per = min(configs_performances)
+        else:
+            early_stop_count = math.ceil(early_stop_count / 1.5)
+            best_per = float('inf')
+
+        writer.add_scalar('Local Best Score', best_per, tri)
+        writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
+
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print (f"[AutoTune] SA searching Current time: {current_time} in {tri}"
+                f" trial best: {best_per:.8f}, "
+                f"history best: {global_best}",
+                flush=True)
+
+        # Can't find more better one, so retire best one to continue explore.
+        if (best_per < global_best):
+            global_best = best_per
+            early_stop_count = 0
+        else:
+            early_stop_count += 1
+            # Attempt to abandon top1.
+            top1_indices, top1_value = agent_group.Top1()
+            # Get all direction population
+            next_data_lst = agent_group.SelectionFull(
+                top1_indices, top1_value, no_repeat=True
+            )
+            valid_config_cnt = 0
+            for idx, data in enumerate(next_data_lst):
+                indices, _, name, direction, next_indices = data
+                sch = None
+                indices_saw_lst = [str(indices), str(indices)]
+                # Find a ok schedule
+                while True:
+                    next_config = agent_group.GetConfigFfromIndices(next_indices)
+                    try:
+                        sch = AddSimpleSchedule(schedule.compute_tensor, next_config)
+                        valid_config_cnt += 1
+                        break
+                    except ValueError:
+                        # Go on in this direction to get next entry
+                        sch = None
+                        next_indices = agent_group.SelectOneAction(
+                            next_indices, name, direction, no_repeat=True)
+                        if next_indices == None or str(next_indices) in indices_saw_lst: # repeat 
+                            break
+                        else:
+                            indices_saw_lst.append(str(next_indices))
+                            continue
+            if valid_config_cnt < population_size * 0.1:
+                top = agent_group.PopTop()
+                retired_indices.append((top.indices, top.value))
+        
+        # Early stop
+        if early_stop_count > early_stop:
+            print(
+                f"[AutoTune] SA searching early stop with repeats {early_stop} times."
+            )
+            break
+
+    for item in retired_indices:
+        agent_group.Record(item[0], item[1], use_sa=False)
+
+    return agent_group.Top1()
+
+
 def QSearching(
     schedule: Schedule,
     func: Build,
@@ -520,30 +833,36 @@ def QSearching(
     population_size: int = 10,
     use_performance_model: bool = False,
     trial: int = 50,
+    max_train_gap: int = 8,
+    update_target_gap:int = 2,
+    early_stop:int = 5,
     eval_warm_times: int = 10,
     eval_round: int = 100,
     eval_timeout: float = None,
     eval_policy: str = "avg",
+    prefix: str = "",
     **kwargs
 ):
     """Only using DQN method"""
-    pass
+    return  QSASearching(
+            schedule = schedule,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            use_sa = False,
+            sa_gamma=1,
+            max_train_gap=max_train_gap,
+            update_target_gap=update_target_gap,
+            early_stop = early_stop,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+            prefix=prefix
+        )
 
-def SASearching(
-    schedule: Schedule,
-    func: Build,
-    agent_group: DQNAgentGroup,
-    population_size: int = 10,
-    use_performance_model: bool = False,
-    trial: int = 50,
-    eval_warm_times: int = 10,
-    eval_round: int = 100,
-    eval_timeout: float = None,
-    eval_policy: str = "avg",
-    **kwargs
-):
-    """Only using SA method"""
-    pass
 
 def QSASearching(
     schedule: Schedule,
@@ -552,32 +871,191 @@ def QSASearching(
     population_size: int = 10,
     use_performance_model: bool = False,
     trial: int = 50,
+    use_sa: bool = True,
+    sa_gamma: int = 0.05,
+    max_train_gap: int = 8,
+    update_target_gap:int = 2,
+    early_stop:int = 5,
     eval_warm_times: int = 10,
     eval_round: int = 100,
     eval_timeout: float = None,
     eval_policy: str = "avg",
+    prefix: str = "",
     **kwargs
 ):
     """Using DQN and SA mixing method"""
-    pass
+
+    print("**************** Start Q Search ****************")
+    print(f"population_size         ={population_size}")
+    print(f"trial                   ={trial}")
+    print(f"use_sa                  ={use_sa}")
+    print(f"sa_gamma                ={sa_gamma}")
+    print(f"max_train_gap           ={max_train_gap}")
+    print(f"update_target_gap       ={update_target_gap}")
+    print(f"early_stop              ={early_stop}")
+    print(f"use_performance_model   ={use_performance_model}")
+    print(f"eval_warm_times         ={eval_warm_times}")
+    print(f"eval_round              ={eval_round}")
+    print(f"eval_timeout            ={eval_timeout}")
+    print(f"eval_policy             ={eval_policy}")
+    print()
+
+    warm_trial = 5
+    warm_population_size = int(population_size)
+    print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
+    global_best = float('inf')
+    warm_try= 0
+    while (agent_group.Top1Value() < float('inf')) == False and warm_try < 5:
+        global_best = Warm(
+            schedule=schedule,
+            func=func,
+            agent_group = agent_group,
+            use_performance_model=use_performance_model,
+            warm_trial=warm_trial,
+            population_size=warm_population_size,
+            repeat_count=warm_trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+        )
+        warm_try += 1
+    
+    early_stop_count = 0
+    retired_indices = []
+
+    train_tri = 2
+    train_cnt = 0
+
+    if use_sa:
+        writer = SummaryWriter('runs/q_sa_search_' + prefix)
+    else:
+        writer = SummaryWriter('runs/q_search_' + prefix)
+    
+    population_size = int(population_size / len(agent_group.agent_group.keys()) * 2)
+    population_size = max(10, population_size)
+
+    for tri in range(trial):
+        # Get topk 
+        topk_indices_lst, topk_value_lst = agent_group.TopK(population_size, modify=True)
+        # Random get next batch data
+        next_data_lst = agent_group.SelectAction(
+            topk_indices_lst, topk_value_lst, trial=tri, 
+            epsilon=0.8, gamma=0.01
+        )
+        
+        # Evaluation performance
+        configs_performances = [] 
+        for idx, data in enumerate(next_data_lst):
+            indices, value, name, direction, next_indices = data
+            sch = None
+            indices_saw_lst = [str(indices), str(indices)]
+            # Find a ok schedule
+            while True:
+                next_config = agent_group.GetConfigFfromIndices(next_indices)
+                try:
+                    sch = AddSimpleSchedule(schedule.compute_tensor, next_config)
+                    break
+                except ValueError:
+                    # Go on in this direction to get next entry
+                    sch = None
+                    next_indices = agent_group.SelectOneAction(
+                        next_indices, name, direction, no_repeat=True)
+                    if next_indices == None or str(next_indices) in indices_saw_lst: # repeat 
+                        break
+                    else:
+                        indices_saw_lst.append(str(next_indices))
+                        continue
+            
+            # Evaluation
+            if sch is not None:
+                if use_performance_model:
+                    configs_performances.append(float('inf')) # Future todo.
+                else:
+                    configs_performances.append(
+                        Evaluate(sch, func, eval_warm_times,
+                        eval_round, eval_timeout, eval_policy)
+                    )
+                if configs_performances[-1] < float("inf"):
+                    agent_group.Record(next_indices, configs_performances[-1], 
+                                       use_sa=use_sa, gamma=sa_gamma)
+                    # Add agent train data
+                    reward = np.tanh(max(value - configs_performances[-1], 0.0))
+                    agent_group.AddData(
+                        indices, name, direction, next_indices, reward
+                    )
+
+        if len(configs_performances):
+            best_per = min(configs_performances)
+        else:
+            early_stop_count = math.ceil(early_stop_count / 1.5)
+            best_per = float('inf')
+
+        writer.add_scalar('Local Best Score', best_per, tri)
+        writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
+
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print (f"[AutoTune] Q searching Current time: {current_time} in {tri}"
+                f" trial best: {best_per:.8f}, "
+                f"history best: {global_best}",
+                flush=True)
+
+        if (best_per < global_best):
+            global_best = best_per
+            early_stop_count = 0
+        else:
+            early_stop_count += 1
+        
+        # Early stop
+        if early_stop_count > early_stop:
+            print(
+                f"[AutoTune] SA searching early stop with repeats {early_stop} times."
+            )
+            break
+        
+        # Append modified topk
+        for idx in range(len(topk_indices_lst)):
+            retired_indices.append((topk_indices_lst[idx], topk_value_lst[idx]))
+
+        # Train model
+        if (tri+1) % train_tri == 0:
+            print(f"[AutoTune] Train DQN in {tri} trial.")
+            agent_group.Train(save_model=True)
+            # Update target model
+            if train_tri < max_train_gap:
+                agent_group.UpdateAgentTargetModel()
+                print(f"[AutoTune] Update DQN target net in {tri} trial.")
+            elif train_tri >= max_train_gap and train_cnt % update_target_gap == 0:
+                # Stable train
+                agent_group.UpdateAgentTargetModel()
+                print(f"[AutoTune] Update DQN target net in {tri} trial.")
+            train_tri = min(max_train_gap, train_tri * 2)
+            train_cnt += 1
+
+    for item in retired_indices:
+        agent_group.Record(item[0], item[1], use_sa=False)
+
+    return agent_group.Top1()
+
 
 def AutoTune(
     input: ComputeTensor,
     method: str = "random_searching",
     population_size: int = 100,
-    agent_model_paths: Dict[str, str] = {},
-    agent_data_paths: Dict[str, str] = {},
-    use_performance_model: bool = False,
-    save_performance_model: bool = False,
-    performance_model_path: str = None,
-    save_performance_data: bool = False,
-    save_performance_data_filepath: str = None,
     trial: int = 100,
+    early_stop:int = 10,
+    use_his_agent: bool = False,
+    use_performance_model: bool = False,
+    performance_model_path: str = None,
+    save_agent_model: bool = False,
+    save_agent_data: bool = False,
+    save_performance_model: bool = False,
+    save_performance_data: bool = False,
+    save_dirpath: str = "",
     eval_warm_times: int = 10,
     eval_round: int = 50,
     eval_timeout: float = None,
     eval_policy: str = "avg",
-    save_searching: bool = True, 
     **kwargs
 ):
     """
@@ -586,22 +1064,29 @@ def AutoTune(
     input: ComputeTensor
     method: str optinal("random_searching)
         method include:
-        "random_searching", "q_searching", "sa_searching", "q_sa_searching"
+        "random_searching", "p_searching", "sa_searching", 
+        "q_searching", "q_sa_searching"
     population_size: int optinal(50)
         The size of the population during the search.
-    agent_model_paths: Dict[str, str]
-        Every agent's model path. The model have train in last searching.
-    agent_data_paths: Dict[str, str]
-        Every agent's data which is apper in last searching.
+    trial:
+        search trails, which multiply with population_size can know how many
+        point will be explorated.
+    early_stop:
+        Stop early when the same result is found several times.
+    use_his_agent: boll optinal(False)
+        Wheather using history agent model and data.
     use_performance_model: boll optinal(False)
         Wheather using cost model to predict program performance.
     performance_model_path: str
         Load the off line performance model path.
+    save_agent_model: Dict[str, str]
+        Every agent's model path. The model have train in last searching.
+    save_agent_data: Dict[str, str]
+        Every agent's data which is apper in last searching.
     save_performance_model: bool
     save_performance_data: bool
-    save_performance_data_filepath: str
-    trial:
-        search trails.
+    save_dirpath: str
+        All file need to save into the directory path.
     eval_round:
         Warm times when run a program to test excution time.
     test_round:
@@ -628,17 +1113,32 @@ def AutoTune(
     else:
         raise ValueError("Input argument type error.")
     
+    sparse_prefix = ""
+    for tensor in sch.all_tensors_bk:
+        if tensor.is_sparse:
+            assert tensor.data, \
+                f"[Autotune] Tensor {tensor} have not load data."
+            sparse_prefix += os.path.basename(tensor.data).split('.')[0]
+
+
     # Step1: Init schedule design space with all the subspace
     tune_space = Space()
 
     origin_axes = sch.origin_axes
+    axis_splited_diensions = dict()
     for name, axis in origin_axes.items():
         split_subspace = SplitSubSpace(axis[0].size, 2, policy="power2")
         tune_space.add_subspace(
             "splite_{}".format(name), split_subspace, "split"
         )
+        axis_splited_diensions[name] = 2
     
-    reorder_subspace = ReorderSubSpace(len(origin_axes) * 2)
+    sorted_axes_name = sorted(list(axis_splited_diensions.keys()))
+    sorted_axis_splited_diensions = \
+        [axis_splited_diensions[name] for name in sorted_axes_name]
+    
+    reorder_subspace = ReorderSubSpace(
+        len(origin_axes) * 2, sorted_axis_splited_diensions)
     tune_space.add_subspace(
         "reorder", reorder_subspace, "reorder"
     )
@@ -660,7 +1160,7 @@ def AutoTune(
     omp_subspace = OpenMPSubspace()
     tune_space.add_subspace("omp", omp_subspace, "omp")
 
-    print(f"[AutoSparse.AutoTuing] Space size = {len(tune_space)}")
+    print(f"[AutoTuing] Space size = {len(tune_space)}")
 
     # Step2: Create Agent Group.
     agent_group = DQNAgentGroup(
@@ -668,19 +1168,22 @@ def AutoTune(
         lr = 0.02, epochs=20, train_batch_size=1000
     )
 
+    # Load performance model
     # if use_performance_model:
         # Load performance model
     
-    for name, filepath in agent_model_paths.items():
-        agent_group.agent_group[name].model_path = filepath
-        agent_group.agent_group[name].LoadModel()
-    for name, filepath in agent_data_paths.items():
-        agent_group.agent_group[name].data_path = filepath
-        agent_group.agent_group[name].LoadData()
+    if (use_his_agent):
+        # Load agent group performance data
+        agent_group.memory = agent_group.LoadPerformanceData(
+            os.path.join(save_dirpath, sparse_prefix, "performance_data.pth")
+        )
+        # Load AgenGroup Model and data
+        agent_group.LoadAgentModel(os.path.join(save_dirpath, sparse_prefix))
+        agent_group.LoadAgentData(os.path.join(save_dirpath, sparse_prefix))
     
     # Step3: Tuning with searching
     func = Build(sch)
-    print(f"[AutoSparse.AutoTuing] Origin format run time = {func.origin_time:.8f}", flush = True)
+    print(f"[AutoTuing] Origin format run time = {func.origin_time:.8f}", flush = True)
     if eval_timeout == None:
         eval_timeout = math.ceil(
             func.origin_time * 2 * (eval_warm_times + eval_round) / 1000)
@@ -696,7 +1199,23 @@ def AutoTune(
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,
             eval_timeout = eval_timeout,
-            eval_policy = eval_policy
+            eval_policy = eval_policy,
+            prefix=sparse_prefix
+        )
+    elif method == "p_searching":
+        indices, value = PSearching(
+            schedule = sch,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            early_stop = early_stop,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+            prefix=sparse_prefix
         )
     elif method == "sa_searching":
         indices, value = SASearching(
@@ -706,10 +1225,12 @@ def AutoTune(
             population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
+            early_stop = early_stop,
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,
             eval_timeout = eval_timeout,
-            eval_policy = eval_policy
+            eval_policy = eval_policy,
+            prefix=sparse_prefix
         )
     elif method == "q_searching":
         indices, value = QSearching(
@@ -719,10 +1240,12 @@ def AutoTune(
             population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
+            early_stop = early_stop,
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,
             eval_timeout = eval_timeout,
-            eval_policy = eval_policy
+            eval_policy = eval_policy,
+            prefix=sparse_prefix
         )
     elif method == "q_sa_searching":
         indices, value = QSASearching(
@@ -732,23 +1255,32 @@ def AutoTune(
             population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
+            sa_gamma=0.05,
+            max_train_gap=8,
+            update_target_gap=2,
+            early_stop = early_stop,
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,
             eval_timeout = eval_timeout,
-            eval_policy = eval_policy
+            eval_policy = eval_policy,
+            prefix=sparse_prefix
         )
     else:
         indices, value = {}, None
         assert False, \
-            "[AutoSparse.AutoTune] Error search method。"
+            "[AutoTune] Error search method."
 
+    # Save agent group performance data
     if save_performance_data:
-        agent_group.SavePerformanceData(save_performance_data_filepath)
+        agent_group.SavePerformanceData(
+        os.path.join(save_dirpath, sparse_prefix, "performance_data.pth")
+    )
 
-    if save_searching:
-        for name, filepath in agent_model_paths.items():
-            agent_group.agent_group[name].SaveModel()
-        for name, filepath in agent_data_paths.items():
-            agent_group.agent_group[name].SaveData()
+    # Load AgenGroup Model and data
+    if (save_agent_model):
+        agent_group.LoadAgentModel(os.path.join(save_dirpath, sparse_prefix))
+    if (save_agent_data):
+        agent_group.LoadAgentData(os.path.join(save_dirpath, sparse_prefix))
+
     config = agent_group.GetConfigFfromIndices(indices)
     return AddSimpleSchedule(sch.compute_tensor, config)
