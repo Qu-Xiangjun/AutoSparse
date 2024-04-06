@@ -9,7 +9,7 @@ from AutoSparse import *
 
 @pytest.mark.parametrize("filename", ['__test_matrix.csr', 
                         'nemspmm1_16x4_0.csr', 'NACA0015_16x8_9.csr'])
-@pytest.mark.parametrize("method", ['random_searching', 
+@pytest.mark.parametrize("method", ['random_searching', 'batch_p_searching',
                         'sa_searching', 'q_searching', 'q_sa_searching'])
 def test_spmv(filename: str, method: str):
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
@@ -40,7 +40,7 @@ def test_spmv(filename: str, method: str):
 
 @pytest.mark.parametrize("filename", ['__test_matrix.csr', 
                         'nemspmm1_16x4_0.csr', 'NACA0015_16x8_9.csr'])
-@pytest.mark.parametrize("method", ['random_searching', 
+@pytest.mark.parametrize("method", ['random_searching', 'batch_p_searching',
                         'sa_searching', 'q_searching', 'q_sa_searching'])
 def test_spmm(filename: str, method: str):
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
@@ -72,7 +72,7 @@ def test_spmm(filename: str, method: str):
 
 @pytest.mark.parametrize("filename", ['__test_matrix.csr', 
                         'nemspmm1_16x4_0.csr', 'NACA0015_16x8_9.csr'])
-@pytest.mark.parametrize("method", ['random_searching', 
+@pytest.mark.parametrize("method", ['random_searching', 'batch_p_searching',
                         'sa_searching', 'q_searching', 'q_sa_searching'])
 def test_sddmm(filename, method: str):
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")

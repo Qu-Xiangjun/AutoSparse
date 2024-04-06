@@ -654,9 +654,8 @@ def PSearching(
 
     return agent_group.Top1()
 
-
 # Batch P method
-def SASearching(
+def BatchPSearching(
     schedule: Schedule,
     func: Build,
     agent_group: DQNAgentGroup,
@@ -671,7 +670,7 @@ def SASearching(
     prefix: str = "",
     **kwargs
 ):
-    """Only using SA method"""
+    """Only using batch p method"""
     print("**************** Start Batch P Search ****************")
     print(f"population_size         ={population_size}")
     print(f"trial                   ={trial}")
@@ -770,7 +769,7 @@ def SASearching(
         writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
 
         current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print (f"[AutoTune] SA searching Current time: {current_time} in {tri}"
+        print (f"[AutoTune] Batch P searching Current time: {current_time} in {tri}"
                 f" trial best: {best_per:.8f}, "
                 f"history best: {global_best}",
                 flush=True)
@@ -816,7 +815,7 @@ def SASearching(
         # Early stop
         if early_stop_count > early_stop:
             print(
-                f"[AutoTune] SA searching early stop with repeats {early_stop} times."
+                f"[AutoTune] Batch P searching early stop with repeats {early_stop} times."
             )
             break
 
@@ -825,17 +824,15 @@ def SASearching(
 
     return agent_group.Top1()
 
-
-def QSearching(
+# Batch P method
+def SASearching(
     schedule: Schedule,
     func: Build,
     agent_group: DQNAgentGroup,
     population_size: int = 10,
-    use_performance_model: bool = False,
     trial: int = 50,
-    max_train_gap: int = 8,
-    update_target_gap:int = 2,
     early_stop:int = 5,
+    use_performance_model: bool = False,
     eval_warm_times: int = 10,
     eval_round: int = 100,
     eval_timeout: float = None,
@@ -843,55 +840,10 @@ def QSearching(
     prefix: str = "",
     **kwargs
 ):
-    """Only using DQN method"""
-    return  QSASearching(
-            schedule = schedule,
-            func=func,
-            agent_group=agent_group,
-            population_size=population_size,
-            use_performance_model = use_performance_model,
-            trial = trial,
-            use_sa = False,
-            sa_gamma=1,
-            max_train_gap=max_train_gap,
-            update_target_gap=update_target_gap,
-            early_stop = early_stop,
-            eval_warm_times = eval_warm_times,
-            eval_round = eval_round,
-            eval_timeout = eval_timeout,
-            eval_policy = eval_policy,
-            prefix=prefix
-        )
-
-
-def QSASearching(
-    schedule: Schedule,
-    func: Build,
-    agent_group: DQNAgentGroup,
-    population_size: int = 10,
-    use_performance_model: bool = False,
-    trial: int = 50,
-    use_sa: bool = True,
-    sa_gamma: int = 0.05,
-    max_train_gap: int = 8,
-    update_target_gap:int = 2,
-    early_stop:int = 5,
-    eval_warm_times: int = 10,
-    eval_round: int = 100,
-    eval_timeout: float = None,
-    eval_policy: str = "avg",
-    prefix: str = "",
-    **kwargs
-):
-    """Using DQN and SA mixing method"""
-
-    print("**************** Start Q Search ****************")
+    """Only using SA method"""
+    print("**************** Start SA Search ****************")
     print(f"population_size         ={population_size}")
     print(f"trial                   ={trial}")
-    print(f"use_sa                  ={use_sa}")
-    print(f"sa_gamma                ={sa_gamma}")
-    print(f"max_train_gap           ={max_train_gap}")
-    print(f"update_target_gap       ={update_target_gap}")
     print(f"early_stop              ={early_stop}")
     print(f"use_performance_model   ={use_performance_model}")
     print(f"eval_warm_times         ={eval_warm_times}")
@@ -924,7 +876,202 @@ def QSASearching(
     early_stop_count = 0
     retired_indices = []
 
-    train_tri = 2
+    writer = SummaryWriter('runs/sa_search_' + prefix)
+
+    population_size = int(population_size / len(agent_group.agent_group.keys()) * 2)
+
+    for tri in range(trial):
+        # Random get next batch data
+        topk_indices_lst, topk_value_lst = agent_group.TopK(population_size, modify=True)
+        configs_performances = [] 
+        for idx in range(len(topk_indices_lst)):
+            all_next_data_lst = agent_group.SelectionFull(
+                topk_indices_lst[idx], topk_value_lst[idx], no_repeat=True
+            )
+            # random.shuffle(all_next_data_lst)
+            # next_data_lst = {}
+            # for item in all_next_data_lst:
+            #     if item[2] not in next_data_lst:
+            #         next_data_lst[item[2]] = item
+            # next_data_lst = list(next_data_lst.values())
+            next_data_lst = random.sample(all_next_data_lst, k = len(agent_group.agent_group.keys()))
+
+            # Evaluation performance
+            for idx, data in enumerate(next_data_lst):
+                indices, _, name, direction, next_indices = data
+                sch = None
+                indices_saw_lst = [str(indices), str(indices)]
+                # Find a ok schedule
+                while True:
+                    next_config = agent_group.GetConfigFfromIndices(next_indices)
+                    try:
+                        sch = AddSimpleSchedule(schedule.compute_tensor, next_config)
+                        break
+                    except ValueError:
+                        # Go on in this direction to get next entry
+                        sch = None
+                        next_indices = agent_group.SelectOneAction(
+                            next_indices, name, direction, no_repeat=True)
+                        if next_indices == None or str(next_indices) in indices_saw_lst: # repeat 
+                            break
+                        else:
+                            indices_saw_lst.append(str(next_indices))
+                            continue
+                
+                # Evaluation
+                if sch is not None:
+                    if use_performance_model:
+                        configs_performances.append(float('inf')) # Future todo.
+                    else:
+                        configs_performances.append(
+                            Evaluate(sch, func, eval_warm_times,
+                            eval_round, eval_timeout, eval_policy)
+                        )
+                    if configs_performances[-1] < float("inf"):
+                        agent_group.Record(next_indices, configs_performances[-1], 
+                                        use_sa=True, gamma=0.05)
+
+        if len(configs_performances):
+            best_per = min(configs_performances)
+        else:
+            early_stop_count = math.ceil(early_stop_count / 1.5)
+            best_per = float('inf')
+
+        writer.add_scalar('Local Best Score', best_per, tri)
+        writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
+
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print (f"[AutoTune] SA searching Current time: {current_time} in {tri}"
+                f" trial best: {best_per:.8f}, "
+                f"history best: {global_best}",
+                flush=True)
+
+        # Can't find more better one, so retire best one to continue explore.
+        if (best_per < global_best):
+            global_best = best_per
+            early_stop_count = 0
+        else:
+            early_stop_count += 1
+        
+        # Early stop
+        if early_stop_count > early_stop:
+            print(
+                f"[AutoTune] SA searching early stop with repeats {early_stop} times."
+            )
+            break
+
+        # Append modified topk
+        for idx in range(len(topk_indices_lst)):
+            retired_indices.append((topk_indices_lst[idx], topk_value_lst[idx]))
+
+        # Reload data
+        if (tri + 1) % 10:
+            retired_indices = sorted(retired_indices, key=lambda x: x[1])
+            added_indices = retired_indices[:population_size]
+            retired_indices = retired_indices[population_size:]
+            for item in added_indices:
+                agent_group.Record(item[0], item[1], use_sa=False)
+
+    for item in retired_indices:
+        agent_group.Record(item[0], item[1], use_sa=False)
+
+    return agent_group.Top1()
+
+
+def QSearching(
+    schedule: Schedule,
+    func: Build,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    use_performance_model: bool = False,
+    trial: int = 50,
+    update_target_gap:int = 4,
+    early_stop:int = 5,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    prefix: str = "",
+    **kwargs
+):
+    """Only using DQN method"""
+    return  QSASearching(
+            schedule = schedule,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            use_sa = False,
+            sa_gamma=1,
+            update_target_gap=update_target_gap,
+            early_stop = early_stop,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+            prefix=prefix
+        )
+
+
+def QSASearching(
+    schedule: Schedule,
+    func: Build,
+    agent_group: DQNAgentGroup,
+    population_size: int = 10,
+    use_performance_model: bool = False,
+    trial: int = 50,
+    use_sa: bool = True,
+    sa_gamma: int = 0.05,
+    update_target_gap:int = 4,
+    early_stop:int = 5,
+    eval_warm_times: int = 10,
+    eval_round: int = 100,
+    eval_timeout: float = None,
+    eval_policy: str = "avg",
+    prefix: str = "",
+    **kwargs
+):
+    """Using DQN and SA mixing method"""
+
+    print("**************** Start Q Search ****************")
+    print(f"population_size         ={population_size}")
+    print(f"trial                   ={trial}")
+    print(f"use_sa                  ={use_sa}")
+    print(f"sa_gamma                ={sa_gamma}")
+    print(f"update_target_gap       ={update_target_gap}")
+    print(f"early_stop              ={early_stop}")
+    print(f"use_performance_model   ={use_performance_model}")
+    print(f"eval_warm_times         ={eval_warm_times}")
+    print(f"eval_round              ={eval_round}")
+    print(f"eval_timeout            ={eval_timeout}")
+    print(f"eval_policy             ={eval_policy}")
+    print()
+
+    warm_trial = 5
+    warm_population_size = int(population_size/2)
+    print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
+    global_best = float('inf')
+    warm_try= 0
+    while (agent_group.Top1Value() < float('inf')) == False and warm_try < 5:
+        global_best = Warm(
+            schedule=schedule,
+            func=func,
+            agent_group = agent_group,
+            use_performance_model=use_performance_model,
+            warm_trial=warm_trial,
+            population_size=warm_population_size,
+            repeat_count=warm_trial,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+        )
+        warm_try += 1
+    
+    early_stop_count = 0
+    retired_indices = []
+
     train_cnt = 0
 
     if use_sa:
@@ -933,7 +1080,6 @@ def QSASearching(
         writer = SummaryWriter('runs/q_search_' + prefix)
     
     population_size = int(population_size / len(agent_group.agent_group.keys()) * 2)
-    population_size = max(10, population_size)
 
     for tri in range(trial):
         # Get topk 
@@ -977,7 +1123,7 @@ def QSASearching(
                         eval_round, eval_timeout, eval_policy)
                     )
                 if configs_performances[-1] < float("inf"):
-                    agent_group.Record(next_indices, configs_performances[-1], 
+                    record_valid = agent_group.Record(next_indices, configs_performances[-1], 
                                        use_sa=use_sa, gamma=sa_gamma)
                     # Add agent train data
                     reward = np.tanh(max(value - configs_performances[-1], 0.0))
@@ -1018,19 +1164,26 @@ def QSASearching(
             retired_indices.append((topk_indices_lst[idx], topk_value_lst[idx]))
 
         # Train model
-        if (tri+1) % train_tri == 0:
-            print(f"[AutoTune] Train DQN in {tri} trial.")
+        if list(agent_group.agent_group.values())[0].memory_size * len(agent_group.agent_group.keys()) > \
+                list(agent_group.agent_group.values())[0].train_batch_size:
             agent_group.Train(save_model=True)
             # Update target model
-            if train_tri < max_train_gap:
-                agent_group.UpdateAgentTargetModel()
-                print(f"[AutoTune] Update DQN target net in {tri} trial.")
-            elif train_tri >= max_train_gap and train_cnt % update_target_gap == 0:
+            if (train_cnt + 1) % update_target_gap == 0:
                 # Stable train
                 agent_group.UpdateAgentTargetModel()
                 print(f"[AutoTune] Update DQN target net in {tri} trial.")
-            train_tri = min(max_train_gap, train_tri * 2)
-            train_cnt += 1
+        else:
+            early_stop_count = 0
+        train_cnt += 1
+
+        # Reload data
+        if (tri + 1) % 10:
+            retired_indices = sorted(retired_indices, key=lambda x: x[1])
+            added_indices = retired_indices[:population_size]
+            retired_indices = retired_indices[population_size:]
+            for item in added_indices:
+                agent_group.Record(item[0], item[1], use_sa=False)
+
 
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
@@ -1064,8 +1217,8 @@ def AutoTune(
     input: ComputeTensor
     method: str optinal("random_searching)
         method include:
-        "random_searching", "p_searching", "sa_searching", 
-        "q_searching", "q_sa_searching"
+        "random_searching", "p_searching", "batch_p_searching",
+        "sa_searching", "q_searching", "q_sa_searching"
     population_size: int optinal(50)
         The size of the population during the search.
     trial:
@@ -1165,7 +1318,7 @@ def AutoTune(
     # Step2: Create Agent Group.
     agent_group = DQNAgentGroup(
         sch.GetScheduleName(), tune_space, decay = 0.9,
-        lr = 0.02, epochs=20, train_batch_size=1000
+        lr = 0.02, epochs=2, train_batch_size=int(population_size/2)
     )
 
     # Load performance model
@@ -1217,6 +1370,21 @@ def AutoTune(
             eval_policy = eval_policy,
             prefix=sparse_prefix
         )
+    elif method == "batch_p_searching":
+        indices, value = BatchPSearching(
+            schedule = sch,
+            func=func,
+            agent_group=agent_group,
+            population_size=population_size,
+            use_performance_model = use_performance_model,
+            trial = trial,
+            early_stop = early_stop,
+            eval_warm_times = eval_warm_times,
+            eval_round = eval_round,
+            eval_timeout = eval_timeout,
+            eval_policy = eval_policy,
+            prefix=sparse_prefix
+        )
     elif method == "sa_searching":
         indices, value = SASearching(
             schedule = sch,
@@ -1240,6 +1408,7 @@ def AutoTune(
             population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
+            update_target_gap= math.ceil(trial * 0.08),
             early_stop = early_stop,
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,
@@ -1255,9 +1424,9 @@ def AutoTune(
             population_size=population_size,
             use_performance_model = use_performance_model,
             trial = trial,
+            use_sa=True,
             sa_gamma=0.05,
-            max_train_gap=8,
-            update_target_gap=2,
+            update_target_gap= math.ceil(trial * 0.08),
             early_stop = early_stop,
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,

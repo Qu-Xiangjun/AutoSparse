@@ -51,9 +51,9 @@ class DQNAgent(object):
         self.name = agent_name
         self.subspace = subspace
         self.major_model = SimpleQNN(
-            input_len, self.subspace.num_directions, 64, 4)
+            input_len, self.subspace.num_directions, 64, 3)
         self.target_model = SimpleQNN(
-            input_len, self.subspace.num_directions, 64, 4)
+            input_len, self.subspace.num_directions, 64, 3)
         self.memory = [] # (current_state, action, next_state, reward) 
         self.memory_size = 0
         self.model_path = "DQNAgent_SimpleQNN_Model_" + self.name + ".pkl"
@@ -187,9 +187,7 @@ class DQNAgent(object):
 
             if save_model and ((epoch + 1) % 5 == 0):
                 self.SaveModel()
-            if (epoch + 1) % 4 == 0:
-                print(f"[cur/total]=[{epoch+1}/{self.epochs}],"
-                        f" loss = {float(loss):.4f}")
+            print(f"[cur/total]=[{epoch+1}/{self.epochs}], loss = {float(loss):.4f}")
     
     def AddData(self, pre_state, action, post_state, reward):
         direction_pos = self.subspace.GetDirectionPos(action)
@@ -463,14 +461,17 @@ class DQNAgentGroup(object):
             # The smaller gamma is, the more likely it is that the worse points 
             # will be selected.
             t = np.exp(-gamma * (value - self.Top1Value()) / self.Top1Value()) 
-            if p <= t:
+            if p <= t or math.isnan(t):
                 # Using heap to rank all the test records.
                 heapq.heappush(self.memory, MemEntry(indices, value))
                 self.memory_size += 1
-                
+                return True
+            else:
+                return False
         else:
             heapq.heappush(self.memory, MemEntry(indices, value))
             self.memory_size += 1
+            return True
 
     def ConvertIndices2FeatureVec(self, indices: Dict):
         ret = []
