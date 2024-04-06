@@ -11,7 +11,7 @@
 				"-march=native", // 指示编译器生成与本地 CPU 架构匹配的代码。
 				"-fopenmp",
                 "-DGCC",
-                "-DNUMCORE=64",
+                "-DNUMCORE=12",
 				"-fdiagnostics-color=always", // 使用彩色显示争端信息
 				"-g", // 添加调试信息
 				"${file}",

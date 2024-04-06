@@ -413,3 +413,4 @@ So If you examine each .csr file, you'll notice that the filename format is "<or
 - 热身次数越多，得出的时间越好，热身至少100次，甚至可以500次更好，实际跑50~100次即可。。。
 - 选择vag 还是 mid 策略差不多
 - 发生format overleaf, 实际是装得下的，这里只是尽可能的排除需要运行时间长的设计。 
+- 注意测试c++用的编译命令要-03 且NUMCORE选择正确
