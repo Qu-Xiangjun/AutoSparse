@@ -21,12 +21,12 @@ find_package(pybind11 PATHS ${__pybind_path})
 
 if(USE_ICC)
     # user select icpc intel compiler
-    set(CMAKE_CXX_COMPILER "icpc")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -qopenmp -DICC -Wextra -fPIC")
+    set(CMAKE_CXX_COMPILER "icc")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -march=native -qopenmp -DICC -Wextra -fPIC")
     message(STATUS "Using Intel compiler (ICC)")
 else()
     # user select gcc compiler
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -fopenmp -DGCC -Wextra -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -march=native -fopenmp -DGCC -Wextra -fPIC")
     message(STATUS "Using GCC compiler (g++)")
 endif()
 set(CMAKE_CXX_STANDARD 17)

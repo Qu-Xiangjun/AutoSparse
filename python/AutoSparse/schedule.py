@@ -52,7 +52,7 @@ class Schedule(object):
     @property
     def all_axes(self) -> Dict[str, List["Axis"]]:
         """Axis name point to Axis object in all_tensors_bk and it don't
-        contain loop splited axis
+        contain loop splited axis, but contain format splited axis.
         """
         all_axes = dict()
         for tensor in self.all_tensors_bk:
@@ -171,15 +171,15 @@ class Schedule(object):
             )
             return None
 
-        total_size = 1
-        for item in axes_size_lst:
-            total_size *= item
-        if total_size != related_tensor_lst[0].format.axes_name[axis_name].size:
-            print(
-                f"[Warning][AutoSparse.Schedule] Accumulate multiplies of split "
-                "axes must equal with origin axis size in FormatSplit."
-            )
-            return None
+        # total_size = 1
+        # for item in axes_size_lst:
+        #     total_size *= item
+        # if total_size != related_tensor_lst[0].format.axes_name[axis_name].size:
+        #     print(
+        #         f"[Warning][AutoSparse.Schedule] Accumulate multiplies of split "
+        #         "axes must equal with origin axis size in FormatSplit."
+        #     )
+        #     return None
         
         # Change all the related tensor's format.
         new_axes_names = [axis_name + str(i) for i in range(len(axes_size_lst))]
@@ -332,15 +332,15 @@ class Schedule(object):
             )
             return None
         
-        total_size = 1
-        for item in axes_size_lst:
-            total_size *= item
-        if total_size != all_axes[axis_name][0].size:
-            print(
-                f"[Warning][AutoSparse.Schedule] Accumulate multiplies of split "
-                "axes must equal with origin axis size in LoopSplit."
-            )
-            return None
+        # total_size = 1
+        # for item in axes_size_lst:
+        #     total_size *= item
+        # if total_size != all_axes[axis_name][0].size:
+        #     print(
+        #         f"[Warning][AutoSparse.Schedule] Accumulate multiplies of split "
+        #         "axes must equal with origin axis size in LoopSplit."
+        #     )
+        #     return None
         
         new_axes_name_lst = [
             axis_name + str(i) for i in range(len(axes_size_lst))

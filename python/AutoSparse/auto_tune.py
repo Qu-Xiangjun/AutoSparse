@@ -59,6 +59,7 @@ def Evaluate(
         time_policy=eval_policy
     )
     if res < 0:
+        print("Error ans")
         res = float("inf")
     return res
 

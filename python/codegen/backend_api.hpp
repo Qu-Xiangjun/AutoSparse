@@ -377,7 +377,7 @@ public:
         float test_time = -1;
         bool verify_res = true;
         try{
-            test_time = M.run(warm, round, verify_res, true, false, time_policy, origin_time*2);
+            test_time = M.run(warm, round, verify_res, true, false, time_policy, origin_time*5);
         }
         catch (const runtime_error& e)
         {
