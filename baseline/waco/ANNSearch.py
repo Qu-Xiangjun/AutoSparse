@@ -434,7 +434,7 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
 
     memory: list[MemEntry] = [] # Record searched point.
     visited_set = set() # Store visited point id.
-    retiered_item = []
+    retiered_item: list[MemEntry] = []
     
     # Warm
     ids = list(random.sample(range(0, num_elements - 1), warm_number))
@@ -449,8 +449,8 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
         print(f"[WACO ANNS] Warm up {i} times = {value:.8f} \t\t {schedules[idx][1]}", flush = True)
     print(f"[WACO ANNS] Find best id in warm up for {schedules[idx][1]} = {memory[0].value}", flush = True)
 
-    early_stop = 20
-    early_stop_cnt = 0
+    # early_stop = 20
+    # early_stop_cnt = 0
 
     global_best_value = memory[0].value
     cur_id = memory[0].id
@@ -485,16 +485,22 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
                    f"history best: {global_best_value:.8f}", flush = True)
         
         if (best_per > global_best_value):
-            if (best_per < float('inf')):
-                early_stop_cnt += 1
-            retiered_item.append(heapq.heappop(memory))
+            # if (best_per < float('inf')):
+            #     early_stop_cnt += 1
+            pass
         else:
-            early_stop_cnt = 0
+            # early_stop_cnt = 0
             global_best_value = best_per
         
-        if early_stop_cnt >= early_stop:
-            print(f"[WACO ANNS] Early stop in reapte {early_stop} times.")
-            break
+        if (best_per < float('inf')):
+            cur_id = labels.tolist()[0][np.argmin(values)]
+        else:
+            retiered_item.append(heapq.heappop(memory))
+            cur_id = retiered_item[-1].id
+
+        # if early_stop_cnt >= early_stop:
+        #     print(f"[WACO ANNS] Early stop in reapte {early_stop} times.")
+        #     break
         
         for idx, val in enumerate(values):
             heapq.heappush(memory, MemEntry(run_ids[idx], val))
@@ -504,6 +510,137 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
         
     return memory[0].id, schedules[memory[0].id][1], memory[0].value
 
+
+def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_number = 100, trials = 500, k = 60):
+    print(f"[WACO ANNS] Searching task {task_name} for matrix {matrix_filename}"
+        f" with warm_number = {warm_number}, trials = {trials} and k = {k}")
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("Using device:", device)
+    
+    autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
+    waco_prefix = os.path.join(autosparse_prefix, "baseline", "waco")
+
+    schedules = TrainingScheduleDataset(os.path.join(waco_prefix, task_name, "TrainingData", "total.txt"), task_name)
+    schedule_loader = torch.utils.data.DataLoader(schedules, batch_size=128, shuffle=False, num_workers=0)
+
+    if (task_name == 'SpMM'):
+        net = ResNet14SpMM(in_channels=1, out_channels=1, D=2) # D : 2D Tensor
+    elif task_name == 'SpMV':
+        net = ResNet14SpMV(in_channels=1, out_channels=1, D=2) # D : 2D Tensor
+    elif task_name == 'SDDMM':
+        net = ResNet14SDDMM(in_channels=1, out_channels=1, D=2) # D : 2D Tensor
+    else:
+        assert (False, "Error task name.")
+    net = net.to(device)
+    net.load_state_dict(torch.load(os.path.join(waco_prefix, task_name, 'resnet.pth')))
+    net.eval()
+
+    embeddings = [] 
+    for batch_idx, (data, string) in tqdm(enumerate(schedule_loader), total=len(schedule_loader)):
+        data = data.to(device)
+        embedding = net.embed_super_schedule(data)
+        embeddings.extend(embedding.detach().cpu().tolist())
+    embeddings = np.array(embeddings)
+    
+    dim = len(schedules[0])
+    num_elements = schedules.__len__()
+
+    # Set KNN graph
+    p = hnswlib.Index(space='l2', dim=dim)
+    p.load_index(os.path.join(waco_prefix, task_name, "hnsw_schedule.bin"), max_elements = num_elements)
+    p.set_ef(200) # ef should always be > k
+
+    # Create task
+    if task_name == "SpMV":
+        st, func = SpMVTask(matrix_filename)
+        createScheuleFunc = CreateSpMVSchedule
+    elif task_name == "SpMM":
+        st, func = SpMMTask(matrix_filename)
+        createScheuleFunc = CreateSpMMSchedule
+    elif task_name == "SDDMM":
+        st, func = SpMMTask(matrix_filename)
+        createScheuleFunc = CreateSDDMMSchedule
+    else:
+        assert False, "Error task name."
+    
+    print(f"[WACO ANNS] CSR origin time = {func.origin_time:.8f} ms")
+
+    memory: list[MemEntry] = [] # Record searched point.
+    visited_set = set() # Store visited point id.
+    retiered_item: list[MemEntry] = []
+    
+    # Warm
+    ids = list(random.sample(range(0, num_elements - 1), warm_number))
+    print(f"[WACO ANNS] Warm up {warm_number} times.")
+    for i, idx in enumerate(ids):
+        if idx in visited_set:
+            continue
+        sch = createScheuleFunc(st, schedules[idx][1])
+        value = RunSchedule(func, sch)
+        heapq.heappush(memory, MemEntry(idx, value))
+        visited_set.add(idx)
+        print(f"[WACO ANNS] Warm up {i} times = {value:.8f} \t\t {schedules[idx][1]}", flush = True)
+    print(f"[WACO ANNS] Find best id in warm up for {schedules[idx][1]} = {memory[0].value}", flush = True)
+
+    # early_stop = 20
+    # early_stop_cnt = 0
+
+    global_best_value = memory[0].value
+    cur_id = memory[0].id
+    
+    for tri in range(trials):
+        if len(memory) == 0:
+            print("[WACO ANNS] Stop search when there have not any item in memory.")
+            break
+        
+        if (tri==0):
+            print(schedules[cur_id][1])
+        labels, dis = p.knn_query(embeddings[cur_id], k = k) # Find closest k neighbor.
+        values = []
+        run_ids = []
+        for idx in labels.tolist()[0]:
+            if idx in visited_set:
+                continue
+            sch = createScheuleFunc(st, schedules[int(idx)][1])
+            if (tri==0):
+                # print(schedules[int(idx)][0])
+                print(schedules[int(idx)][1])
+            value = RunSchedule(func, sch)
+            visited_set.add(idx)
+            values.append(value)
+            run_ids.append(idx)
+
+        if len(values):
+            best_per = min(values)
+        else:
+            best_per = float('inf')
+        print (f"[WACO ANNS] Search in {tri} trial best: {best_per:.8f}, "
+                   f"history best: {global_best_value:.8f}", flush = True)
+        
+        if not (best_per < float('inf')):
+            retiered_item.append(heapq.heappop(memory))
+        
+        if (best_per > global_best_value):
+            # if (best_per < float('inf')):
+            #     early_stop_cnt += 1
+            cur_id = memory[0].id
+        else:
+            # early_stop_cnt = 0
+            global_best_value = best_per
+            cur_id = labels.tolist()[0][np.argmin(values)]
+        
+        # if early_stop_cnt >= early_stop:
+        #     print(f"[WACO ANNS] Early stop in reapte {early_stop} times.")
+        #     break
+        
+        for idx, val in enumerate(values):
+            heapq.heappush(memory, MemEntry(run_ids[idx], val))
+
+    for item in retiered_item:
+        heapq.heappush(memory, item)
+        
+    return memory[0].id, schedules[memory[0].id][1], memory[0].value
 
 def test_spmm():
     schedules = [
@@ -553,7 +690,7 @@ if __name__ == "__main__":
     #     )
     #     res_f.write(string)
     #     res_f.close()
-    id, schedules, value = ANNS(task_name, "nemspmm1_16x4_0.csr")
+    id, schedules, value = ANNS3(task_name, "Trec6_16x16_9.csr")
     print(schedules + f" {value:.8f}")
 
     # test_spmm()
