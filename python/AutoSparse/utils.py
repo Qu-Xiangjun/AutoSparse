@@ -2,6 +2,9 @@
 from typing import *
 import numpy as np
 import math
+import os, sys
+from scipy.sparse import coo_matrix
+from scipy.io import mmwrite
 
 def GetAlphabet26BaseNumber(n: int, is_upper: bool, string: str = None) -> str:
     """Translate integer n to English alphabet 26 base number
@@ -122,10 +125,31 @@ def Flatten(x):
     return ret
 
 
+def get_coo_from_csr_file(filepath) :
+    assert ".csr" in filepath
+    
+    csr = np.fromfile(filepath, dtype='<i4')
+    num_row,num_col,nnz = csr[0],csr[1],csr[2]
+    coo = np.zeros((nnz,3),dtype=int)
+    coo[:,1] = csr[3+num_row+1:3+num_row+1+nnz] # col
+    bins = np.array(csr[4:num_row+4]) - np.array(csr[3:num_row+3])
+    coo[:,0] = np.repeat(range(num_row), bins)
+    coo[:,2] = np.ones(nnz)
+    return num_row, num_col, nnz, coo
+
+def write_mtx_from_coo(num_row, num_col, coo, filepath):
+    assert ".mtx" in filepath
+    sparse_matrix = coo_matrix((coo[:, 2], (coo[:, 0], coo[:, 1])), shape=(num_row, num_col))
+    mmwrite(filepath, sparse_matrix)
+
+
+
 if __name__ == "__main__":
-    for i in range(100):
-        print(GetAlphabet26BaseNumber(i, True))
-        print(GetAlphabet26BaseNumber(i, False))
-    print(SplitWithFactorization(256, 4))
-    print(Permute([0,1,2,3,4,5,6]))
-    print(Flatten([[[1,2,3],[4,5]],[6,7,9]]))
+    # for i in range(100):
+    #     print(GetAlphabet26BaseNumber(i, True))
+    #     print(GetAlphabet26BaseNumber(i, False))
+    # print(SplitWithFactorization(256, 4))
+    # print(Permute([0,1,2,3,4,5,6]))
+    # print(Flatten([[[1,2,3],[4,5]],[6,7,9]]))
+    num_row, num_col, nnz, coo = get_coo_from_csr_file("/home/qxj/AutoSparse/dataset/demo_dataset/nemspmm1_16x4_0.csr")
+    write_mtx_from_coo(num_row, num_col, coo, "/home/qxj/AutoSparse/dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx")

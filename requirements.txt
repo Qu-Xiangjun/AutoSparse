@@ -2,3 +2,4 @@ numpy
 pytest
 pybind11
 torch
+scipy
