@@ -1,0 +1,26 @@
+Chevron3_4x16_1: num_row = 131072, num_col = 8192, nnz = 4611968
+Chevron3_4x16_1 Execution time of this operator: 97.094 ms
+
+vibrobox_1x1_0: num_row = 65536, num_col = 4096, nnz = 4580587
+vibrobox_1x1_0 Execution time of this operator: 305.725 ms
+
+NACA0015_16x8_9: num_row = 131072, num_col = 4096, nnz = 3174656
+NACA0015_16x8_9 Execution time of this operator: 72.112 ms
+
+nemspmm1_16x4_0: num_row = 4096, num_col = 8192, nnz = 701760
+nemspmm1_16x4_0 Execution time of this operator: 14.119 ms
+
+Trec6_16x16_9: num_row = 32768, num_col = 8192, nnz = 163840
+Trec6_16x16_9 Execution time of this operator: 3.140 ms
+
+crystk01_2x16_1: num_row = 2048, num_col = 65536, nnz = 1041952
+crystk01_2x16_1 Execution time of this operator: 127.428 ms
+
+t2dal_a_8x4_3: num_row = 16384, num_col = 8192, nnz = 1511360
+t2dal_a_8x4_3 Execution time of this operator: 59.026 ms
+
+EX1_8x8_4: num_row = 4096, num_col = 4096, nnz = 1151680
+EX1_8x8_4 Execution time of this operator: 31.326 ms
+
+hugebubbles-00010_4x2_0: num_row = 4096, num_col = 65536, nnz = 6000928
+hugebubbles-00010_4x2_0 Execution time of this operator: 2361.121 ms

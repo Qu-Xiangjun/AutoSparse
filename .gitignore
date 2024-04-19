@@ -8,3 +8,4 @@ origin_dataset/*.csr
 build/
 CollectedData/
 hnsw_schedule.bin
+*.npy
