@@ -12,7 +12,7 @@ B = Tensor((k_, j), is_sparse=False)
 """Calculation declaration"""
 C = Compute(A@B)
 """Auto-Tune and excute"""
-# sch = AutoTune(C, method = "Q_leaning", use_cost_model = True)
+sch = AutoTune(C, method = "Q_leaning", use_cost_model = True)
 A.LoadData("/home/qxj/AutoSparse/dataset/demo_dataset/__test_matrix.csr")
 func = Build(C)
 time = func.Run()
