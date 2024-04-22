@@ -204,6 +204,8 @@ def evaluate_best_record(filename):
     N = int(num_row)
     BS_R = 16
     BS_C = 16
+    assert (N % BS_R == 0)
+    assert (K % BS_C == 0)
 
     X_np = np.random.randn(M, K).astype("float32")
     W_np_ = np.zeros((num_row, num_col), dtype="float32")
