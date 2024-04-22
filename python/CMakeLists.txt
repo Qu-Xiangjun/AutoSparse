@@ -5,7 +5,7 @@ project(AutoSparseBackend C CXX)
 option(USE_ICC "Use Intel compiler (ICC)" OFF)
 
 # find correct version of Python
-execute_process(COMMAND python -c "import sys; print(sys.executable)" 
+execute_process(COMMAND python3 -c "import sys; print(sys.executable)" 
     OUTPUT_VARIABLE Python_EXECUTABLE
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 find_package(Python COMPONENTS Development Interpreter REQUIRED)
