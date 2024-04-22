@@ -4,6 +4,7 @@
         "name": "Linux",
         "includePath": [
             "${workspaceFolder}/**",
+            "/opt/intel/oneapi/mkl/latest/include"
         ],
         "defines": [],
         "compilerPath": "/usr/bin/gcc",
