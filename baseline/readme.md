@@ -19,7 +19,7 @@
 wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/2f3a5785-1c41-4f65-a2f9-ddf9e0db3ea0/l_onemkl_p_2024.1.0.695_offline.sh
 sudo sh ./l_onemkl_p_2024.1.0.695_offline.sh -a --cli 
 ```
-3. 拉取ASpT仓库，按照其readme 修改makefile.in中编译器位置和MKL库位置，
+3. 拉取ASpT仓库，按照其readme 修改makefile.in中编译器位置和MKL库位置，也可以不拉取，本地已经提取出关键的baseline文件
    - 注意2024.1版本很多文件与其原有的已经不匹配，注意修改一些地址的路径位置
    - 如果报错.so库找不到，就从MKL库的路径中添加到.bashrc ，如 `export LD_LIBRARY_PATH=/path/to/libiomp5:$LD_LIBRARY_PATH`
    - 注意如果没有AVX-512 删除 各个文件夹下makefile中 avx512和向量指令的编译命令
