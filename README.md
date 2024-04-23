@@ -37,6 +37,7 @@ which iccvars.sh
 
 2. Install AutoSparse
 ```bash
+export NUMCORE=$(nproc --all)
 cd $AUTOSPARSE_HOME/python
 make
 ```
