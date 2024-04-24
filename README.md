@@ -35,7 +35,16 @@ icpc --version
 which iccvars.sh
 ```
 
-2. Install AutoSparse
+2. Install TACO
+```bash
+cd $AUTOSPARSE_HOME/taco
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j8
+```
+
+3. Install AutoSparse
 ```bash
 export NUMCORE=$(nproc --all)
 cd $AUTOSPARSE_HOME/python
@@ -43,5 +52,5 @@ make
 ```
 > Note: if you use `gcc`, you will changed `-DUSE_ICC=ON` in `$AUTOSPARSE_HOOME/poython/Makefile` to be `OFF`
 
-3. How to use
+1. How to use
 Please see `$AUTOSPARSE_HOOME/poython/tutorial.py` and `$AUTOSPARSE_HOOME/poython/test`
