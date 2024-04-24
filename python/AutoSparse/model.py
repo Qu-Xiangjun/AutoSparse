@@ -293,6 +293,7 @@ class DQNAgentGroup(object):
         self.memory = []
         self.memory_size = 0
         self.visits_set = set()
+        self.schedule_data = [] # [schedule_command, value]
     
     @property
     def action_num(self):
@@ -472,6 +473,9 @@ class DQNAgentGroup(object):
             heapq.heappush(self.memory, MemEntry(indices, value))
             self.memory_size += 1
             return True
+    
+    def AddSchedule(self, cmd: str, value: float):
+        self.schedule_data.append([cmd, value])
 
     def ConvertIndices2FeatureVec(self, indices: Dict):
         ret = []
@@ -599,12 +603,12 @@ class DQNAgentGroup(object):
         for _, agent in self.agent_group.items():
             agent.UpdateTargetModel()
     
-    def SavePerformanceData(self, filepath: str):
-        """Save data for all the pair of (space config, performance)."""
+    def SaveMemoryData(self, filepath: str):
+        """Save data for all the object of (space indices, performance)."""
         assert "pth" in filepath.split(".")
         torch.save(self.memory, filepath)
     
-    def LoadPerformanceData(self, filepath: str):
+    def LoadMemoryData(self, filepath: str):
         """From filepath load pth file path.
         
         Returns
@@ -615,4 +619,17 @@ class DQNAgentGroup(object):
         self.memory = torch.load(filepath)
         self.memory_size = len(self.memory)
         print(f"[INFO] Successfully read performance data from the {filepath}.")
+    
+    def SaveScheduleData(self, filepath: str):
+        """ Save AutoSparse schedule config and value. """
+        assert "pth" in filepath.split(".")
+        torch.save(self.schedule_data, filepath)
+    
+    @staticmethod
+    def LoadScheduleData(filepath: str):
+        """ Load schedule config and value. """
+        assert "pth" in filepath.split(".")
+        return torch.load(filepath)
+
+
 

@@ -2,6 +2,7 @@ from typing import Union
 import signal
 import time
 import torch
+import csv
 import datetime
 import random
 import threading
@@ -59,7 +60,7 @@ def Evaluate(
         time_policy=eval_policy
     )
     if res < 0:
-        print("Error ans")
+        # print("Error ans")
         res = float("inf")
     return res
 
@@ -379,7 +380,7 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
     import multiprocessing
     sch.SetThreadNum(multiprocessing.cpu_count())
     if config.get("omp", None) != None:
-        sch.SetParallelChunk(config["omp"])
+        sch.SetParallelChunk(config["omp"][0])
     else:
         sch.SetParallelChunk(32) # Default
 
@@ -440,8 +441,11 @@ def Warm(
                         eval_round, eval_timeout, eval_policy)
                     )
                 if configs_performances[-1] < float("inf"):
-                    agent_group.Record(configs_indicse[i], 
+                    record_valid = agent_group.Record(configs_indicse[i], 
                                        configs_performances[-1], use_sa=False)
+                    if record_valid:
+                        agent_group.AddSchedule(
+                            schedule.GenConfigCommand()[1], configs_performances[-1])
             
             best_per = min(configs_performances)
             print (f"[AutoTune] Warm in {tri} trial best: {best_per:.8f}, "
@@ -472,6 +476,8 @@ def RandomSearching(
     eval_timeout: float = None,
     eval_policy: str = "avg",
     prefix: str = "",
+    save_best_trace: bool = False,
+    save_dirpath: str = "",
     **kwargs
 ):
     """Ramdom search.
@@ -493,7 +499,11 @@ def RandomSearching(
     print(f"eval_policy             ={eval_policy}")
     print()
 
+    best_trace = []
+
     writer = SummaryWriter('runs/random_search_' + prefix)
+    start_time = time.time()
+
     for tri in range(trial):
         local_best = Warm(
             schedule=schedule,
@@ -508,10 +518,22 @@ def RandomSearching(
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
         )
+        best_trace.append([tri, time.time() - start_time, agent_group.Top1()[1]])
         writer.add_scalar('Local Best Score', local_best, tri)
         writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
         current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"Random Search: Current time: {current_time} in trial {tri}", flush=True)
+
+    # Save best trace
+    if save_best_trace:
+        filepath = os.path.join(save_dirpath, prefix, "random_searching_{}".format(
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ))
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Round", "Relative Time (ms)", "Value"])
+            for item in best_trace:
+                writer.writerow(item)
 
     return agent_group.Top1()
 
@@ -529,6 +551,8 @@ def PSearching(
     eval_timeout: float = None,
     eval_policy: str = "avg",
     prefix: str = "",
+    save_best_trace: bool = False,
+    save_dirpath: str = "",
     **kwargs
 ):
     """Only using SA method"""
@@ -575,6 +599,8 @@ def PSearching(
     retired_indices = []
 
     writer = SummaryWriter('runs/p_search_' + prefix)
+    best_trace = []
+    start_time = time.time()
 
     for tri in range(trial):
         # Ramdom get a good point.
@@ -617,8 +643,14 @@ def PSearching(
                         eval_round, eval_timeout, eval_policy)
                     )
                 if configs_performances[-1] < float("inf"):
-                    agent_group.Record(next_indices, configs_performances[-1], 
+                    record_valid = agent_group.Record(next_indices, configs_performances[-1], 
                                        use_sa=True, gamma=0.05)
+                    if record_valid:
+                        agent_group.AddSchedule(
+                            sch.GenConfigCommand()[1], configs_performances[-1])
+        
+        best_trace.append([tri, time.time() - start_time, global_best])
+        
         if len(configs_performances):
             best_per = min(configs_performances)
         else:
@@ -652,6 +684,17 @@ def PSearching(
     
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
+    
+    # Save best trace
+    if save_best_trace:
+        filepath = os.path.join(save_dirpath, prefix, "p_searching_{}".format(
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ))
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Round", "Relative Time (ms)", "Value"])
+            for item in best_trace:
+                writer.writerow(item)
 
     return agent_group.Top1()
 
@@ -669,6 +712,8 @@ def BatchPSearching(
     eval_timeout: float = None,
     eval_policy: str = "avg",
     prefix: str = "",
+    save_best_trace: bool = False,
+    save_dirpath: str = "",
     **kwargs
 ):
     """Only using batch p method"""
@@ -710,6 +755,8 @@ def BatchPSearching(
     retired_indices = []
 
     writer = SummaryWriter('runs/p_search_' + prefix)
+    best_trace = []
+    start_time = time.time()
 
     for tri in range(trial):
         # Random get next batch data
@@ -754,11 +801,16 @@ def BatchPSearching(
                         eval_round, eval_timeout, eval_policy)
                     )
                 if configs_performances[-1] < float("inf"):
-                    agent_group.Record(next_indices, configs_performances[-1], 
+                    record_valid = agent_group.Record(next_indices, configs_performances[-1], 
                                        use_sa=True, gamma=0.05)
+                    if record_valid:
+                        agent_group.AddSchedule(
+                            sch.GenConfigCommand()[1], configs_performances[-1])
             
             if len(configs_performances) == population_size:
                 break
+
+        best_trace.append([tri, time.time() - start_time, global_best])
 
         if len(configs_performances):
             best_per = min(configs_performances)
@@ -822,6 +874,17 @@ def BatchPSearching(
 
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
+    
+    # Save best trace
+    if save_best_trace:
+        filepath = os.path.join(save_dirpath, prefix, "batch_p_searching_{}".format(
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ))
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Round", "Relative Time (ms)", "Value"])
+            for item in best_trace:
+                writer.writerow(item)
 
     return agent_group.Top1()
 
@@ -839,6 +902,8 @@ def SASearching(
     eval_timeout: float = None,
     eval_policy: str = "avg",
     prefix: str = "",
+    save_best_trace: bool = False,
+    save_dirpath: str = "",
     **kwargs
 ):
     """Only using SA method"""
@@ -877,9 +942,11 @@ def SASearching(
     early_stop_count = 0
     retired_indices = []
 
-    writer = SummaryWriter('runs/sa_search_' + prefix)
-
     population_size = int(population_size / len(agent_group.agent_group.keys()) * 2)
+
+    writer = SummaryWriter('runs/sa_search_' + prefix)
+    best_trace = []
+    start_time = time.time()
 
     for tri in range(trial):
         # Random get next batch data
@@ -929,9 +996,14 @@ def SASearching(
                             eval_round, eval_timeout, eval_policy)
                         )
                     if configs_performances[-1] < float("inf"):
-                        agent_group.Record(next_indices, configs_performances[-1], 
+                        record_valid = agent_group.Record(next_indices, configs_performances[-1], 
                                         use_sa=True, gamma=0.05)
+                        if record_valid:
+                            agent_group.AddSchedule(
+                                sch.GenConfigCommand()[1], configs_performances[-1])
 
+        best_trace.append([tri, time.time() - start_time, global_best])
+        
         if len(configs_performances):
             best_per = min(configs_performances)
         else:
@@ -976,6 +1048,17 @@ def SASearching(
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
 
+    # Save best trace
+    if save_best_trace:
+        filepath = os.path.join(save_dirpath, prefix, "sa_{}".format(
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ))
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Round", "Relative Time (ms)", "Value"])
+            for item in best_trace:
+                writer.writerow(item)
+
     return agent_group.Top1()
 
 
@@ -993,6 +1076,8 @@ def QSearching(
     eval_timeout: float = None,
     eval_policy: str = "avg",
     prefix: str = "",
+    save_best_trace: bool = False,
+    save_dirpath: str = "",
     **kwargs
 ):
     """Only using DQN method"""
@@ -1011,7 +1096,9 @@ def QSearching(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=prefix
+            prefix=prefix,
+            save_best_trace = save_best_trace,
+            save_dirpath = save_dirpath
         )
 
 
@@ -1031,6 +1118,8 @@ def QSASearching(
     eval_timeout: float = None,
     eval_policy: str = "avg",
     prefix: str = "",
+    save_best_trace: bool = False,
+    save_dirpath: str = "",
     **kwargs
 ):
     """Using DQN and SA mixing method"""
@@ -1082,6 +1171,9 @@ def QSASearching(
     
     population_size = int(population_size / len(agent_group.agent_group.keys()) * 2)
 
+    best_trace = []
+    start_time = time.time()
+
     for tri in range(trial):
         # Get topk 
         topk_indices_lst, topk_value_lst = agent_group.TopK(population_size, modify=True)
@@ -1131,6 +1223,10 @@ def QSASearching(
                     agent_group.AddData(
                         indices, name, direction, next_indices, reward
                     )
+                    if record_valid:
+                        agent_group.AddSchedule(sch.GenConfigCommand()[1], configs_performances[-1])
+
+        best_trace.append([tri, time.time() - start_time, global_best])
 
         if len(configs_performances):
             best_per = min(configs_performances)
@@ -1189,6 +1285,17 @@ def QSASearching(
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
 
+    # Save best trace
+    if save_best_trace:
+        filepath = os.path.join(save_dirpath, prefix, "random_searching_{}".format(
+            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ))
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Round", "Relative Time (ms)", "Value"])
+            for item in best_trace:
+                writer.writerow(item)
+
     return agent_group.Top1()
 
 
@@ -1204,8 +1311,10 @@ def AutoTune(
     save_agent_model: bool = False,
     save_agent_data: bool = False,
     save_performance_model: bool = False,
-    save_performance_data: bool = False,
-    save_dirpath: str = "",
+    save_memory_data: bool = False,
+    save_schedule_data: bool = False,
+    save_best_trace: bool = False,
+    save_dirpath: str = os.getenv("AUTOSPARSE_HOME"),
     eval_warm_times: int = 10,
     eval_round: int = 50,
     eval_timeout: float = None,
@@ -1238,7 +1347,12 @@ def AutoTune(
     save_agent_data: Dict[str, str]
         Every agent's data which is apper in last searching.
     save_performance_model: bool
-    save_performance_data: bool
+    save_memory_data: bool
+        Save the search process data so that the search can resume.
+    save_schedule_data: bool
+        Save explored space.
+    save_best_trace: bool
+        The convergence history during the search process is saved.
     save_dirpath: str
         All file need to save into the directory path.
     eval_round:
@@ -1328,8 +1442,8 @@ def AutoTune(
     
     if (use_his_agent):
         # Load agent group performance data
-        agent_group.memory = agent_group.LoadPerformanceData(
-            os.path.join(save_dirpath, sparse_prefix, "performance_data.pth")
+        agent_group.memory = agent_group.LoadMemoryData(
+            os.path.join(save_dirpath, sparse_prefix, "memory_data.pth")
         )
         # Load AgenGroup Model and data
         agent_group.LoadAgentModel(os.path.join(save_dirpath, sparse_prefix))
@@ -1354,7 +1468,9 @@ def AutoTune(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=sparse_prefix
+            prefix=sparse_prefix,
+            save_best_trace=save_best_trace,
+            save_dirpath=save_dirpath
         )
     elif method == "p_searching":
         indices, value = PSearching(
@@ -1369,7 +1485,9 @@ def AutoTune(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=sparse_prefix
+            prefix=sparse_prefix,
+            save_best_trace=save_best_trace,
+            save_dirpath=save_dirpath
         )
     elif method == "batch_p_searching":
         indices, value = BatchPSearching(
@@ -1384,7 +1502,9 @@ def AutoTune(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=sparse_prefix
+            prefix=sparse_prefix,
+            save_best_trace=save_best_trace,
+            save_dirpath=save_dirpath
         )
     elif method == "sa_searching":
         indices, value = SASearching(
@@ -1399,7 +1519,9 @@ def AutoTune(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=sparse_prefix
+            prefix=sparse_prefix,
+            save_best_trace=save_best_trace,
+            save_dirpath=save_dirpath
         )
     elif method == "q_searching":
         indices, value = QSearching(
@@ -1415,7 +1537,9 @@ def AutoTune(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=sparse_prefix
+            prefix=sparse_prefix,
+            save_best_trace=save_best_trace,
+            save_dirpath=save_dirpath
         )
     elif method == "q_sa_searching":
         indices, value = QSASearching(
@@ -1433,7 +1557,9 @@ def AutoTune(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
-            prefix=sparse_prefix
+            prefix=sparse_prefix,
+            save_best_trace=save_best_trace,
+            save_dirpath=save_dirpath
         )
     else:
         indices, value = {}, None
@@ -1441,16 +1567,20 @@ def AutoTune(
             "[AutoTune] Error search method."
 
     # Save agent group performance data
-    if save_performance_data:
-        agent_group.SavePerformanceData(
-        os.path.join(save_dirpath, sparse_prefix, "performance_data.pth")
+    if save_memory_data:
+        agent_group.SaveMemoryData(
+            os.path.join(save_dirpath, sparse_prefix, "memory_data.pth")
     )
 
     # Load AgenGroup Model and data
     if (save_agent_model):
-        agent_group.LoadAgentModel(os.path.join(save_dirpath, sparse_prefix))
+        agent_group.SaveAgentModel(os.path.join(save_dirpath, sparse_prefix))
     if (save_agent_data):
-        agent_group.LoadAgentData(os.path.join(save_dirpath, sparse_prefix))
+        agent_group.SaveAgentData(os.path.join(save_dirpath, sparse_prefix))
+    
+    # Save explored space.
+    if save_schedule_data:
+        agent_group.SaveScheduleData(os.path.join(save_dirpath, sparse_prefix, "schedule_data.pth"))
 
     config = agent_group.GetConfigFfromIndices(indices)
     return AddSimpleSchedule(sch.compute_tensor, config)

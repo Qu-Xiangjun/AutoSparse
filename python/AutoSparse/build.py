@@ -58,6 +58,7 @@ class Build(object):
         if isinstance(sch, ComputeTensor):
             sch = CreateSchedule(sch)
         pure_comp_desc, schedules = sch.GenConfigCommand()
+        # print([pure_comp_desc, schedules])
         assert pure_comp_desc == self.pure_comp_desc, \
             "[AutoSparse.Build] New Schedule is different builded computation."
         

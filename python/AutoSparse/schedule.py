@@ -495,11 +495,11 @@ class Schedule(object):
         self.flag_in_loop_schedule = True
         return True
 
-    def SetThreadNum(self, num):
+    def SetThreadNum(self, num: int):
         """Set OpenMP thread number argument."""
         self.thread_num = num
 
-    def SetParallelChunk(self, num):
+    def SetParallelChunk(self, num: int):
         """Set OpenMP parallel chunk size"""
         self.parchunk = num
 

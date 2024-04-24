@@ -105,4 +105,4 @@ def test_sddmm(filename, method: str):
     time = min([func.Run() for i in range(10)])
     print(time)
 
-test_spmm('nemspmm1_16x4_0.csr', "q_searching")
+test_spmm('nemspmm1_16x4_0.csr', "random_searching")
