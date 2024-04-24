@@ -526,8 +526,11 @@ def RandomSearching(
 
     # Save best trace
     if save_best_trace:
-        filepath = os.path.join(save_dirpath, prefix, "random_searching_{}".format(
-            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        filepath = os.path.join(save_dirpath, prefix)
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        filepath = os.path.join(filepath, "random_searching_{}".format(
+            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -687,8 +690,11 @@ def PSearching(
     
     # Save best trace
     if save_best_trace:
-        filepath = os.path.join(save_dirpath, prefix, "p_searching_{}".format(
-            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        filepath = os.path.join(save_dirpath, prefix)
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        filepath = os.path.join(filepath, "p_searching_{}".format(
+            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -877,8 +883,11 @@ def BatchPSearching(
     
     # Save best trace
     if save_best_trace:
-        filepath = os.path.join(save_dirpath, prefix, "batch_p_searching_{}".format(
-            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        filepath = os.path.join(save_dirpath, prefix)
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        filepath = os.path.join(filepath, "batch_p_searching_{}".format(
+            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -1050,8 +1059,11 @@ def SASearching(
 
     # Save best trace
     if save_best_trace:
-        filepath = os.path.join(save_dirpath, prefix, "sa_{}".format(
-            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        filepath = os.path.join(save_dirpath, prefix)
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        filepath = os.path.join(filepath, "sa_searching_{}".format(
+            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -1287,9 +1299,17 @@ def QSASearching(
 
     # Save best trace
     if save_best_trace:
-        filepath = os.path.join(save_dirpath, prefix, "random_searching_{}".format(
-            datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        ))
+        filepath = os.path.join(save_dirpath, prefix)
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        if use_sa:
+            filepath = os.path.join(filepath, "q_sa_searching_{}".format(
+                datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+            ))
+        else:
+            filepath = os.path.join(filepath, "q_searching_{}".format(
+                datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+            ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(["Round", "Relative Time (ms)", "Value"])
@@ -1580,7 +1600,7 @@ def AutoTune(
     
     # Save explored space.
     if save_schedule_data:
-        agent_group.SaveScheduleData(os.path.join(save_dirpath, sparse_prefix, "schedule_data.pth"))
+        agent_group.SaveScheduleData(os.path.join(save_dirpath, sparse_prefix, method+"schedule_data.pth"))
 
     config = agent_group.GetConfigFfromIndices(indices)
     return AddSimpleSchedule(sch.compute_tensor, config)
