@@ -1,0 +1,89 @@
+nohup: ignoring input
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:141: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 11040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+No GPU available, using CPU instead.
+num_row=4096, num_col=8192, num_nonezero=701760
+3 A 1 2 i 4096 0 k 8192 1 B 0 2 k 8192 0 j 128 0 C 0 2 i 4096 0 j 128 0 float
+[AutoTuing] Space size = 2916000000
+[AutoTuing] Origin format run time = 0.86706501
+**************** Start Random Search ****************
+population_size         =100
+trial                   =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 1.87307823, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:14:48 in trial 0
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 6.06778193, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:15:02 in trial 1
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 18.69043732, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:15:11 in trial 2
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 17.73759842, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:15:28 in trial 3
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 14.76813316, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:15:43 in trial 4
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 17.34332466, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:15:50 in trial 5
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 15.01704502, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:15:59 in trial 6
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 17.51801872, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:16:13 in trial 7
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 47.69133377, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:16:23 in trial 8
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 17.48135757, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:16:33 in trial 9
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 18.01982117, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:16:43 in trial 10
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 16.57086754, history best: 1.8730782270431519
+Random Search: Current time: 2024-04-26 04:16:56 in trial 11
+TimeoutError -------------------------
+TimeoutError -------------------------

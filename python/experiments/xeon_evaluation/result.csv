@@ -1,0 +1,27 @@
+name,method,config command,csr_time,best_time
+bcsstk38,random_searching,2 k 2 k0 128 k1 32 i 2 i0 32 i1 128 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 2 k0 0 k1 1 1 j 2 j0 2 j1 64 6 i0 k0 i1 k1 j0 j1 i0 None None 0 32 2,0.4256172478199005,0.43239980936050415
+bcsstk38,p_searching,2 k 2 k0 16 k1 256 i 2 i0 128 i1 32 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 1 k0 0 k1 1 1 j 2 j0 4 j1 32 6 i0 k0 k1 i1 j0 j1 i0 j1 k0 16 32 2,0.8567748069763184,0.37389084696769714
+mhd4800a,random_searching,2 k 2 k0 128 k1 32 i 2 i0 512 i1 8 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 2 k0 1 k1 1 1 j 2 j0 4 j1 32 6 i0 i1 k0 j0 k1 j1 i0 j1 None 0 32 4,1.349674105644226,8.145185470581055
+mhd4800a,p_searching,2 k 2 k0 32 k1 128 i 2 i0 64 i1 64 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 4 j1 32 6 i0 i1 k0 k1 j0 j1 i0 None i1 64 32 1,0.2732197940349579,0.16809788346290588
+conf5_0-4x4-18,random_searching,2 k 2 k0 512 k1 4 i 2 i0 2048 i1 1 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 1 k0 1 k1 2 1 j 2 j0 1 j1 128 6 i0 k0 i1 k1 j0 j1 i0 j1 j0 1 32 16,0.16477978229522705,0.23888230323791504
+conf5_0-4x4-18,p_searching,2 k 2 k0 8 k1 256 i 2 i0 128 i1 16 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 0 k1 1 1 j 2 j0 16 j1 8 6 i0 k0 i1 k1 j0 j1 i0 j1 j0 16 32 2,0.19834570586681366,0.1973416656255722
+cca,random_searching,2 k 2 k0 128 k1 256 i 2 i0 8192 i1 4 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 1 k0 1 k1 2 1 j 2 j0 2 j1 64 6 i0 k0 k1 i1 j0 j1 i0 j1 None 0 32 64,4.115453243255615,2.265608787536621
+cca,p_searching,2 k 2 k0 128 k1 256 i 2 i0 8192 i1 4 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 1 k0 2 k1 3 1 j 2 j0 8 j1 16 6 i0 i1 k0 k1 j0 j1 i0 None None 0 32 128,2.823079824447632,1.4415665864944458
+Trefethen_20000,random_searching,2 k 2 k0 16384 k1 1 i 2 i0 256 i1 64 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 2 k0 4 k1 4 1 j 2 j0 1 j1 128 6 i0 i1 k0 j0 k1 j1 i0 j1 j0 1 32 2,0.8122956156730652,1.0542783737182617
+Trefethen_20000,p_searching,2 k 2 k0 128 k1 128 i 2 i0 128 i1 128 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 0 k0 2 k1 3 1 j 2 j0 2 j1 64 6 i0 i1 k0 k1 j0 j1 i0 j1 None 0 32 1,0.8243693709373474,0.973410964012146
+pf2177,random_searching,2 k 2 k0 64 k1 128 i 2 i0 4096 i1 2 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 0 k0 2 k1 2 1 j 2 j0 128 j1 1 6 i0 i1 k0 k1 j0 j1 i0 None None 0 32 2,1.173100233078003,1.4474860429763794
+pf2177,p_searching,2 k 2 k0 32 k1 256 i 2 i0 256 i1 32 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 0 k1 1 1 j 2 j0 1 j1 128 6 i0 j0 k0 i1 k1 j1 i0 None None 0 32 2,1.2373305559158325,1.3208376169204712
+msc10848,random_searching,2 k 2 k0 128 k1 64 i 2 i0 256 i1 32 1 A 4 i0 k0 k1 i1 A 4 i0 0 i1 1 k0 1 k1 2 1 j 2 j0 8 j1 16 6 i0 k0 k1 i1 j0 j1 i0 None None 0 32 1,1.4091274738311768,1.1565221548080444
+msc10848,p_searching,2 k 2 k0 64 k1 128 i 2 i0 256 i1 32 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 1 k1 1 1 j 2 j0 4 j1 32 6 i0 k0 i1 j0 k1 j1 i0 j1 j0 4 32 1,1.4251071214675903,1.0557737350463867
+cfd1,random_searching,2 k 2 k0 1024 k1 64 i 2 i0 2048 i1 32 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 k0 i1 k1 j0 j1 i0 j1 None 0 32 4,3.6270668506622314,3.5324392318725586
+cfd1,p_searching,2 k 2 k0 16384 k1 4 i 2 i0 256 i1 256 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 1 k0 1 k1 1 1 j 2 j0 8 j1 16 6 i0 k0 k1 i1 j0 j1 i0 j1 j0 8 32 1,3.501661539077759,3.39705491065979
+net100,random_searching,2 k 2 k0 64 k1 256 i 2 i0 1024 i1 16 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 2 1 j 2 j0 16 j1 8 6 i0 k0 i1 k1 j0 j1 i0 None None 0 32 8,3.1799449920654297,2.8696365356445312
+net100,p_searching,2 k 2 k0 64 k1 256 i 2 i0 4096 i1 4 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 2 j1 64 6 i0 k0 i1 j0 k1 j1 i0 j1 None 0 32 8,3.322690010070801,2.7015161514282227
+name,method,config command,csr_time,best_time
+cca,q_sa_searching,2 i 2 i0 1024 i1 32 k 2 k0 256 k1 128 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 0 k0 1 k1 2 1 j 2 j0 1 j1 128 6 i0 i1 k0 j0 k1 j1 i0 None None 0 32 16,2.0221028327941895,1.783754587173462
+name,method,config command,csr_time,best_time
+cca,q_sa_searching,2 i 2 i0 128 i1 256 k 2 k0 256 k1 128 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 1 k0 2 k1 3 1 j 2 j0 4 j1 32 6 i0 i1 k0 k1 j0 j1 i0 None j1 32 32 2,1.9497711658477783,1.4809249639511108
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+cca,q_sa_searching,2 k 2 k0 32768 k1 1 i 2 i0 128 i1 256 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 1 k0 1 k1 0 1 j 2 j0 4 j1 32 6 i0 i1 j0 k0 j1 k1 i0 None None 0 32 4,2.5553112030029297,1.7453709840774536
