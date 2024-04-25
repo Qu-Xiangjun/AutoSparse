@@ -629,7 +629,10 @@ class DQNAgentGroup(object):
     def LoadScheduleData(filepath: str):
         """ Load schedule config and value. """
         assert "pth" in filepath.split(".")
-        return torch.load(filepath)
+        data = torch.load(filepath)
+        data_val = [element[1] for element in data]
+        idx = torch.argmin(torch.tensor(data_val))
+        return data, data[idx][0], data[idx][1]
 
 
 
