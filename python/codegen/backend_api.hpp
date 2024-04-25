@@ -174,7 +174,7 @@ public:
             else
             {
                 int len = 1;
-                for (int j = 0; j < axes_count; ++j) len *= tensor_format[j].dimension;
+                for (int j = 0; j < axes_count; ++j) len *= ceil_power_of_two(tensor_format[j].dimension);
                 vector<float> tensor_data(len, is_lhs ? 0 : 1);
                 M.add_tensor(tensor_name, tensor_format, tensor_data, is_lhs);
             }

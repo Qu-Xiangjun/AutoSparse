@@ -130,4 +130,8 @@ bool executeCommand(const string cmd) {
     return excution_success;
 }
 
+int ceil_power_of_two(int num) {
+    return int(pow(2, ceil(log2(num))));
+}
+
 #endif // UTILS_HPP
