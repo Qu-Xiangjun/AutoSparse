@@ -2,9 +2,11 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
+platform = "xeon"
+
 # 定义CSV文件所在的文件夹路径
 autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
-folder_path = os.path.join(autosparse_prefix, "python", "experiments", "evaluation", "cca")
+folder_path = os.path.join(autosparse_prefix, "python", "experiments", platform+"_evaluation", "cca")
 
 # 获取文件夹下所有的CSV文件
 csv_files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
