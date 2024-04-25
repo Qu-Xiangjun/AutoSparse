@@ -25,3 +25,6 @@ name,method,config command,csr_time,best_time
 name,method,config command,csr_time,best_time
 name,method,config command,csr_time,best_time
 cca,q_sa_searching,2 k 2 k0 32768 k1 1 i 2 i0 128 i1 256 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 1 k0 1 k1 0 1 j 2 j0 4 j1 32 6 i0 i1 j0 k0 j1 k1 i0 None None 0 32 4,2.5553112030029297,1.7453709840774536
+nemspmm1_16x4_0,random_searching,2 i 2 i0 512 i1 8 k 2 k0 8192 k1 1 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 2 k0 2 k1 4 1 j 2 j0 4 j1 32 6 i0 k0 k1 i1 j0 j1 i0 j1 None 0 32 2,0.8588842749595642,0.7335827350616455
+nemspmm1_16x4_0,p_searching,2 i 2 i0 256 i1 16 k 2 k0 256 k1 32 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 k0 i1 k1 j0 j1 i0 None None 0 32 2,0.8885558247566223,0.7453092932701111
+nemspmm1_16x4_0,q_sa_searching,2 i 2 i0 256 i1 16 k 2 k0 256 k1 32 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 128 j1 1 6 i0 k0 i1 k1 j0 j1 i0 j1 None 0 32 2,0.8937985897064209,0.8122812509536743
