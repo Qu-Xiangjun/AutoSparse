@@ -233,13 +233,13 @@ def CreateSDDMMSchedule(ct: ComputeTensor, superschedule: str):
     return sch
 
 def RunSchedule(func: Build, sch: Schedule):
-    value = func.Run(sch, 100, 100)
-    if value < 0:
-        print('ERROR ans')
-        return float('inf')
-    return value
-    # return auto_tune.Evaluate(sch, func, 10, 100, eval_timeout=math.ceil(
-    #         func.origin_time * 2 * (10 + 100) / 1000))
+    # value = func.Run(sch, 10, 50)
+    # if value < 0:
+    #     print('ERROR ans')
+    #     return float('inf')
+    # return value
+    return auto_tune.Evaluate(sch, func, 10, 50, eval_timeout=math.ceil(
+            func.origin_time * 2 * (10 + 50) / 1000))
 
 class MemEntry(object):
     def __init__(self, id, value):
@@ -511,7 +511,9 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
     return memory[0].id, schedules[memory[0].id][1], memory[0].value
 
 
-def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_number = 100, trials = 500, k = 60):
+def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", 
+          warm_number = 100, trials = 500, k = 60, 
+          save_res = False, save_dirpath: str = ""):
     print(f"[WACO ANNS] Searching task {task_name} for matrix {matrix_filename}"
         f" with warm_number = {warm_number}, trials = {trials} and k = {k}")
 
@@ -588,6 +590,9 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
 
     global_best_value = memory[0].value
     cur_id = memory[0].id
+
+    best_trace = []
+    start_time = time.time()
     
     for tri in range(trials):
         if len(memory) == 0:
@@ -630,6 +635,10 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
             global_best_value = best_per
             cur_id = labels.tolist()[0][np.argmin(values)]
         
+        best_trace.append(
+            [tri, time.time() - start_time, global_best_value]
+        )
+        
         # if early_stop_cnt >= early_stop:
         #     print(f"[WACO ANNS] Early stop in reapte {early_stop} times.")
         #     break
@@ -639,7 +648,25 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
 
     for item in retiered_item:
         heapq.heappush(memory, item)
+    
+    # Save best trace
+    if save_res:
+        filepath = save_dirpath
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        filepath = os.path.join(filepath, "anns_searching_{}".format(
+            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+        ))
+        with open(filepath, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Round", "Relative Time (ms)", "Value"])
+            for item in best_trace:
+                writer.writerow(item)
         
+        # save all the point explored.
+        schedule_data = [[schedules[int(item.id)][1], item.value]for item in memory]
+        torch.save(schedule_data, filepath)
+
     return memory[0].id, schedules[memory[0].id][1], memory[0].value
 
 def test_spmm():
@@ -678,19 +705,36 @@ def test_spmm():
 
 if __name__ == "__main__":
     waco_prefix = os.getenv("AUTOSPARSE_HOME")
+    platform = "xeon" # epyc
+
     matrix_total_file = os.path.join(waco_prefix, "dataset", "total.txt")
-    task_name = "SpMM" # "SpMV" "SDDMM"
-    # with open(matrix_total_file) as f :
-    #     matrix_names = f.read().splitlines()
-    # for name in matrix_names:
-    #     result = ANNS(task_name, name + '.csr', 100, 500, 20)
-    #     res_f = open(os.path.join(waco_prefix, "baseline", "waco", "result.txt"), 'w')
-    #     string = "{0} {1} {2} {3} {4} \n".format(
-    #         task_name, name, result[0], result[1], result[2]
-    #     )
-    #     res_f.write(string)
-    #     res_f.close()
-    id, schedules, value = ANNS3(task_name, "Trec6_16x16_9.csr")
-    print(schedules + f" {value:.8f}")
+    with open(matrix_total_file) as f:
+        matrix_names = f.read().splitlines()
+
+    for task_name in ["SpMM", "SpMV", "SDDMM"]:
+        for name in matrix_names:
+            save_dirpath_prefix = os.path.join(
+                waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
+            )
+            if not os.path.exists(save_dirpath_prefix):
+                os.makedirs(save_dirpath_prefix)
+
+            result = ANNS3(
+                task_name, name + '.csr', 100, 150, 60, 
+                save_res=True, 
+                save_dirpath=save_dirpath_prefix
+            )
+            res_f = open(os.path.join(waco_prefix, "baseline", "waco", "result.txt"), 'w')
+            string = "{0} {1} {2} {3} {4} \n".format(
+                task_name, name, result[0], result[1], result[2]
+            )
+            res_f.write(string)
+            res_f.close()
+
+
+    # id, schedules, value = ANNS3(task_name, "Trec6_16x16_9.csr")
+    # print(schedules + f" {value:.8f}")
 
     # test_spmm()
+
+# nohup python evaluation.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
