@@ -194,6 +194,10 @@ class DQNAgent(object):
         assert direction_pos >= 0
         self.memory.append((pre_state, direction_pos, post_state, reward))
         self.memory_size += 1
+
+    def ClearMemory(self):
+        self.memory.clear()
+        self.memory_size = 0
     
     def GetModelPath(self):
         return self.model_path
@@ -290,8 +294,9 @@ class DQNAgentGroup(object):
         # Keep track of the data as it appears and used by heap to get topK.
         # TODO: Record all the data as it appears will take too many memory?
         # TODO: But note the list will be used to create test data set?
-        self.memory = []
+        self.memory: List[MemEntry] = []
         self.memory_size = 0
+        self.retired_memory: List[MemEntry] = []
         self.visits_set = set()
         self.schedule_data = [] # [schedule_command, value]
     
@@ -555,6 +560,17 @@ class DQNAgentGroup(object):
         else:
             return MemEntry({}, float("inf"))
     
+    def ClearMemory(self):
+        for _, agent in self.agent_group.items():
+            agent.ClearMemory()
+        self.retired_memory.extend(self.memory)
+        self.memory = []
+        self.memory_size = 0
+    
+    def RecoverMemory(self):
+        self.memory.extend(self.retired_memory)
+        self.retired_memory = []
+    
     def LoadorCreateAgentModel(self):
         for _, agent in self.agent_group.items():
             agent.LoadOrCreateModel()
@@ -606,6 +622,7 @@ class DQNAgentGroup(object):
     def SaveMemoryData(self, filepath: str):
         """Save data for all the object of (space indices, performance)."""
         assert "pth" in filepath.split(".")
+        self.RecoverMemory()
         torch.save(self.memory, filepath)
     
     def LoadMemoryData(self, filepath: str):

@@ -1285,84 +1285,38 @@ def QSASearching(
             early_stop_count = 0
         train_cnt += 1
 
-        # Add random data or P_search
-        if (tri + 1) % update_target_gap == 0:
-            cnt = random.random()
-            if cnt < 0.5:
-                local_best = Warm(
-                    schedule = schedule,
-                    func = func,
-                    agent_group=agent_group,
-                    use_performance_model=use_performance_model,
-                    warm_trial=1,
-                    population_size=warm_population_size,
-                    repeat_count=0,
-                    eval_warm_times = eval_warm_times,
-                    eval_round = eval_round,
-                    eval_timeout = eval_timeout,
-                    eval_policy = eval_policy,
-                )
-                global_best = min(local_best, global_best)
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                print(f"Try Random Search: Current time: {current_time} in trial {tri}", flush=True)
-            else:
-                top_indices, top_value = agent_group.TopRandom(gamma=0.5)
-                next_data_lst = agent_group.SelectionFull(
-                    top_indices, top_value, no_repeat=True
-                )
-                configs_performances_help = [] 
-                for idx, data in enumerate(next_data_lst):
-                    indices, _, name, direction, next_indices = data
-                    sch = None
-                    indices_saw_lst = [str(indices), str(indices)]
-                    # Find a ok schedule
-                    while True:
-                        next_config = agent_group.GetConfigFfromIndices(next_indices)
-                        try:
-                            sch = AddSimpleSchedule(schedule.compute_tensor, next_config)
-                            break
-                        except ValueError:
-                            # Go on in this direction to get next entry
-                            sch = None
-                            next_indices = agent_group.SelectOneAction(
-                                next_indices, name, direction, no_repeat=True)
-                            if next_indices == None or str(next_indices) in indices_saw_lst: # repeat 
-                                break
-                            else:
-                                indices_saw_lst.append(str(next_indices))
-                                continue
-                    
-                    # Evaluation
-                    if sch is not None:
-                        if use_performance_model:
-                            configs_performances_help.append(float('inf')) # Future todo.
-                        else:
-                            configs_performances_help.append(
-                                Evaluate(sch, func, eval_warm_times,
-                                eval_round, eval_timeout, eval_policy)
-                            )
-                        if configs_performances_help[-1] < float("inf"):
-                            record_valid = agent_group.Record(next_indices, configs_performances_help[-1], 
-                                            use_sa=True, gamma=0.05)
-                            if record_valid:
-                                agent_group.AddSchedule(
-                                    sch.GenConfigCommand()[1], configs_performances_help[-1])
-                if len(configs_performances):
-                    local_best = min(configs_performances)
-                else:
-                    local_best = float("inf")
-                global_best = min(local_best, global_best)
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                print(f"Try P Search: Current time: {current_time} in trial {tri}", flush=True)
+        # Restart search from other random point.
+        if early_stop_count >= 15:
+            print("[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.")
+            agent_group.ClearMemory()
 
-        # Reload data
-        if (tri + 1) % 10 == 0 and len(retired_indices):
-            retired_indices = sorted(retired_indices, key=lambda x: x[1])
-            added_indices = retired_indices[:population_size]
-            retired_indices = retired_indices[population_size:]
-            for idx, item in enumerate(added_indices):
-                if (idx / (len(retired_indices)+0.001)) < random.random():
-                    agent_group.Record(item[0], item[1], use_sa=False)
+            local_best = Warm(
+                schedule = schedule,
+                func = func,
+                agent_group=agent_group,
+                use_performance_model=use_performance_model,
+                warm_trial=warm_trial,
+                population_size=warm_population_size,
+                repeat_count=warm_trial,
+                eval_warm_times = eval_warm_times,
+                eval_round = eval_round,
+                eval_timeout = eval_timeout,
+                eval_policy = eval_policy,
+            )
+            global_best = min(local_best, global_best)
+            current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f"Try Random Search: Current time: {current_time} in trial {tri}", flush=True)
+
+            early_stop_count = 0
+
+        # # Reload data
+        # if (train_cnt + 1) % update_target_gap == 0 and len(retired_indices):
+        #     retired_indices = sorted(retired_indices, key=lambda x: x[1])
+        #     added_indices = retired_indices[:population_size]
+        #     retired_indices = retired_indices[population_size:]
+        #     for idx, item in enumerate(added_indices):
+        #         if (idx / (len(retired_indices)+0.001)) < random.random():
+        #             agent_group.Record(item[0], item[1], use_sa=False)
 
 
     for item in retired_indices:
@@ -1386,6 +1340,8 @@ def QSASearching(
             writer.writerow(["Round", "Relative Time (ms)", "Value"])
             for item in best_trace:
                 writer.writerow(item)
+
+    agent_group.RecoverMemory()
 
     return agent_group.Top1()
 
