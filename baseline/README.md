@@ -8,11 +8,17 @@ The next topics are config every baseline env.
 cd $AUTOSPARSE_HOME/baseline/waco/hnswlib
 pip install .
 ```
+
+1. Get Dataset from WACO 
+Get pretrained dataset for WACO in https://www.dropbox.com/s/mos4jtma4jmqkje/pretrained.zip?dl=0.
+Move `CollectedData` folder into the corresponding position.
+
+
 1. building a KNN graph
 ```bash
 python $AUTOSPARSE_HOME/baseline/waco/buildKNN.py
 ```
-2. search using ANNS
+1. search using ANNS
 ```bash
 python $AUTOSPARSE_HOME/baseline/waco/ANNSearch.py
 ```
