@@ -535,7 +535,12 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
     else:
         assert (False, "Error task name.")
     net = net.to(device)
-    net.load_state_dict(torch.load(os.path.join(waco_prefix, task_name, 'resnet.pth')))
+    pretrain_static_dict = torch.load(os.path.join(waco_prefix, task_name, 'resnet.pth'))
+    new_state_dict = {}
+    for key, value in pretrain_static_dict.items():
+        if key in net.state_dict():
+            new_state_dict[key] = value
+    net.load_state_dict(new_state_dict)
     net.eval()
 
     embeddings = [] 
