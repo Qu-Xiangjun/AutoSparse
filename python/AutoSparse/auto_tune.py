@@ -1286,7 +1286,7 @@ def QSASearching(
         train_cnt += 1
 
         # Restart search from other random point.
-        if early_stop_count >= 15:
+        if early_stop_count >= 10:
             print("[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.")
             agent_group.ClearMemory()
 
