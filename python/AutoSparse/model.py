@@ -165,6 +165,8 @@ class DQNAgent(object):
         return self.subspace.NextEntry(index, direction)
 
     def Train(self, save_model = True):
+        if len(self.memory_size == 0):
+            return
         batch_size = min(self.memory_size, self.train_batch_size)
         # TODO: Can there only store least recently recorded data?
         batch_data = random.sample(self.memory, k = batch_size)
