@@ -14,11 +14,11 @@ Get pretrained dataset for WACO in https://www.dropbox.com/s/mos4jtma4jmqkje/pre
 Move `CollectedData` folder into the corresponding position.
 
 
-1. building a KNN graph
+2. building a KNN graph
 ```bash
 python $AUTOSPARSE_HOME/baseline/waco/buildKNN.py
 ```
-1. search using ANNS
+3. search using ANNS
 ```bash
 python $AUTOSPARSE_HOME/baseline/waco/ANNSearch.py
 ```
