@@ -1,0 +1,8 @@
+nohup: ignoring input
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:141: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 11040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+No GPU available, using CPU instead.
+num_row=47072, num_col=47072, num_nonezero=2336898
+3 A 1 2 i 47072 0 k 47072 1 B 0 2 k 47072 0 j 128 0 C 0 2 i 47072 0 j 128 0 float
+[AutoTuing] Space size = 2916000000
+[AutoTuing] Origin format run time = 3.39910793

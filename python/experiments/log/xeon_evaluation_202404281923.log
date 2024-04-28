@@ -1,0 +1,108 @@
+nohup: ignoring input
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:141: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 11040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+No GPU available, using CPU instead.
+num_row=4800, num_col=4800, num_nonezero=102252
+3 A 1 2 i 4800 0 k 4800 1 B 0 2 k 4800 0 j 128 0 C 0 2 i 4800 0 j 128 0 float
+[AutoTuing] Space size = 2916000000
+[AutoTuing] Origin format run time = 0.25065678
+**************** Start Q Search ****************
+population_size         =100
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 50 data.
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 3.09286690, history best: 3.092866897583008
+TimeoutError -------------------------
+[AutoTune] Warm in 1 trial best: 11.84560871, history best: 3.092866897583008
+[AutoTune] Warm in 2 trial best: 4.78712511, history best: 3.092866897583008
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-04-28 19:24:29 in 0 trial best: 2.20636201, history best: 3.092866897583008
+[cur/total]=[1/5], loss = 5528.5220
+[cur/total]=[2/5], loss = 5173.5566
+[cur/total]=[3/5], loss = 4827.8408
+[cur/total]=[4/5], loss = 4496.3555
+[cur/total]=[5/5], loss = 4181.0317
+[cur/total]=[1/5], loss = 748.7172
+[cur/total]=[2/5], loss = 667.4516
+[cur/total]=[3/5], loss = 591.8778
+[cur/total]=[4/5], loss = 523.0956
+[cur/total]=[5/5], loss = 461.1811
+[cur/total]=[1/5], loss = 5345.8926
+[cur/total]=[2/5], loss = 5011.9697
+[cur/total]=[3/5], loss = 4688.1367
+[cur/total]=[4/5], loss = 4378.9600
+[cur/total]=[5/5], loss = 4085.9956
+[cur/total]=[1/5], loss = 4040.2004
+[cur/total]=[2/5], loss = 3775.7100
+[cur/total]=[3/5], loss = 3519.9822
+[cur/total]=[4/5], loss = 3276.5137
+[cur/total]=[5/5], loss = 3046.3694
+[cur/total]=[1/5], loss = 7324.5356
+[cur/total]=[2/5], loss = 7049.0620
+[cur/total]=[3/5], loss = 6775.8892
+[cur/total]=[4/5], loss = 6508.2593
+[cur/total]=[5/5], loss = 6247.5088
+[cur/total]=[1/5], loss = 3301.7375
+[cur/total]=[2/5], loss = 3122.3633
+[cur/total]=[3/5], loss = 2946.9094
+[cur/total]=[4/5], loss = 2777.8127
+[cur/total]=[5/5], loss = 2616.0537
+[cur/total]=[1/5], loss = 27475.3242
+[cur/total]=[2/5], loss = 26237.3711
+[cur/total]=[3/5], loss = 25014.4199
+[cur/total]=[4/5], loss = 23823.3828
+[cur/total]=[5/5], loss = 22669.8457
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-04-28 19:25:17 in 1 trial best: 0.58040643, history best: 2.206362009048462
+[cur/total]=[1/5], loss = 3594.1599
+[cur/total]=[2/5], loss = 3321.4885
+[cur/total]=[3/5], loss = 3068.2124
+[cur/total]=[4/5], loss = 2833.6074
+[cur/total]=[5/5], loss = 2616.6240
+[cur/total]=[1/5], loss = 1336.3428
+[cur/total]=[2/5], loss = 1187.1819
+[cur/total]=[3/5], loss = 1057.6284
+[cur/total]=[4/5], loss = 945.4029
+[cur/total]=[5/5], loss = 847.6315
+[cur/total]=[1/5], loss = 14125.2324
+[cur/total]=[2/5], loss = 12881.2764
+[cur/total]=[3/5], loss = 11724.0518
+[cur/total]=[4/5], loss = 10657.2090
+[cur/total]=[5/5], loss = 9678.3779
+[cur/total]=[1/5], loss = 2887.9160
+[cur/total]=[2/5], loss = 2625.5713
+[cur/total]=[3/5], loss = 2394.6382
+[cur/total]=[4/5], loss = 2192.3594
+[cur/total]=[5/5], loss = 2014.9139
+[cur/total]=[1/5], loss = 4129.1973
+[cur/total]=[2/5], loss = 3999.5596
+[cur/total]=[3/5], loss = 3874.9370
+[cur/total]=[4/5], loss = 3755.2158
+[cur/total]=[5/5], loss = 3640.1465
+[cur/total]=[1/5], loss = 2688.7883
+[cur/total]=[2/5], loss = 2559.6248
+[cur/total]=[3/5], loss = 2436.3472
+[cur/total]=[4/5], loss = 2319.1108
+[cur/total]=[5/5], loss = 2207.7786
+[cur/total]=[1/5], loss = 22607.3320
+[cur/total]=[2/5], loss = 21652.7305
+[cur/total]=[3/5], loss = 20726.1582
+[cur/total]=[4/5], loss = 19827.7676
+[cur/total]=[5/5], loss = 18957.3691
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-04-28 19:26:04 in 2 trial best: 0.20519216, history best: 0.5804064273834229

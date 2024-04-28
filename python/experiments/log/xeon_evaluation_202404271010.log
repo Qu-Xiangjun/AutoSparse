@@ -1,0 +1,49 @@
+nohup: ignoring input
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:141: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 11040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+No GPU available, using CPU instead.
+num_row=8032, num_col=8032, num_nonezero=355460
+3 A 1 2 i 8032 0 k 8032 1 B 0 2 k 8032 0 j 128 0 C 0 2 i 8032 0 j 128 0 float
+[AutoTuing] Space size = 2916000000
+[AutoTuing] Origin format run time = 0.41802236
+**************** Start Q Search ****************
+population_size         =100
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 50 data.
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 16.94717598, history best: 16.947175979614258
+TimeoutError -------------------------
+[AutoTune] Warm in 1 trial best: 8.11810112, history best: 8.118101119995117
+[AutoTune] Warm in 2 trial best: 45.18321609, history best: 8.118101119995117
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-04-27 10:11:22 in 0 trial best: 0.65417290, history best: 8.118101119995117
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-04-27 10:12:01 in 1 trial best: 0.44425654, history best: 0.6541728973388672
+Traceback (most recent call last):
+  File "/home/qxj/AutoSparse/python/experiments/evaluation.py", line 79, in <module>
+    Evaluation(platform = "xeon")
+  File "/home/qxj/AutoSparse/python/experiments/evaluation.py", line 66, in Evaluation
+    sch = AutoTune(C, method = method, population_size=100, trial = 100,
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 1593, in AutoTune
+    indices, value = QSASearching(
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 1278, in QSASearching
+    agent_group.Train(save_model=False)
+  File "/home/qxj/AutoSparse/python/AutoSparse/model.py", line 515, in Train
+    agent.Train(save_model)
+  File "/home/qxj/AutoSparse/python/AutoSparse/model.py", line 168, in Train
+    if len(self.memory_size == 0):
+TypeError: object of type 'bool' has no len()
