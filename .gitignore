@@ -6,6 +6,6 @@ taco_kernel.so
 bin/
 origin_dataset/*.csr
 build/
-CollectedData/
+CollectedData*
 hnsw_schedule.bin
 *.npy
