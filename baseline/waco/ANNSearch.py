@@ -49,7 +49,7 @@ def SpMMTask(filename):
     i = Axis(int(num_row), ModeType.DENSE, "i")
     k = Axis(int(num_col), ModeType.COMPRESSED, "k")
     k_ = Axis(int(num_col), ModeType.DENSE, "k")
-    j = Axis(256, ModeType.DENSE, "j")
+    j = Axis(128, ModeType.DENSE, "j")
     """Tensor declaration"""
     A = Tensor((i, k), is_sparse=True)
     B = Tensor((k_, j), is_sparse=False)
@@ -74,8 +74,8 @@ def SDDMMTask(filename):
     i = Axis(int(num_row), ModeType.DENSE, "i")
     j = Axis(int(num_col), ModeType.COMPRESSED, "j")
     i_ = Axis(int(num_row), ModeType.DENSE, "i")
-    k_ = Axis(256, ModeType.DENSE, "k")
-    k__ = Axis(256, ModeType.DENSE, "k")
+    k_ = Axis(128, ModeType.DENSE, "k")
+    k__ = Axis(128, ModeType.DENSE, "k")
     j_ = Axis(int(num_col), ModeType.DENSE, "j")
     """Tensor declaration"""
     A = Tensor((i, j), is_sparse=True)
@@ -218,7 +218,7 @@ def CreateSDDMMSchedule(ct: ComputeTensor, superschedule: str):
     sch.FormatSplit('k', [math.ceil(sch.all_axes['k'][0].size / k1s) , k1s])
     format_reordered = []
     for item in order:
-        if 'i' in item or 'j' in order:
+        if 'i' in item or 'j' in item:
             format_reordered.append(item)
     for tensor in sch.all_tensors_bk:
         if tensor.is_sparse == True:
@@ -299,7 +299,7 @@ def ANNS(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numbe
         st, func = SpMMTask(matrix_filename)
         createScheuleFunc = CreateSpMMSchedule
     elif task_name == "SDDMM":
-        st, func = SpMMTask(matrix_filename)
+        st, func = SDDMMTask(matrix_filename)
         createScheuleFunc = CreateSDDMMSchedule
     else:
         assert False, "Error task name."
@@ -427,7 +427,7 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
         st, func = SpMMTask(matrix_filename)
         createScheuleFunc = CreateSpMMSchedule
     elif task_name == "SDDMM":
-        st, func = SpMMTask(matrix_filename)
+        st, func = SDDMMTask(matrix_filename)
         createScheuleFunc = CreateSDDMMSchedule
     else:
         assert False, "Error task name."
@@ -568,7 +568,7 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
         st, func = SpMMTask(matrix_filename)
         createScheuleFunc = CreateSpMMSchedule
     elif task_name == "SDDMM":
-        st, func = SpMMTask(matrix_filename)
+        st, func = SDDMMTask(matrix_filename)
         createScheuleFunc = CreateSDDMMSchedule
     else:
         assert False, "Error task name."
@@ -722,7 +722,7 @@ if __name__ == "__main__":
     with open(matrix_total_file) as f:
         matrix_names = f.read().splitlines()
 
-    for task_name in ["SpMV", "SDDMM"]: # "SpMM"
+    for task_name in [ "SDDMM"]: # "SpMM" "SpMV",
         for name in matrix_names:
             save_dirpath_prefix = os.path.join(
                 waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
