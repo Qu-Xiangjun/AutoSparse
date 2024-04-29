@@ -44,3 +44,19 @@ bcsstk38,q_sa_searching,2 i 2 i0 256 i1 16 k 2 k0 32 k1 128 1 A 4 i0 i1 k0 k1 A 
 mhd4800a,q_sa_searching,2 i 2 i0 256 i1 16 k 2 k0 32 k1 128 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 8 j1 16 6 i0 k0 i1 j0 k1 j1 i0 j1 i1 16 128 1,0.27666065096855164,0.21081232
 conf5_0-4x4-18,q_sa_searching,2 i 2 i0 256 i1 8 k 2 k0 8 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 i1 k0 j0 k1 j1 i0 None None 0 128 1,0.29477888345718384,0.18066619999999997
 cca,q_sa_searching,2 i 2 i0 1024 i1 32 k 2 k0 128 k1 256 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 1 k0 2 k1 4 1 j 2 j0 1 j1 128 6 i0 k0 k1 i1 j0 j1 i0 None None 0 128 4,0.8722182512283325,4.364586
+name,method,config command,csr_time,best_time
+Trefethen_20000,q_sa_searching,2 i 2 i0 2048 i1 8 k 2 k0 64 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 0 k0 2 k1 2 1 j 2 j0 8 j1 16 6 i0 i1 k0 k1 j0 j1 i0 None None 0 128 4,1.0655475854873657,0.8682228599999999
+pf2177,q_sa_searching,2 i 2 i0 8192 i1 1 k 2 k0 32 k1 256 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 2 k0 0 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 None k0 32 128 8,1.6786895990371704,1.28177222
+msc10848,q_sa_searching,2 i 2 i0 8192 i1 1 k 2 k0 32 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 2 k0 2 k1 1 1 j 2 j0 32 j1 4 6 i0 i1 k0 j0 k1 j1 i0 j1 None 0 128 8,3.0748136043548584,1.7646957
+cfd1,q_sa_searching,2 i 2 i0 4096 i1 16 k 2 k0 256 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 i1 k0 j0 k1 j1 i0 j1 None 0 128 4,3.4327681064605713,3.8321182000000005
+net100,q_sa_searching,2 i 2 i0 512 i1 32 k 2 k0 64 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 2 k0 4 k1 3 1 j 2 j0 32 j1 4 6 i0 i1 k0 j0 k1 j1 i0 j1 None 0 128 1,3.855355978012085,3.21967326
+vanbody,q_sa_searching,2 i 2 i0 8192 i1 4 k 2 k0 128 k1 256 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 1 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 k0 i1 j0 k1 j1 i0 None j0 16 128 2,4.33130407333374,3.72051262
+net150,q_sa_searching,2 i 2 i0 32768 i1 1 k 2 k0 128 k1 256 1 A 4 i0 k0 k1 i1 A 4 i0 0 i1 3 k0 1 k1 1 1 j 2 j0 8 j1 16 6 i0 k0 k1 i1 j0 j1 i0 None None 0 128 16,6.050638198852539,4.7725984
+Chevron3_4x16_1,q_sa_searching,2 i 2 i0 8192 i1 16 k 2 k0 32 k1 256 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 k0 i1 j0 k1 j1 i0 None i1 16 128 2,8.491890907287598,6.07741532
+vibrobox_1x1_0,q_sa_searching,2 i 2 i0 8192 i1 8 k 2 k0 32 k1 128 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 None 0 128 2,8.095824241638184,6.03369456
+NACA0015_16x8_9,q_sa_searching,2 i 2 i0 131072 i1 1 k 2 k0 1024 k1 4 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 0 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 None None 0 128 32,5.468512058258057,4.02601606
+nemspmm1_16x4_0,q_sa_searching,2 i 2 i0 512 i1 8 k 2 k0 128 k1 64 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 None 0 128 1,2.8979604244232178,1.12916892
+Trec6_16x16_9,q_sa_searching,2 i 2 i0 32768 i1 1 k 2 k0 128 k1 64 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 1 k0 0 k1 1 1 j 2 j0 64 j1 2 6 i0 k0 i1 j0 k1 j1 i0 j1 None 0 128 2,1.795316457748413,0.2534849
+crystk01_2x16_1,q_sa_searching,2 i 2 i0 2048 i1 1 k 2 k0 256 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 i1 k0 j0 k1 j1 i0 None j0 16 128 2,4.330864429473877,1.57938496
+t2dal_a_8x4_3,q_sa_searching,2 i 2 i0 16384 i1 1 k 2 k0 128 k1 64 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 j0 32 128 4,2.57241153717041,1.90124188
+EX1_8x8_4,q_sa_searching,2 i 2 i0 4096 i1 1 k 2 k0 256 k1 16 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 0 1 j 2 j0 32 j1 4 6 i0 k0 j0 i1 k1 j1 i0 j1 None 0 128 4,3.1011152267456055,1.4770415599999998
