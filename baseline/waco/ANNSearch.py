@@ -90,6 +90,7 @@ def SDDMMTask(filename):
     return C, func
 
 def CreateSpMVSchedule(ct: ComputeTensor, superschedule: str):
+    superschedule = superschedule.split()
     i1s = int(superschedule[0])
     k1s = int(superschedule[1])
     order = superschedule[2:6]
@@ -184,6 +185,7 @@ def CreateSpMMSchedule(ct: ComputeTensor, superschedule: str):
     return sch
 
 def CreateSDDMMSchedule(ct: ComputeTensor, superschedule: str):
+    superschedule = superschedule.split()
     i1s = int(superschedule[0])
     k1s = int(superschedule[1])
     j1s = int(superschedule[2])
@@ -535,7 +537,7 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
     else:
         assert (False, "Error task name.")
     net = net.to(device)
-    pretrain_static_dict = torch.load(os.path.join(waco_prefix, task_name, 'resnet.pth'))
+    pretrain_static_dict = torch.load(os.path.join(waco_prefix, task_name, 'resnet.pth'), map_location=device)
     new_state_dict = {}
     for key, value in pretrain_static_dict.items():
         if key in net.state_dict():
@@ -604,8 +606,8 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
             print("[WACO ANNS] Stop search when there have not any item in memory.")
             break
         
-        if (tri==0):
-            print(schedules[cur_id][1])
+        # if (tri==0):
+            # print(schedules[cur_id][1])
         labels, dis = p.knn_query(embeddings[cur_id], k = k) # Find closest k neighbor.
         values = []
         run_ids = []
@@ -613,9 +615,9 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
             if idx in visited_set:
                 continue
             sch = createScheuleFunc(st, schedules[int(idx)][1])
-            if (tri==0):
-                # print(schedules[int(idx)][0])
-                print(schedules[int(idx)][1])
+            # if (tri==0):
+            #     # print(schedules[int(idx)][0])
+            #     print(schedules[int(idx)][1])
             value = RunSchedule(func, sch)
             visited_set.add(idx)
             values.append(value)
@@ -656,13 +658,13 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
     
     # Save best trace
     if save_res:
-        filepath = save_dirpath
-        if not os.path.exists(filepath):
-            os.makedirs(filepath)
-        filepath = os.path.join(filepath, "anns_searching_{}".format(
+        filedir = save_dirpath
+        if not os.path.exists(filedir):
+            os.makedirs(filedir)
+        csv_filepath = os.path.join(filedir, "anns_searching_{}".format(
             datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
-        with open(filepath, 'w', newline='') as file:
+        with open(csv_filepath, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(["Round", "Relative Time (ms)", "Value"])
             for item in best_trace:
@@ -670,7 +672,11 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
         
         # save all the point explored.
         schedule_data = [[schedules[int(item.id)][1], item.value]for item in memory]
-        torch.save(schedule_data, filepath)
+        torch.save(schedule_data, os.path.join(
+            filedir, "schedule_data_{}.pth".format(
+                datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+            ) 
+        ))
 
     return memory[0].id, schedules[memory[0].id][1], memory[0].value
 
@@ -710,13 +716,13 @@ def test_spmm():
 
 if __name__ == "__main__":
     waco_prefix = os.getenv("AUTOSPARSE_HOME")
-    platform = "xeon" # epyc
+    platform = "epyc" # epyc
 
     matrix_total_file = os.path.join(waco_prefix, "dataset", "total.txt")
     with open(matrix_total_file) as f:
         matrix_names = f.read().splitlines()
 
-    for task_name in ["SpMM", "SpMV", "SDDMM"]:
+    for task_name in ["SpMV", "SDDMM"]: # "SpMM"
         for name in matrix_names:
             save_dirpath_prefix = os.path.join(
                 waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
@@ -729,17 +735,17 @@ if __name__ == "__main__":
                 save_res=True, 
                 save_dirpath=save_dirpath_prefix
             )
-            res_f = open(os.path.join(waco_prefix, "baseline", "waco", "result.txt"), 'w')
+            res_f = open(os.path.join(waco_prefix, "baseline", "waco", "result.txt"), 'a')
             string = "{0} {1} {2} {3} {4} \n".format(
                 task_name, name, result[0], result[1], result[2]
             )
             res_f.write(string)
             res_f.close()
 
-
+    # task_name = 'SpMV'
     # id, schedules, value = ANNS3(task_name, "Trec6_16x16_9.csr")
     # print(schedules + f" {value:.8f}")
 
     # test_spmm()
 
-# nohup python evaluation.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python ANNSearch.py > ./log/expyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 

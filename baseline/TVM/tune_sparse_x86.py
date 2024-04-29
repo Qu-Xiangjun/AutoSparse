@@ -9,6 +9,8 @@ from tvm.auto_scheduler import _ffi_api
 from tvm.topi.utils import get_const_tuple
 from tvm.topi.sparse.utils import random_bsr_matrix
 
+os.environ["TVM_NUM_THREADS"] = "64"
+
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
 @auto_scheduler.register_workload
@@ -271,8 +273,10 @@ if __name__ == "__main__":
     matrix_total_file = os.path.join(autosparse_prefix, "dataset", "total.txt")
     with open(matrix_total_file) as f :
         matrix_names = f.read().splitlines()
-    # for name in matrix_names:
-    #     tune_for_spmm(name)
+    for name in matrix_names:
+        tune_for_spmm(name)
     # tune_for_spmm("nemspmm1_16x4_0")
     for name in matrix_names:
         evaluate_best_record(name)
+
+# nohup python tune_sparse_x86.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
