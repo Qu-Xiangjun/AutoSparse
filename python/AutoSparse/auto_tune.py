@@ -303,7 +303,7 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
 
     # FormatReorder && Mode setting and checking
     axes_mode = {} # {axis_name: mode}
-    for idx, tensor in enumerate(sch.all_tensors_bk):
+    for idx, tensor in enumerate(sch.all_tensors_bk[:-1]):
         if tensor.is_sparse == False:
             continue
         tensor_all_axes_name = tensor.format.axes_name.keys()
@@ -333,6 +333,43 @@ def AddSimpleSchedule(compute_tensor: ComputeTensor, config: Dict):
                 sch.FormatMode(new_tensor, axis_name, format_modes[i])
                 # If there are multiple tensors with the same axis, take the largest mode. 
                 axes_mode[axis_name] = max(axes_mode.get(axis_name, 0), format_modes[i])
+    
+    
+    is_out_sparse = sch.all_tensors_bk[-1].is_sparse
+    if is_out_sparse:
+        tensor = sch.all_tensors_bk[-1]
+        # set order
+        tensor_all_axes_name = tensor.format.axes_name.keys()
+        new_ordered_axes = []
+        for axis_name in reordered_vars:
+            if axis_name in tensor_all_axes_name:
+                new_ordered_axes.append(axis_name)
+        if config.get("reorder", None) != None:
+            new_tensor = sch.FormatReorder(tensor, new_ordered_axes)
+        else:
+            new_tensor = tensor
+        
+        # set mode
+        format_mode_subspace_name = "format_mode_{}".format(sch.tensor_name_lst[-1])
+        format_modes = config.get(format_mode_subspace_name, None)
+        if format_modes != None:
+            assert len(tensor.shape) == len(format_modes), \
+                    "[AutoTune.AddSimpleSchedule] Format mode count differ from tensor."
+            format_modes_dict = {}
+            for i in range(len(new_ordered_axes)):
+                format_modes_dict[new_ordered_axes[i]] = format_modes[i]
+            if CheckMode(new_ordered_axes, all_axes_size, format_modes_dict) == False:
+                raise ValueError()
+            for i, axis_name in enumerate(new_ordered_axes):
+                sch.FormatMode(new_tensor, axis_name, format_modes[i])
+                # If there are multiple tensors with the same axis, take the largest mode. 
+                axes_mode[axis_name] = max(axes_mode.get(axis_name, 0), format_modes[i])
+        else: # mode same with other input sparse axis
+            for i, axis_name in enumerate(new_ordered_axes):
+                if axis_name in axes_mode.keys():
+                    sch.FormatMode(new_tensor, axis_name, axes_mode[axis_name])
+                else:
+                    sch.FormatMode(new_tensor, axis_name, 0)
     
     # Parallel
     is_parallel = config.get("parallel", [])
@@ -1458,13 +1495,31 @@ def AutoTune(
         "reorder", reorder_subspace, "reorder"
     )
 
-    for i, tensor in enumerate(sch.all_tensors_bk):
+    is_out_sparse = sch.all_tensors_bk[-1].is_sparse
+    have_other_sparse_related = False
+
+    for i, tensor in enumerate(sch.all_tensors_bk[:-1]):
         if tensor.is_sparse:
             format_mode_subspace = FModeSubSpace(len(tensor.shape) * 2)
             tune_space.add_subspace(
                 "format_mode_{}".format(sch.tensor_name_lst[i]),
                 format_mode_subspace, "format_mode"
             )
+            if is_out_sparse:
+                out_tensor_axes_name = [
+                    axis.name for axis in sch.all_tensors_bk[-1].format.axes]
+                for axis in tensor.format.axes:
+                    if axis.name in out_tensor_axes_name:
+                        have_other_sparse_related = True
+    
+    if is_out_sparse and have_other_sparse_related == False:
+        tensor = sch.all_tensors_bk[-1]
+        format_mode_subspace = FModeSubSpace(len(tensor.shape) * 2)
+        tune_space.add_subspace(
+            "format_mode_{}".format(sch.tensor_name_lst[i]),
+            format_mode_subspace, "format_mode"
+        )
+    
 
     # Include parallel vecorize unroll
     parallel_subspace = ParallelSubspace(3) 
