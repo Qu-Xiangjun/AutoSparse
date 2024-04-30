@@ -373,8 +373,8 @@ public:
         T_un_crd = vector<vector<int>>(num_rank, vector<int>());
         T_vals = vector<float>();
 
-        int limit = nnz * 20; // 5e8
-        int format_size = 0; // Count the format storage int32 overhead.
+        long limit = nnz * 20; // 5e8
+        long format_size = 0; // Count the format storage int32 overhead.
 
         /* Pack to packed coo copied deeply from coo in new rank order, and sort. */
         int prefixsum = 0; // 求和所有维度的 lenbit
