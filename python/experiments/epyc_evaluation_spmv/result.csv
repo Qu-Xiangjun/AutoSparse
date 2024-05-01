@@ -19,3 +19,13 @@ Trec6_16x16_9,q_sa_searching,2 i 2 i0 4096 i1 8 j 2 j0 128 j1 64 1 A 4 i0 j0 i1 
 crystk01_2x16_1,q_sa_searching,2 i 2 i0 128 i1 16 j 2 j0 256 j1 256 1 A 4 i0 j0 i1 j1 A 4 i0 0 i1 1 j0 0 j1 1 0 4 i0 j0 i1 j1 i0 None None 0 128 4,0.05744009092450142,0.29622
 t2dal_a_8x4_3,q_sa_searching,2 i 2 i0 128 i1 128 j 2 j0 8192 j1 1 1 A 4 i0 j0 i1 j1 A 4 i0 0 i1 1 j0 1 j1 0 0 4 i0 j0 i1 j1 i0 None None 0 128 2,0.02935362048447132,1.591078
 EX1_8x8_4,q_sa_searching,2 i 2 i0 128 i1 32 j 2 j0 256 j1 16 1 A 4 i0 j0 j1 i1 A 4 i0 1 i1 2 j0 0 j1 1 0 4 i0 j0 j1 i1 i0 None j0 256 128 2,0.04402929171919823,0.900877
+name,method,config command,csr_time,best_time
+bcsstk38,q_sa_searching,2 j 2 j0 128 j1 32 i 2 i0 32 i1 128 1 A 4 i0 i1 j0 j1 A 4 i0 1 i1 1 j0 1 j1 2 0 4 i0 i1 j0 j1 i0 None None 0 128 1,0.06828604638576508,0.364931
+cfd1,q_sa_searching,2 j 2 j0 256 j1 256 i 2 i0 256 i1 256 1 A 4 i0 j0 i1 j1 A 4 i0 1 i1 1 j0 1 j1 2 0 4 i0 j0 i1 j1 i0 None None 0 128 2,0.08799228072166443,1.336921
+conf5_0-4x4-18,q_sa_searching,2 j 2 j0 2048 j1 1 i 2 i0 2048 i1 1 1 A 4 i0 j0 i1 j1 A 4 i0 0 i1 0 j0 1 j1 0 0 4 i0 j0 i1 j1 i0 None None 0 128 64,0.04968789964914322,0.03177028
+crystk01_2x16_1,q_sa_searching,2 j 2 j0 512 j1 128 i 2 i0 16 i1 128 1 A 4 i0 j0 j1 i1 A 4 i0 0 i1 1 j0 1 j1 0 0 4 i0 j0 j1 i1 i0 None None 0 128 1,0.09402921050786972,0.673713
+EX1_8x8_4,q_sa_searching,2 j 2 j0 256 j1 16 i 2 i0 128 i1 32 1 A 4 i0 j0 j1 i1 A 4 i0 1 i1 1 j0 1 j1 0 0 4 i0 j0 j1 i1 i0 None None 0 128 2,0.042566388845443726,0.399675
+mhd4800a,q_sa_searching,2 j 2 j0 128 j1 32 i 2 i0 32 i1 128 1 A 4 i0 j0 j1 i1 A 4 i0 0 i1 1 j0 1 j1 1 0 4 i0 j0 j1 i1 i0 None None 0 128 1,0.033820949494838715,0.02998466
+msc10848,q_sa_searching,2 j 2 j0 32 j1 256 i 2 i0 1024 i1 8 1 A 4 i0 j0 i1 j1 A 4 i0 0 i1 1 j0 0 j1 1 0 4 i0 j0 i1 j1 i0 None j0 32 128 8,0.03907715156674385,0.778059
+NACA0015_16x8_9,q_sa_searching,2 j 2 j0 512 j1 8 i 2 i0 512 i1 256 1 A 4 i0 i1 j0 j1 A 4 i0 0 i1 0 j0 1 j1 0 0 4 i0 i1 j0 j1 i0 None i1 256 128 4,0.11812946200370789,1.087065
+nemspmm1_16x4_0,q_sa_searching,2 j 2 j0 32 j1 256 i 2 i0 1024 i1 4 1 A 4 i0 i1 j0 j1 A 4 i0 0 i1 1 j0 1 j1 1 0 4 i0 i1 j0 j1 i0 None None 0 128 16,0.03670024126768112,0.454017
