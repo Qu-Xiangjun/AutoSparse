@@ -285,7 +285,7 @@ def ComputeHelp1(
                 elif format.axes[i].name != compute_tensor.format.axes[i].name:
                     format_flag = False
                 else:
-                    compute_tensor.format.axes[i] = format.axes[i]
+                    compute_tensor.format.axes[i].mode = format.axes[i].mode
     assert format_flag, \
         "[AutoSparse.Compute] input format don't match with ComputeTensor."
 

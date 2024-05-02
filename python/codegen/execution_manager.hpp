@@ -715,6 +715,13 @@ public:
 #endif
 		compile_success = executeCommand(taco_header_command);
 
+        if (rhs_tensor.size() == 3) {
+            char* env_val = getenv("AUTOSPARSE_HOME");
+            string waco_prefix = env_val;
+            string patch_command = "python " + waco_prefix + "/python/codegen/sddmm_patch.py ./taco_kernel.c";
+            system(patch_command.c_str());
+        }
+
         // Compile kernel.c
         string cc_command;
 		#ifdef ICC // `-DICC` in compile command
@@ -919,10 +926,11 @@ public:
         
         if (verify && corret_val.size())
         {
-            vector<float> &res = lh_tensor->get_vals();
-            // fwrite2file((float*)res.data(), res.size(), "******* T0 *******");
+            float *res = (float*)(T[0]->vals);
+            int res_size = T[0]->vals_size;
+			// fwrite2file(res, res_size, "******* T0 *******");
             bool flag = true;
-            for (int i = 0; i < res.size(); i++)
+            for (int i = 0; i < res_size; i++)
             {
                 if (abs(corret_val[i] - res[i] > 0.01))
                 {

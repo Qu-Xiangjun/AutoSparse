@@ -28,7 +28,7 @@ uniform_real_distribution<float> uniform(-1.0, 1.0);
 /**
  * Read CSR format sparse matrix from .csr file
  */
-void ReadCSR2D(string filepath, Compressed_Coo& coo)
+void ReadCSR2D(string filepath, Compressed_Coo& coo, bool is_lhs)
 {
     coo.clear();
 
@@ -60,7 +60,8 @@ void ReadCSR2D(string filepath, Compressed_Coo& coo)
 		int data;
 		csr.read((char *)&data, sizeof(data));
 		A_crd[i] = data;
-		A_val[i] = 1.0; // TODO: Now only consider sparse matrix layout.
+        if (is_lhs) A_val[i] = 0.0;
+		else A_val[i] = 1.0; // TODO: Now only consider sparse matrix layout.
 	}
 	csr.close();
 
@@ -167,14 +168,16 @@ public:
             {
                 Compressed_Coo tmp_coo;
                 assert (sparse_count < filepaths.size());
-                ReadCSR2D(filepaths[sparse_count], tmp_coo);
+                ReadCSR2D(filepaths[sparse_count], tmp_coo, is_lhs);
                 M.add_tensor(tensor_name, tensor_format, tmp_coo, is_lhs);
                 sparse_count++;
             }
             else
             {
-                int len = 1;
+                long len = 1;
                 for (int j = 0; j < axes_count; ++j) len *= ceil_power_of_two(tensor_format[j].dimension);
+                // TODO: Note overleaf if matrix so big
+                assert (len < 1000000010);
                 vector<float> tensor_data(len, is_lhs ? 0 : 1);
                 M.add_tensor(tensor_name, tensor_format, tensor_data, is_lhs);
             }

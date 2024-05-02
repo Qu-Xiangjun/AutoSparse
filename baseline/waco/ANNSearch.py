@@ -69,7 +69,7 @@ def SDDMMTask(filename):
     num_row, num_col, num_nonezero = np.fromfile(
         mtx_filepath, count=3, dtype = '<i4'
     )
-    print(f"num_row={num_row}, num_col={num_col}, num_nonezero={num_nonezero}")
+    print(f"{filename} num_row={num_row}, num_col={num_col}, num_nonezero={num_nonezero}")
     """Axis declarations"""
     i = Axis(int(num_row), ModeType.DENSE, "i")
     j = Axis(int(num_col), ModeType.COMPRESSED, "j")
@@ -77,17 +77,20 @@ def SDDMMTask(filename):
     k_ = Axis(128, ModeType.DENSE, "k")
     k__ = Axis(128, ModeType.DENSE, "k")
     j_ = Axis(int(num_col), ModeType.DENSE, "j")
+    i__ = Axis(int(num_row), ModeType.DENSE, "i")
+    j__ = Axis(int(num_col), ModeType.COMPRESSED, "j")
     """Tensor declaration"""
     A = Tensor((i, j), is_sparse=True)
     B = Tensor((i_, k_), is_sparse=False)
     C = Tensor((k__, j_), is_sparse=False)
     """Calculation declaration"""
-    C = Compute(A*(B@C))
+    D = Compute(A*(B@C), is_sparse=True, format=(i__, j__))
     """Auto-Tune and excute"""
     A.LoadData(mtx_filepath)
+    D.LoadData(mtx_filepath)
 
-    func = Build(C)
-    return C, func
+    func = Build(D)
+    return D, func
 
 def CreateSpMVSchedule(ct: ComputeTensor, superschedule: str):
     superschedule = superschedule.split()
@@ -716,14 +719,37 @@ def test_spmm():
 
 if __name__ == "__main__":
     waco_prefix = os.getenv("AUTOSPARSE_HOME")
-    platform = "epyc" # epyc
+    platform = "epyc" # epyc xeon
 
-    matrix_total_file = os.path.join(waco_prefix, "dataset", "total.txt")
-    with open(matrix_total_file) as f:
-        matrix_names = f.read().splitlines()
+    # matrix_total_file = os.path.join(waco_prefix, "dataset", "total.txt")
+    # with open(matrix_total_file) as f:
+    #     matrix_names = f.read().splitlines()
 
-    for task_name in [ "SDDMM"]: # "SpMM" "SpMV",
+    matrix_names = [
+        "bcsstk38",
+        "mhd4800a",
+        "conf5_0-4x4-18",
+        "cca",
+        "Trefethen_20000",
+        "pf2177",
+        "msc10848",
+        "cfd1",
+        "net100",
+        "vanbody",
+        "net150",
+        "Chevron3_4x16_1",
+        "vibrobox_1x1_0",
+        "NACA0015_16x8_9",
+        "nemspmm1_16x4_0",
+        "Trec6_16x16_9",
+        "crystk01_2x16_1",
+        "t2dal_a_8x4_3",
+        "EX1_8x8_4"
+    ]
+
+    for task_name in ["SDDMM"]: # "SpMM" "SpMV",
         for name in matrix_names:
+            print(f"task {task_name} for matrix {name}")
             save_dirpath_prefix = os.path.join(
                 waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
             )
@@ -735,7 +761,7 @@ if __name__ == "__main__":
                 save_res=True, 
                 save_dirpath=save_dirpath_prefix
             )
-            res_f = open(os.path.join(waco_prefix, "baseline", "waco", "result.txt"), 'a')
+            res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_" + task_name + ".txt"), 'a')
             string = "{0} {1} {2} {3} {4} \n".format(
                 task_name, name, result[0], result[1], result[2]
             )
@@ -748,4 +774,5 @@ if __name__ == "__main__":
 
     # test_spmm()
 
-# nohup python ANNSearch.py > ./log/expyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python ANNSearch.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python ANNSearch.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 

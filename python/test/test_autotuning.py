@@ -90,19 +90,22 @@ def test_sddmm(filename, method: str):
     k_ = Axis(256, ModeType.DENSE, "k")
     k__ = Axis(256, ModeType.DENSE, "k")
     j_ = Axis(int(num_col), ModeType.DENSE, "j")
+    i__ = Axis(int(num_row), ModeType.DENSE, "i")
+    j__ = Axis(int(num_col), ModeType.COMPRESSED, "j")
     """Tensor declaration"""
     A = Tensor((i, j), is_sparse=True)
     B = Tensor((i_, k_), is_sparse=False)
     C = Tensor((k__, j_), is_sparse=False)
     """Calculation declaration"""
-    C = Compute(A*(B@C))
+    D = Compute(A*(B@C), is_sparse=True, format=(i__, j__))
     """Auto-Tune and excute"""
     A.LoadData(mtx_filepath)
-    print(CreateSchedule(C).GenConfigCommand()[0])
+    D.LoadData(mtx_filepath)
+    print(CreateSchedule(D).GenConfigCommand())
 
-    sch = AutoTune(C, method = method, population_size=100, trial = 100)
+    sch = AutoTune(D, method = method, population_size=100, trial = 100)
     func = Build(sch)
     time = min([func.Run() for i in range(10)])
     print(time)
 
-test_spmm('nemspmm1_16x4_0.csr', "random_searching")
+test_sddmm('nemspmm1_16x4_0.csr', "random_searching")
