@@ -69,3 +69,13 @@ name,method,config command,csr_time,best_time
 name,method,config command,csr_time,best_time
 name,method,config command,csr_time,best_time
 name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+mhd4800a,q_sa_searching,2 k 2 k0 32 k1 128 i 2 i0 512 i1 8 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 2 j1 64 6 i0 k0 i1 j0 k1 j1 i0 None None 0 32 2,0.12377031147480011,0.14717997610569
+conf5_0-4x4-18,q_sa_searching,2 k 2 k0 128 k1 16 i 2 i0 256 i1 8 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 1 j1 128 6 i0 k0 j0 i1 k1 j1 i0 j1 i1 8 32 4,0.1355888694524765,0.17241361737251282
+Trefethen_20000,q_sa_searching,2 k 2 k0 64 k1 256 i 2 i0 1024 i1 16 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 k0 i1 k1 j0 j1 i0 None i1 16 32 4,0.8599702715873718,0.8184824585914612
+pf2177,q_sa_searching,2 k 2 k0 8192 k1 1 i 2 i0 4096 i1 2 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 0 k0 1 k1 0 1 j 2 j0 2 j1 64 6 i0 i1 k0 j0 k1 j1 i0 j1 None 0 32 8,1.182159423828125,1.1070057153701782
+net100,q_sa_searching,2 k 2 k0 64 k1 256 i 2 i0 1024 i1 16 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 4 j1 32 6 i0 k0 i1 k1 j0 j1 i0 None None 0 32 2,3.1847429275512695,2.8908708095550537
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+Chevron3_4x16_1,q_sa_searching,2 k 2 k0 128 k1 64 i 2 i0 512 i1 256 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 0 k1 1 1 j 2 j0 2 j1 64 6 i0 k0 i1 j0 k1 j1 i0 j1 k0 128 32 16,5.218475341796875,5.05122184753418
