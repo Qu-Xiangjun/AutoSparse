@@ -9,7 +9,12 @@ from tvm.auto_scheduler import _ffi_api
 from tvm.topi.utils import get_const_tuple
 from tvm.topi.sparse.utils import random_bsr_matrix
 
-os.environ["TVM_NUM_THREADS"] = "64"
+platform = 'epyc'
+
+if platform == 'epyc':
+    os.environ["TVM_NUM_THREADS"] = "128"
+else:
+    os.environ["TVM_NUM_THREADS"] = "64"
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -81,7 +86,7 @@ def from_csr(filepath) :
     csr = np.fromfile(filepath, dtype='<i4')
     num_row,num_col,nnz = csr[0],csr[1],csr[2]
     coo = np.zeros((nnz,2),dtype=int)
-    coo[:,1] = csr[3+num_row+1:]
+    coo[:,1] = csr[3+num_row+1:3+num_row+1+nnz] # col
     bins = np.array(csr[4:num_row+4]) - np.array(csr[3:num_row+3])
     coo[:,0] = np.repeat(range(num_row), bins)
     return num_row, num_col, nnz, coo
