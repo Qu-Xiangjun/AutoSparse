@@ -122,7 +122,7 @@ double SpMM_S(string filepath, MKL_INT n)
         elapsed_time += ((endtime.tv_sec-starttime.tv_sec)*1000000 + endtime.tv_usec-starttime.tv_usec)/1000.0;
         // elapsed_time += compute_clock(Clock::now(), t1);
         assert (status == SPARSE_STATUS_SUCCESS);
-        if (cnt==0) cout << matrixC[0] << endl;
+        if (cnt==0) cout << matrixC[1] << endl;
     }
 
     return elapsed_time / round;
@@ -136,27 +136,39 @@ int main()
     string filename = "strides_mask";
     string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
     cout << filepath << endl;
-    for (int i = 0; i < 50; i++){
-        res += SpMM_S(filepath, 256);
-    }   
-    cout << filename << " = " << res/50 << endl;
+    res = SpMM_S(filepath, 256);
+    cout << filename << " = " << res << endl;
 
     filename = "encoder.layer.9.intermediate.dense.weight";
     filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
     cout << filepath << endl;
-    for (int i = 0; i < 50; i++){
-        res += SpMM_S(filepath, 3072);
-    }   
-    cout << filename << " = " << res/50 << endl;
+    res = SpMM_S(filepath, 3072);
+    cout << filename << " = " << res << endl;
 
     filename = "encoder.layer.8.output.dense.weight";
     filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
     cout << filepath << endl;
-    for (int i = 0; i < 50; i++){
-        res += SpMM_S(filepath, 768);
-    }   
-    cout << filename << " = " << res/50 << endl;
-    
+    res = SpMM_S(filepath, 768);
+    cout << filename << " = " << res << endl;
+
+    filename = "encoder.layer.9.output.dense.weight";
+    filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
+    cout << filepath << endl;
+    res = SpMM_S(filepath, 768);
+    cout << filename << " = " << res << endl;
+
+    filename = "encoder.layer.10.output.dense.weight";
+    filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
+    cout << filepath << endl;
+    res = SpMM_S(filepath, 768);
+    cout << filename << " = " << res << endl;
+
+    filename = "encoder.layer.11.output.dense.weight";
+    filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
+    cout << filepath << endl;
+    res = SpMM_S(filepath, 768);
+    cout << filename << " = " << res << endl;
+
     return 0;
 }
 

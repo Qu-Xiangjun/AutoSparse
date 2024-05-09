@@ -273,8 +273,8 @@ if __name__ == "__main__":
     matrix_total_file = os.path.join(autosparse_prefix, "dataset", "total.txt")
     with open(matrix_total_file) as f :
         matrix_names = f.read().splitlines()
-    for name in matrix_names:
-        tune_for_spmm(name)
+    # for name in matrix_names:
+    #     tune_for_spmm(name)
     # tune_for_spmm("nemspmm1_16x4_0")
     for name in matrix_names:
         evaluate_best_record(name)
