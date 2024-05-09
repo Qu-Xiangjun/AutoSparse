@@ -1,0 +1,2854 @@
+nohup: ignoring input
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:141: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 11040). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at ../c10/cuda/CUDAFunctions.cpp:108.)
+  return torch._C._cuda_getDeviceCount() > 0
+No GPU available, using CPU instead.
+strides_mask q_sa_searching num_row=4096, num_col=4096, num_nonezero=264192
+('4 A 1 2 i 4096 0 j 4096 1 B 0 2 i 4096 0 k 256 0 C 0 2 k 256 0 j 4096 0 D 1 2 i 4096 0 j 4096 1 float', '0 2 A 2 i j D 2 i j A 2 i 0 j 1 D 2 i 0 j 1 0 0 None None None 0 32 64')
+[AutoTuing] Space size = 3280500000
+[AutoTuing] Origin format run time = 29.42932129
+**************** Start Q Search ****************
+population_size         =100
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =4
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 50 data.
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: inf, history best: inf
+[AutoTune] Warm in 1 trial best: inf, history best: inf
+[AutoTune] Warm in 2 trial best: 292.64767456, history best: 292.6476745605469
+[AutoTune] Q searching Current time: 2024-05-09 17:51:19 in 0 trial best: 154.38792419, history best: 292.6476745605469
+[AutoTune] Q searching Current time: 2024-05-09 17:52:21 in 1 trial best: 49.98313522, history best: 154.38792419433594
+[cur/total]=[1/5], loss = 25900.5957
+[cur/total]=[2/5], loss = 24542.5957
+[cur/total]=[3/5], loss = 23214.8262
+[cur/total]=[4/5], loss = 21935.3320
+[cur/total]=[5/5], loss = 20710.9453
+[cur/total]=[1/5], loss = 14789.8125
+[cur/total]=[2/5], loss = 13580.1025
+[cur/total]=[3/5], loss = 12417.7959
+[cur/total]=[4/5], loss = 11321.0791
+[cur/total]=[5/5], loss = 10296.1562
+[cur/total]=[1/5], loss = 6492.5747
+[cur/total]=[2/5], loss = 6009.6816
+[cur/total]=[3/5], loss = 5543.3564
+[cur/total]=[4/5], loss = 5100.0957
+[cur/total]=[5/5], loss = 4681.9531
+[cur/total]=[1/5], loss = 21697.3535
+[cur/total]=[2/5], loss = 20848.4766
+[cur/total]=[3/5], loss = 20009.2637
+[cur/total]=[4/5], loss = 19190.0332
+[cur/total]=[5/5], loss = 18394.9512
+[cur/total]=[1/5], loss = 19314.4219
+[cur/total]=[2/5], loss = 18683.6484
+[cur/total]=[3/5], loss = 18054.3887
+[cur/total]=[4/5], loss = 17433.8223
+[cur/total]=[5/5], loss = 16825.0664
+[cur/total]=[1/5], loss = 19316.9961
+[cur/total]=[2/5], loss = 18614.2988
+[cur/total]=[3/5], loss = 17915.4941
+[cur/total]=[4/5], loss = 17228.9590
+[cur/total]=[5/5], loss = 16558.3691
+[cur/total]=[1/5], loss = 7940.9668
+[cur/total]=[2/5], loss = 7411.7041
+[cur/total]=[3/5], loss = 6901.9189
+[cur/total]=[4/5], loss = 6418.4653
+[cur/total]=[5/5], loss = 5963.1763
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 17:54:17 in 2 trial best: 25.47860718, history best: 49.98313522338867
+[cur/total]=[1/5], loss = 14867.7324
+[cur/total]=[2/5], loss = 14146.0547
+[cur/total]=[3/5], loss = 13455.9170
+[cur/total]=[4/5], loss = 12796.6299
+[cur/total]=[5/5], loss = 12167.1738
+[cur/total]=[1/5], loss = 5326.3428
+[cur/total]=[2/5], loss = 5026.6694
+[cur/total]=[3/5], loss = 4740.3340
+[cur/total]=[4/5], loss = 4467.1094
+[cur/total]=[5/5], loss = 4206.6279
+[cur/total]=[1/5], loss = 3726.2498
+[cur/total]=[2/5], loss = 3297.3369
+[cur/total]=[3/5], loss = 2936.3516
+[cur/total]=[4/5], loss = 2634.8367
+[cur/total]=[5/5], loss = 2381.8264
+[cur/total]=[1/5], loss = 10601.1387
+[cur/total]=[2/5], loss = 10312.6025
+[cur/total]=[3/5], loss = 10029.7715
+[cur/total]=[4/5], loss = 9752.4707
+[cur/total]=[5/5], loss = 9480.5312
+[cur/total]=[1/5], loss = 9855.7627
+[cur/total]=[2/5], loss = 9596.0674
+[cur/total]=[3/5], loss = 9342.6689
+[cur/total]=[4/5], loss = 9095.4883
+[cur/total]=[5/5], loss = 8854.3584
+[cur/total]=[1/5], loss = 12530.0059
+[cur/total]=[2/5], loss = 12108.0371
+[cur/total]=[3/5], loss = 11698.2246
+[cur/total]=[4/5], loss = 11300.7979
+[cur/total]=[5/5], loss = 10915.6309
+[cur/total]=[1/5], loss = 4899.4614
+[cur/total]=[2/5], loss = 4555.3652
+[cur/total]=[3/5], loss = 4237.6924
+[cur/total]=[4/5], loss = 3944.7234
+[cur/total]=[5/5], loss = 3674.3318
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 17:56:35 in 3 trial best: 23.66256905, history best: 25.478607177734375
+[cur/total]=[1/5], loss = 11447.1045
+[cur/total]=[2/5], loss = 10872.3525
+[cur/total]=[3/5], loss = 10323.1826
+[cur/total]=[4/5], loss = 9798.6367
+[cur/total]=[5/5], loss = 9297.7432
+[cur/total]=[1/5], loss = 2515.0247
+[cur/total]=[2/5], loss = 2400.1394
+[cur/total]=[3/5], loss = 2290.5623
+[cur/total]=[4/5], loss = 2186.0149
+[cur/total]=[5/5], loss = 2086.2188
+[cur/total]=[1/5], loss = 2017.3315
+[cur/total]=[2/5], loss = 1864.9824
+[cur/total]=[3/5], loss = 1733.5176
+[cur/total]=[4/5], loss = 1617.2048
+[cur/total]=[5/5], loss = 1512.1798
+[cur/total]=[1/5], loss = 9305.0664
+[cur/total]=[2/5], loss = 8910.0137
+[cur/total]=[3/5], loss = 8533.9248
+[cur/total]=[4/5], loss = 8177.5034
+[cur/total]=[5/5], loss = 7840.4619
+[cur/total]=[1/5], loss = 11196.5225
+[cur/total]=[2/5], loss = 10976.7031
+[cur/total]=[3/5], loss = 10760.3984
+[cur/total]=[4/5], loss = 10547.5859
+[cur/total]=[5/5], loss = 10338.1924
+[cur/total]=[1/5], loss = 12718.9336
+[cur/total]=[2/5], loss = 12382.1436
+[cur/total]=[3/5], loss = 12052.8701
+[cur/total]=[4/5], loss = 11730.9180
+[cur/total]=[5/5], loss = 11416.0576
+[cur/total]=[1/5], loss = 3369.7859
+[cur/total]=[2/5], loss = 3102.4546
+[cur/total]=[3/5], loss = 2862.8962
+[cur/total]=[4/5], loss = 2647.6650
+[cur/total]=[5/5], loss = 2453.5188
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 17:59:28 in 4 trial best: 21.92908287, history best: 23.662569046020508
+[cur/total]=[1/5], loss = 8867.6514
+[cur/total]=[2/5], loss = 8371.1152
+[cur/total]=[3/5], loss = 7899.3618
+[cur/total]=[4/5], loss = 7451.3730
+[cur/total]=[5/5], loss = 7026.1133
+[cur/total]=[1/5], loss = 1742.0400
+[cur/total]=[2/5], loss = 1671.7939
+[cur/total]=[3/5], loss = 1604.1639
+[cur/total]=[4/5], loss = 1539.0011
+[cur/total]=[5/5], loss = 1476.1643
+[cur/total]=[1/5], loss = 1231.8090
+[cur/total]=[2/5], loss = 1162.9365
+[cur/total]=[3/5], loss = 1099.1074
+[cur/total]=[4/5], loss = 1039.1309
+[cur/total]=[5/5], loss = 982.2813
+[cur/total]=[1/5], loss = 6618.3174
+[cur/total]=[2/5], loss = 6243.2651
+[cur/total]=[3/5], loss = 5899.0859
+[cur/total]=[4/5], loss = 5583.6021
+[cur/total]=[5/5], loss = 5294.5674
+[cur/total]=[1/5], loss = 9476.6914
+[cur/total]=[2/5], loss = 9297.1514
+[cur/total]=[3/5], loss = 9120.0547
+[cur/total]=[4/5], loss = 8945.3301
+[cur/total]=[5/5], loss = 8772.9023
+[cur/total]=[1/5], loss = 10898.5449
+[cur/total]=[2/5], loss = 10551.5742
+[cur/total]=[3/5], loss = 10213.3154
+[cur/total]=[4/5], loss = 9883.7441
+[cur/total]=[5/5], loss = 9562.7129
+[cur/total]=[1/5], loss = 2338.1086
+[cur/total]=[2/5], loss = 2147.0332
+[cur/total]=[3/5], loss = 1978.0206
+[cur/total]=[4/5], loss = 1827.4044
+[cur/total]=[5/5], loss = 1692.1757
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:03:16 in 5 trial best: 12.88315010, history best: 21.9290828704834
+[cur/total]=[1/5], loss = 6571.1626
+[cur/total]=[2/5], loss = 6163.2100
+[cur/total]=[3/5], loss = 5778.9785
+[cur/total]=[4/5], loss = 5417.2539
+[cur/total]=[5/5], loss = 5076.8311
+[cur/total]=[1/5], loss = 1415.5186
+[cur/total]=[2/5], loss = 1356.9432
+[cur/total]=[3/5], loss = 1300.3220
+[cur/total]=[4/5], loss = 1245.5498
+[cur/total]=[5/5], loss = 1192.5264
+[cur/total]=[1/5], loss = 813.3279
+[cur/total]=[2/5], loss = 771.4650
+[cur/total]=[3/5], loss = 731.5765
+[cur/total]=[4/5], loss = 693.4422
+[cur/total]=[5/5], loss = 656.9115
+[cur/total]=[1/5], loss = 14947.5771
+[cur/total]=[2/5], loss = 14046.7900
+[cur/total]=[3/5], loss = 13195.1680
+[cur/total]=[4/5], loss = 12393.8799
+[cur/total]=[5/5], loss = 11641.8828
+[cur/total]=[1/5], loss = 7871.1226
+[cur/total]=[2/5], loss = 7712.5166
+[cur/total]=[3/5], loss = 7556.5684
+[cur/total]=[4/5], loss = 7403.2192
+[cur/total]=[5/5], loss = 7252.3965
+[cur/total]=[1/5], loss = 11138.9727
+[cur/total]=[2/5], loss = 10712.5723
+[cur/total]=[3/5], loss = 10299.6865
+[cur/total]=[4/5], loss = 9900.1211
+[cur/total]=[5/5], loss = 9513.6191
+[cur/total]=[1/5], loss = 1612.2188
+[cur/total]=[2/5], loss = 1469.1240
+[cur/total]=[3/5], loss = 1344.9012
+[cur/total]=[4/5], loss = 1235.5671
+[cur/total]=[5/5], loss = 1138.1558
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:08:01 in 6 trial best: 12.46503830, history best: 12.883150100708008
+[cur/total]=[1/5], loss = 4690.6035
+[cur/total]=[2/5], loss = 4379.2158
+[cur/total]=[3/5], loss = 4088.5334
+[cur/total]=[4/5], loss = 3817.2615
+[cur/total]=[5/5], loss = 3564.1689
+[cur/total]=[1/5], loss = 1141.1647
+[cur/total]=[2/5], loss = 1091.3787
+[cur/total]=[3/5], loss = 1043.0962
+[cur/total]=[4/5], loss = 996.2474
+[cur/total]=[5/5], loss = 950.7720
+[cur/total]=[1/5], loss = 818.2405
+[cur/total]=[2/5], loss = 734.7015
+[cur/total]=[3/5], loss = 662.6915
+[cur/total]=[4/5], loss = 600.5439
+[cur/total]=[5/5], loss = 546.6641
+[cur/total]=[1/5], loss = 11477.3203
+[cur/total]=[2/5], loss = 10654.5947
+[cur/total]=[3/5], loss = 9891.6885
+[cur/total]=[4/5], loss = 9185.1104
+[cur/total]=[5/5], loss = 8531.2656
+[cur/total]=[1/5], loss = 7091.1621
+[cur/total]=[2/5], loss = 6945.5137
+[cur/total]=[3/5], loss = 6801.8857
+[cur/total]=[4/5], loss = 6660.2300
+[cur/total]=[5/5], loss = 6520.4941
+[cur/total]=[1/5], loss = 8807.1123
+[cur/total]=[2/5], loss = 8510.4990
+[cur/total]=[3/5], loss = 8221.3613
+[cur/total]=[4/5], loss = 7939.6924
+[cur/total]=[5/5], loss = 7665.3501
+[cur/total]=[1/5], loss = 1109.6246
+[cur/total]=[2/5], loss = 1017.5967
+[cur/total]=[3/5], loss = 933.4719
+[cur/total]=[4/5], loss = 856.5045
+[cur/total]=[5/5], loss = 786.0517
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:12:16 in 7 trial best: 12.08486843, history best: 12.465038299560547
+[cur/total]=[1/5], loss = 3069.8162
+[cur/total]=[2/5], loss = 2816.7451
+[cur/total]=[3/5], loss = 2583.1492
+[cur/total]=[4/5], loss = 2367.6687
+[cur/total]=[5/5], loss = 2169.0039
+[cur/total]=[1/5], loss = 906.6171
+[cur/total]=[2/5], loss = 863.7328
+[cur/total]=[3/5], loss = 822.0800
+[cur/total]=[4/5], loss = 781.6217
+[cur/total]=[5/5], loss = 742.3290
+[cur/total]=[1/5], loss = 520.0678
+[cur/total]=[2/5], loss = 470.2442
+[cur/total]=[3/5], loss = 427.3277
+[cur/total]=[4/5], loss = 389.9364
+[cur/total]=[5/5], loss = 356.9680
+[cur/total]=[1/5], loss = 7965.0220
+[cur/total]=[2/5], loss = 7411.4458
+[cur/total]=[3/5], loss = 6897.9189
+[cur/total]=[4/5], loss = 6421.7129
+[cur/total]=[5/5], loss = 5980.2607
+[cur/total]=[1/5], loss = 4558.0903
+[cur/total]=[2/5], loss = 4383.4956
+[cur/total]=[3/5], loss = 4216.2959
+[cur/total]=[4/5], loss = 4056.3643
+[cur/total]=[5/5], loss = 3903.4199
+[cur/total]=[1/5], loss = 6751.5874
+[cur/total]=[2/5], loss = 6526.4360
+[cur/total]=[3/5], loss = 6307.1987
+[cur/total]=[4/5], loss = 6093.7783
+[cur/total]=[5/5], loss = 5886.0850
+[cur/total]=[1/5], loss = 632.4827
+[cur/total]=[2/5], loss = 589.6586
+[cur/total]=[3/5], loss = 550.1295
+[cur/total]=[4/5], loss = 513.4508
+[cur/total]=[5/5], loss = 479.2856
+[AutoTune] Update DQN target net in 7 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:16:17 in 8 trial best: 11.68227196, history best: 12.084868431091309
+[cur/total]=[1/5], loss = 874.2765
+[cur/total]=[2/5], loss = 781.0762
+[cur/total]=[3/5], loss = 699.1916
+[cur/total]=[4/5], loss = 627.1501
+[cur/total]=[5/5], loss = 563.6516
+[cur/total]=[1/5], loss = 758.4443
+[cur/total]=[2/5], loss = 717.8513
+[cur/total]=[3/5], loss = 678.5464
+[cur/total]=[4/5], loss = 640.5102
+[cur/total]=[5/5], loss = 603.7264
+[cur/total]=[1/5], loss = 56.0538
+[cur/total]=[2/5], loss = 43.8198
+[cur/total]=[3/5], loss = 36.9980
+[cur/total]=[4/5], loss = 31.9464
+[cur/total]=[5/5], loss = 27.7694
+[cur/total]=[1/5], loss = 4009.3828
+[cur/total]=[2/5], loss = 3680.3704
+[cur/total]=[3/5], loss = 3379.9282
+[cur/total]=[4/5], loss = 3105.6865
+[cur/total]=[5/5], loss = 2855.4468
+[cur/total]=[1/5], loss = 6760.2744
+[cur/total]=[2/5], loss = 6488.2046
+[cur/total]=[3/5], loss = 6227.6792
+[cur/total]=[4/5], loss = 5978.3257
+[cur/total]=[5/5], loss = 5739.8208
+[cur/total]=[1/5], loss = 2837.2783
+[cur/total]=[2/5], loss = 2714.8962
+[cur/total]=[3/5], loss = 2597.4526
+[cur/total]=[4/5], loss = 2484.8201
+[cur/total]=[5/5], loss = 2376.8291
+[cur/total]=[1/5], loss = 732.7057
+[cur/total]=[2/5], loss = 664.6470
+[cur/total]=[3/5], loss = 604.4719
+[cur/total]=[4/5], loss = 550.7499
+[cur/total]=[5/5], loss = 502.3233
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:19:41 in 9 trial best: 9.97501087, history best: 11.682271957397461
+[cur/total]=[1/5], loss = 710.9924
+[cur/total]=[2/5], loss = 628.9351
+[cur/total]=[3/5], loss = 555.7550
+[cur/total]=[4/5], loss = 490.6574
+[cur/total]=[5/5], loss = 432.8680
+[cur/total]=[1/5], loss = 568.1829
+[cur/total]=[2/5], loss = 533.8682
+[cur/total]=[3/5], loss = 500.7741
+[cur/total]=[4/5], loss = 468.8937
+[cur/total]=[5/5], loss = 438.2217
+[cur/total]=[1/5], loss = 26.6794
+[cur/total]=[2/5], loss = 22.1922
+[cur/total]=[3/5], loss = 18.7684
+[cur/total]=[4/5], loss = 16.1185
+[cur/total]=[5/5], loss = 14.0368
+[cur/total]=[1/5], loss = 2755.8079
+[cur/total]=[2/5], loss = 2524.7686
+[cur/total]=[3/5], loss = 2314.8362
+[cur/total]=[4/5], loss = 2124.2439
+[cur/total]=[5/5], loss = 1951.3458
+[cur/total]=[1/5], loss = 3278.8640
+[cur/total]=[2/5], loss = 3109.8201
+[cur/total]=[3/5], loss = 2950.8953
+[cur/total]=[4/5], loss = 2801.4363
+[cur/total]=[5/5], loss = 2660.7805
+[cur/total]=[1/5], loss = 2746.7295
+[cur/total]=[2/5], loss = 2588.9490
+[cur/total]=[3/5], loss = 2438.5112
+[cur/total]=[4/5], loss = 2295.2520
+[cur/total]=[5/5], loss = 2158.9724
+[cur/total]=[1/5], loss = 447.7536
+[cur/total]=[2/5], loss = 410.1402
+[cur/total]=[3/5], loss = 375.4709
+[cur/total]=[4/5], loss = 343.5045
+[cur/total]=[5/5], loss = 314.0378
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:22:31 in 10 trial best: 9.85596943, history best: 9.975010871887207
+[cur/total]=[1/5], loss = 381.8363
+[cur/total]=[2/5], loss = 341.0212
+[cur/total]=[3/5], loss = 304.0865
+[cur/total]=[4/5], loss = 270.6965
+[cur/total]=[5/5], loss = 240.5431
+[cur/total]=[1/5], loss = 408.7519
+[cur/total]=[2/5], loss = 380.4808
+[cur/total]=[3/5], loss = 353.4043
+[cur/total]=[4/5], loss = 327.5162
+[cur/total]=[5/5], loss = 302.8121
+[cur/total]=[1/5], loss = 12.3792
+[cur/total]=[2/5], loss = 10.7208
+[cur/total]=[3/5], loss = 9.3533
+[cur/total]=[4/5], loss = 8.2004
+[cur/total]=[5/5], loss = 7.2174
+[cur/total]=[1/5], loss = 1832.5613
+[cur/total]=[2/5], loss = 1722.1542
+[cur/total]=[3/5], loss = 1622.1843
+[cur/total]=[4/5], loss = 1531.5928
+[cur/total]=[5/5], loss = 1449.3942
+[cur/total]=[1/5], loss = 4306.6973
+[cur/total]=[2/5], loss = 4145.5151
+[cur/total]=[3/5], loss = 3991.8882
+[cur/total]=[4/5], loss = 3845.3643
+[cur/total]=[5/5], loss = 3705.5205
+[cur/total]=[1/5], loss = 1309.1293
+[cur/total]=[2/5], loss = 1257.6768
+[cur/total]=[3/5], loss = 1208.2394
+[cur/total]=[4/5], loss = 1160.7253
+[cur/total]=[5/5], loss = 1115.0446
+[cur/total]=[1/5], loss = 295.9601
+[cur/total]=[2/5], loss = 268.2193
+[cur/total]=[3/5], loss = 242.6976
+[cur/total]=[4/5], loss = 219.2490
+[cur/total]=[5/5], loss = 197.7370
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:24:41 in 11 trial best: 2.24671268, history best: 9.855969429016113
+[cur/total]=[1/5], loss = 185.6198
+[cur/total]=[2/5], loss = 164.9896
+[cur/total]=[3/5], loss = 146.8518
+[cur/total]=[4/5], loss = 130.8072
+[cur/total]=[5/5], loss = 116.5408
+[cur/total]=[1/5], loss = 279.2842
+[cur/total]=[2/5], loss = 256.9247
+[cur/total]=[3/5], loss = 235.7229
+[cur/total]=[4/5], loss = 215.6671
+[cur/total]=[5/5], loss = 196.7432
+[cur/total]=[1/5], loss = 5.4044
+[cur/total]=[2/5], loss = 5.0030
+[cur/total]=[3/5], loss = 4.6297
+[cur/total]=[4/5], loss = 4.2823
+[cur/total]=[5/5], loss = 3.9588
+[cur/total]=[1/5], loss = 1711.9978
+[cur/total]=[2/5], loss = 1659.9133
+[cur/total]=[3/5], loss = 1610.6874
+[cur/total]=[4/5], loss = 1564.0531
+[cur/total]=[5/5], loss = 1519.7705
+[cur/total]=[1/5], loss = 2101.7458
+[cur/total]=[2/5], loss = 2025.5787
+[cur/total]=[3/5], loss = 1952.4414
+[cur/total]=[4/5], loss = 1882.0446
+[cur/total]=[5/5], loss = 1814.2078
+[cur/total]=[1/5], loss = 1376.9658
+[cur/total]=[2/5], loss = 1300.5015
+[cur/total]=[3/5], loss = 1228.0199
+[cur/total]=[4/5], loss = 1159.3961
+[cur/total]=[5/5], loss = 1094.4272
+[cur/total]=[1/5], loss = 212.9995
+[cur/total]=[2/5], loss = 190.6190
+[cur/total]=[3/5], loss = 170.7110
+[cur/total]=[4/5], loss = 153.0153
+[cur/total]=[5/5], loss = 137.3015
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:27:30 in 12 trial best: 8.43096733, history best: 2.2467126846313477
+[cur/total]=[1/5], loss = 111.8124
+[cur/total]=[2/5], loss = 98.9020
+[cur/total]=[3/5], loss = 87.3278
+[cur/total]=[4/5], loss = 76.9709
+[cur/total]=[5/5], loss = 67.7226
+[cur/total]=[1/5], loss = 178.9344
+[cur/total]=[2/5], loss = 162.2214
+[cur/total]=[3/5], loss = 146.5827
+[cur/total]=[4/5], loss = 131.9939
+[cur/total]=[5/5], loss = 118.4283
+[cur/total]=[1/5], loss = 5.4645
+[cur/total]=[2/5], loss = 4.7625
+[cur/total]=[3/5], loss = 4.2385
+[cur/total]=[4/5], loss = 3.8201
+[cur/total]=[5/5], loss = 3.4684
+[cur/total]=[1/5], loss = 1963.2611
+[cur/total]=[2/5], loss = 1892.2449
+[cur/total]=[3/5], loss = 1824.0718
+[cur/total]=[4/5], loss = 1758.6868
+[cur/total]=[5/5], loss = 1695.9990
+[cur/total]=[1/5], loss = 2590.1206
+[cur/total]=[2/5], loss = 2485.6062
+[cur/total]=[3/5], loss = 2385.2163
+[cur/total]=[4/5], loss = 2288.8809
+[cur/total]=[5/5], loss = 2196.4756
+[cur/total]=[1/5], loss = 1223.3385
+[cur/total]=[2/5], loss = 1150.6196
+[cur/total]=[3/5], loss = 1081.6864
+[cur/total]=[4/5], loss = 1016.3969
+[cur/total]=[5/5], loss = 954.6027
+[cur/total]=[1/5], loss = 82.4628
+[cur/total]=[2/5], loss = 70.8772
+[cur/total]=[3/5], loss = 61.0719
+[cur/total]=[4/5], loss = 52.7757
+[cur/total]=[5/5], loss = 45.7716
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:30:07 in 13 trial best: 7.16756582, history best: 2.2467126846313477
+[cur/total]=[1/5], loss = 60.4420
+[cur/total]=[2/5], loss = 52.3857
+[cur/total]=[3/5], loss = 45.3275
+[cur/total]=[4/5], loss = 39.1543
+[cur/total]=[5/5], loss = 33.7656
+[cur/total]=[1/5], loss = 105.8565
+[cur/total]=[2/5], loss = 94.2467
+[cur/total]=[3/5], loss = 83.5649
+[cur/total]=[4/5], loss = 73.7749
+[cur/total]=[5/5], loss = 64.8385
+[cur/total]=[1/5], loss = 3.8181
+[cur/total]=[2/5], loss = 3.5485
+[cur/total]=[3/5], loss = 3.3013
+[cur/total]=[4/5], loss = 3.0719
+[cur/total]=[5/5], loss = 2.8585
+[cur/total]=[1/5], loss = 2116.1880
+[cur/total]=[2/5], loss = 2045.5448
+[cur/total]=[3/5], loss = 1976.7515
+[cur/total]=[4/5], loss = 1909.8051
+[cur/total]=[5/5], loss = 1844.6843
+[cur/total]=[1/5], loss = 3273.5762
+[cur/total]=[2/5], loss = 3112.5447
+[cur/total]=[3/5], loss = 2963.9375
+[cur/total]=[4/5], loss = 2826.7537
+[cur/total]=[5/5], loss = 2699.9795
+[cur/total]=[1/5], loss = 881.5500
+[cur/total]=[2/5], loss = 807.8555
+[cur/total]=[3/5], loss = 739.9318
+[cur/total]=[4/5], loss = 677.4662
+[cur/total]=[5/5], loss = 620.1266
+[cur/total]=[1/5], loss = 45.7235
+[cur/total]=[2/5], loss = 40.2864
+[cur/total]=[3/5], loss = 35.8400
+[cur/total]=[4/5], loss = 32.1605
+[cur/total]=[5/5], loss = 29.1031
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:32:43 in 14 trial best: 2.13506126, history best: 2.2467126846313477
+[cur/total]=[1/5], loss = 210.1406
+[cur/total]=[2/5], loss = 201.0470
+[cur/total]=[3/5], loss = 192.5798
+[cur/total]=[4/5], loss = 184.6729
+[cur/total]=[5/5], loss = 177.2735
+[cur/total]=[1/5], loss = 56.7160
+[cur/total]=[2/5], loss = 49.3661
+[cur/total]=[3/5], loss = 42.7463
+[cur/total]=[4/5], loss = 36.8136
+[cur/total]=[5/5], loss = 31.5241
+[cur/total]=[1/5], loss = 1.6078
+[cur/total]=[2/5], loss = 1.4860
+[cur/total]=[3/5], loss = 1.3877
+[cur/total]=[4/5], loss = 1.3032
+[cur/total]=[5/5], loss = 1.2295
+[cur/total]=[1/5], loss = 1178.4773
+[cur/total]=[2/5], loss = 1125.7722
+[cur/total]=[3/5], loss = 1075.8794
+[cur/total]=[4/5], loss = 1028.6295
+[cur/total]=[5/5], loss = 983.8574
+[cur/total]=[1/5], loss = 1251.4978
+[cur/total]=[2/5], loss = 1165.7385
+[cur/total]=[3/5], loss = 1088.7316
+[cur/total]=[4/5], loss = 1019.4081
+[cur/total]=[5/5], loss = 956.8011
+[cur/total]=[1/5], loss = 656.6255
+[cur/total]=[2/5], loss = 608.8438
+[cur/total]=[3/5], loss = 564.2632
+[cur/total]=[4/5], loss = 522.7601
+[cur/total]=[5/5], loss = 484.1854
+[cur/total]=[1/5], loss = 11.0410
+[cur/total]=[2/5], loss = 10.4097
+[cur/total]=[3/5], loss = 9.8958
+[cur/total]=[4/5], loss = 9.4631
+[cur/total]=[5/5], loss = 9.0958
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:35:15 in 15 trial best: 2.29762816, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 176.9233
+[cur/total]=[2/5], loss = 168.1257
+[cur/total]=[3/5], loss = 160.3793
+[cur/total]=[4/5], loss = 153.5036
+[cur/total]=[5/5], loss = 147.3446
+[cur/total]=[1/5], loss = 26.8337
+[cur/total]=[2/5], loss = 22.6983
+[cur/total]=[3/5], loss = 19.0741
+[cur/total]=[4/5], loss = 15.9183
+[cur/total]=[5/5], loss = 13.1890
+[cur/total]=[1/5], loss = 0.9003
+[cur/total]=[2/5], loss = 0.7622
+[cur/total]=[3/5], loss = 0.7145
+[cur/total]=[4/5], loss = 0.6854
+[cur/total]=[5/5], loss = 0.6682
+[cur/total]=[1/5], loss = 1766.5831
+[cur/total]=[2/5], loss = 1699.2306
+[cur/total]=[3/5], loss = 1634.2588
+[cur/total]=[4/5], loss = 1571.5809
+[cur/total]=[5/5], loss = 1511.1044
+[cur/total]=[1/5], loss = 1728.3198
+[cur/total]=[2/5], loss = 1667.7072
+[cur/total]=[3/5], loss = 1610.7936
+[cur/total]=[4/5], loss = 1557.0757
+[cur/total]=[5/5], loss = 1506.1702
+[cur/total]=[1/5], loss = 511.2100
+[cur/total]=[2/5], loss = 464.9068
+[cur/total]=[3/5], loss = 422.8183
+[cur/total]=[4/5], loss = 384.6287
+[cur/total]=[5/5], loss = 350.0233
+[cur/total]=[1/5], loss = 5.6279
+[cur/total]=[2/5], loss = 5.1431
+[cur/total]=[3/5], loss = 4.8045
+[cur/total]=[4/5], loss = 4.5397
+[cur/total]=[5/5], loss = 4.3318
+[AutoTune] Update DQN target net in 15 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:37:52 in 16 trial best: 2.15043640, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 5.7626
+[cur/total]=[2/5], loss = 4.8078
+[cur/total]=[3/5], loss = 4.0580
+[cur/total]=[4/5], loss = 3.4498
+[cur/total]=[5/5], loss = 2.9473
+[cur/total]=[1/5], loss = 13.6547
+[cur/total]=[2/5], loss = 11.1687
+[cur/total]=[3/5], loss = 9.0659
+[cur/total]=[4/5], loss = 7.3025
+[cur/total]=[5/5], loss = 5.8371
+[cur/total]=[1/5], loss = 14.5400
+[cur/total]=[2/5], loss = 3.6573
+[cur/total]=[3/5], loss = 2.1676
+[cur/total]=[4/5], loss = 1.8198
+[cur/total]=[5/5], loss = 1.7012
+[cur/total]=[1/5], loss = 2047.2489
+[cur/total]=[2/5], loss = 1935.9832
+[cur/total]=[3/5], loss = 1834.6782
+[cur/total]=[4/5], loss = 1742.0564
+[cur/total]=[5/5], loss = 1656.9135
+[cur/total]=[1/5], loss = 559.6036
+[cur/total]=[2/5], loss = 534.0258
+[cur/total]=[3/5], loss = 510.4623
+[cur/total]=[4/5], loss = 488.4971
+[cur/total]=[5/5], loss = 467.8246
+[cur/total]=[1/5], loss = 193.4939
+[cur/total]=[2/5], loss = 167.2503
+[cur/total]=[3/5], loss = 145.4433
+[cur/total]=[4/5], loss = 127.3810
+[cur/total]=[5/5], loss = 112.3832
+[cur/total]=[1/5], loss = 5.2012
+[cur/total]=[2/5], loss = 2.4977
+[cur/total]=[3/5], loss = 2.1190
+[cur/total]=[4/5], loss = 2.0831
+[cur/total]=[5/5], loss = 2.0777
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:39:56 in 17 trial best: 3.32227826, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 2.3890
+[cur/total]=[2/5], loss = 2.1190
+[cur/total]=[3/5], loss = 1.8905
+[cur/total]=[4/5], loss = 1.6956
+[cur/total]=[5/5], loss = 1.5290
+[cur/total]=[1/5], loss = 4.6309
+[cur/total]=[2/5], loss = 3.6478
+[cur/total]=[3/5], loss = 2.8550
+[cur/total]=[4/5], loss = 2.2227
+[cur/total]=[5/5], loss = 1.7243
+[cur/total]=[1/5], loss = 0.8622
+[cur/total]=[2/5], loss = 0.8070
+[cur/total]=[3/5], loss = 0.7829
+[cur/total]=[4/5], loss = 0.7705
+[cur/total]=[5/5], loss = 0.7647
+[cur/total]=[1/5], loss = 1158.6068
+[cur/total]=[2/5], loss = 1088.2373
+[cur/total]=[3/5], loss = 1022.7148
+[cur/total]=[4/5], loss = 961.7021
+[cur/total]=[5/5], loss = 904.8926
+[cur/total]=[1/5], loss = 401.7884
+[cur/total]=[2/5], loss = 371.1632
+[cur/total]=[3/5], loss = 343.8916
+[cur/total]=[4/5], loss = 319.5354
+[cur/total]=[5/5], loss = 297.7077
+[cur/total]=[1/5], loss = 124.7161
+[cur/total]=[2/5], loss = 115.1371
+[cur/total]=[3/5], loss = 106.8599
+[cur/total]=[4/5], loss = 99.5982
+[cur/total]=[5/5], loss = 93.1308
+[cur/total]=[1/5], loss = 4.9406
+[cur/total]=[2/5], loss = 4.7132
+[cur/total]=[3/5], loss = 4.5009
+[cur/total]=[4/5], loss = 4.3011
+[cur/total]=[5/5], loss = 4.1126
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:42:24 in 18 trial best: 2.88092828, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 1.9315
+[cur/total]=[2/5], loss = 1.6911
+[cur/total]=[3/5], loss = 1.4782
+[cur/total]=[4/5], loss = 1.2883
+[cur/total]=[5/5], loss = 1.1196
+[cur/total]=[1/5], loss = 1.3361
+[cur/total]=[2/5], loss = 1.0376
+[cur/total]=[3/5], loss = 0.8110
+[cur/total]=[4/5], loss = 0.6414
+[cur/total]=[5/5], loss = 0.5161
+[cur/total]=[1/5], loss = 0.4658
+[cur/total]=[2/5], loss = 0.4595
+[cur/total]=[3/5], loss = 0.4618
+[cur/total]=[4/5], loss = 0.4757
+[cur/total]=[5/5], loss = 0.5122
+[cur/total]=[1/5], loss = 1279.6045
+[cur/total]=[2/5], loss = 1225.5581
+[cur/total]=[3/5], loss = 1174.3936
+[cur/total]=[4/5], loss = 1125.7603
+[cur/total]=[5/5], loss = 1079.3888
+[cur/total]=[1/5], loss = 906.3656
+[cur/total]=[2/5], loss = 861.3575
+[cur/total]=[3/5], loss = 818.8046
+[cur/total]=[4/5], loss = 778.4899
+[cur/total]=[5/5], loss = 740.1903
+[cur/total]=[1/5], loss = 63.4270
+[cur/total]=[2/5], loss = 55.7075
+[cur/total]=[3/5], loss = 49.0571
+[cur/total]=[4/5], loss = 43.3078
+[cur/total]=[5/5], loss = 38.3193
+[cur/total]=[1/5], loss = 23.5042
+[cur/total]=[2/5], loss = 20.1456
+[cur/total]=[3/5], loss = 17.5679
+[cur/total]=[4/5], loss = 15.2626
+[cur/total]=[5/5], loss = 13.1992
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:44:57 in 19 trial best: 7.42856312, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 129.6646
+[cur/total]=[2/5], loss = 123.0043
+[cur/total]=[3/5], loss = 116.9314
+[cur/total]=[4/5], loss = 111.3225
+[cur/total]=[5/5], loss = 106.0752
+[cur/total]=[1/5], loss = 0.4246
+[cur/total]=[2/5], loss = 0.3586
+[cur/total]=[3/5], loss = 0.3115
+[cur/total]=[4/5], loss = 0.2779
+[cur/total]=[5/5], loss = 0.2540
+[cur/total]=[1/5], loss = 0.4184
+[cur/total]=[2/5], loss = 0.6289
+[cur/total]=[3/5], loss = 1.1345
+[cur/total]=[4/5], loss = 2.1347
+[cur/total]=[5/5], loss = 3.4924
+[cur/total]=[1/5], loss = 976.2082
+[cur/total]=[2/5], loss = 929.3965
+[cur/total]=[3/5], loss = 885.0904
+[cur/total]=[4/5], loss = 843.0627
+[cur/total]=[5/5], loss = 803.1294
+[cur/total]=[1/5], loss = 686.5196
+[cur/total]=[2/5], loss = 650.4804
+[cur/total]=[3/5], loss = 616.0619
+[cur/total]=[4/5], loss = 583.1935
+[cur/total]=[5/5], loss = 551.8097
+[cur/total]=[1/5], loss = 80.4646
+[cur/total]=[2/5], loss = 70.9221
+[cur/total]=[3/5], loss = 62.7172
+[cur/total]=[4/5], loss = 55.6602
+[cur/total]=[5/5], loss = 49.5751
+[cur/total]=[1/5], loss = 4.9613
+[cur/total]=[2/5], loss = 4.5920
+[cur/total]=[3/5], loss = 4.4586
+[cur/total]=[4/5], loss = 4.3556
+[cur/total]=[5/5], loss = 4.2680
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:48:12 in 20 trial best: 9.72329998, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 2.7099
+[cur/total]=[2/5], loss = 1.9027
+[cur/total]=[3/5], loss = 1.3732
+[cur/total]=[4/5], loss = 1.0295
+[cur/total]=[5/5], loss = 0.8075
+[cur/total]=[1/5], loss = 0.2367
+[cur/total]=[2/5], loss = 0.2240
+[cur/total]=[3/5], loss = 0.2142
+[cur/total]=[4/5], loss = 0.2063
+[cur/total]=[5/5], loss = 0.1997
+[cur/total]=[1/5], loss = 6.4809
+[cur/total]=[2/5], loss = 3.2638
+[cur/total]=[3/5], loss = 2.4492
+[cur/total]=[4/5], loss = 2.2322
+[cur/total]=[5/5], loss = 2.2518
+[cur/total]=[1/5], loss = 999.9066
+[cur/total]=[2/5], loss = 945.8301
+[cur/total]=[3/5], loss = 894.5399
+[cur/total]=[4/5], loss = 845.9108
+[cur/total]=[5/5], loss = 799.8186
+[cur/total]=[1/5], loss = 229.7201
+[cur/total]=[2/5], loss = 207.6885
+[cur/total]=[3/5], loss = 187.6309
+[cur/total]=[4/5], loss = 169.3725
+[cur/total]=[5/5], loss = 152.7578
+[cur/total]=[1/5], loss = 25.3204
+[cur/total]=[2/5], loss = 21.7652
+[cur/total]=[3/5], loss = 18.7401
+[cur/total]=[4/5], loss = 16.1645
+[cur/total]=[5/5], loss = 13.9693
+[cur/total]=[1/5], loss = 10.5164
+[cur/total]=[2/5], loss = 9.8016
+[cur/total]=[3/5], loss = 9.1596
+[cur/total]=[4/5], loss = 8.5693
+[cur/total]=[5/5], loss = 8.0234
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:50:35 in 21 trial best: 10.31479073, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 0.3178
+[cur/total]=[2/5], loss = 0.2567
+[cur/total]=[3/5], loss = 0.2277
+[cur/total]=[4/5], loss = 0.2145
+[cur/total]=[5/5], loss = 0.2086
+[cur/total]=[1/5], loss = 0.1939
+[cur/total]=[2/5], loss = 0.1885
+[cur/total]=[3/5], loss = 0.1834
+[cur/total]=[4/5], loss = 0.1786
+[cur/total]=[5/5], loss = 0.1739
+[cur/total]=[1/5], loss = 1.1932
+[cur/total]=[2/5], loss = 1.5673
+[cur/total]=[3/5], loss = 3.3909
+[cur/total]=[4/5], loss = 7.3576
+[cur/total]=[5/5], loss = 10.9744
+[cur/total]=[1/5], loss = 471.6441
+[cur/total]=[2/5], loss = 448.5821
+[cur/total]=[3/5], loss = 427.7443
+[cur/total]=[4/5], loss = 408.6708
+[cur/total]=[5/5], loss = 390.9974
+[cur/total]=[1/5], loss = 1386.1797
+[cur/total]=[2/5], loss = 1323.4253
+[cur/total]=[3/5], loss = 1263.9585
+[cur/total]=[4/5], loss = 1207.4786
+[cur/total]=[5/5], loss = 1153.7444
+[cur/total]=[1/5], loss = 224.9805
+[cur/total]=[2/5], loss = 208.6431
+[cur/total]=[3/5], loss = 193.6943
+[cur/total]=[4/5], loss = 179.9914
+[cur/total]=[5/5], loss = 167.3849
+[cur/total]=[1/5], loss = 5.7319
+[cur/total]=[2/5], loss = 5.3928
+[cur/total]=[3/5], loss = 5.2326
+[cur/total]=[4/5], loss = 5.1287
+[cur/total]=[5/5], loss = 5.0506
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:53:01 in 22 trial best: 9.93510914, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 0.6730
+[cur/total]=[2/5], loss = 0.5124
+[cur/total]=[3/5], loss = 0.4279
+[cur/total]=[4/5], loss = 0.3764
+[cur/total]=[5/5], loss = 0.3429
+[cur/total]=[1/5], loss = 0.1694
+[cur/total]=[2/5], loss = 0.1649
+[cur/total]=[3/5], loss = 0.1606
+[cur/total]=[4/5], loss = 0.1563
+[cur/total]=[5/5], loss = 0.1522
+[cur/total]=[1/5], loss = 13.3231
+[cur/total]=[2/5], loss = 17.5052
+[cur/total]=[3/5], loss = 19.7972
+[cur/total]=[4/5], loss = 21.2750
+[cur/total]=[5/5], loss = 22.2780
+[cur/total]=[1/5], loss = 717.1394
+[cur/total]=[2/5], loss = 670.4272
+[cur/total]=[3/5], loss = 626.2191
+[cur/total]=[4/5], loss = 584.4684
+[cur/total]=[5/5], loss = 545.0897
+[cur/total]=[1/5], loss = 554.9294
+[cur/total]=[2/5], loss = 516.9793
+[cur/total]=[3/5], loss = 482.1529
+[cur/total]=[4/5], loss = 450.0583
+[cur/total]=[5/5], loss = 420.3820
+[cur/total]=[1/5], loss = 262.1121
+[cur/total]=[2/5], loss = 241.3570
+[cur/total]=[3/5], loss = 222.3754
+[cur/total]=[4/5], loss = 204.9879
+[cur/total]=[5/5], loss = 189.0112
+[cur/total]=[1/5], loss = 2.8817
+[cur/total]=[2/5], loss = 2.7676
+[cur/total]=[3/5], loss = 2.7037
+[cur/total]=[4/5], loss = 2.7156
+[cur/total]=[5/5], loss = 2.9315
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:55:43 in 23 trial best: 9.77878857, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 104.8915
+[cur/total]=[2/5], loss = 95.9649
+[cur/total]=[3/5], loss = 88.5398
+[cur/total]=[4/5], loss = 81.9262
+[cur/total]=[5/5], loss = 75.8252
+[cur/total]=[1/5], loss = 0.1482
+[cur/total]=[2/5], loss = 0.1442
+[cur/total]=[3/5], loss = 0.1403
+[cur/total]=[4/5], loss = 0.1366
+[cur/total]=[5/5], loss = 0.1329
+[cur/total]=[1/5], loss = 21.7007
+[cur/total]=[2/5], loss = 17.9641
+[cur/total]=[3/5], loss = 16.1435
+[cur/total]=[4/5], loss = 15.0726
+[cur/total]=[5/5], loss = 14.4969
+[cur/total]=[1/5], loss = 479.9392
+[cur/total]=[2/5], loss = 451.7802
+[cur/total]=[3/5], loss = 425.2052
+[cur/total]=[4/5], loss = 400.0448
+[cur/total]=[5/5], loss = 376.1768
+[cur/total]=[1/5], loss = 451.3607
+[cur/total]=[2/5], loss = 419.0301
+[cur/total]=[3/5], loss = 388.9474
+[cur/total]=[4/5], loss = 360.9826
+[cur/total]=[5/5], loss = 335.0039
+[cur/total]=[1/5], loss = 33.5588
+[cur/total]=[2/5], loss = 28.4996
+[cur/total]=[3/5], loss = 24.5633
+[cur/total]=[4/5], loss = 21.3677
+[cur/total]=[5/5], loss = 18.6915
+[cur/total]=[1/5], loss = 6.9849
+[cur/total]=[2/5], loss = 7.1950
+[cur/total]=[3/5], loss = 7.4401
+[cur/total]=[4/5], loss = 7.6703
+[cur/total]=[5/5], loss = 7.8935
+[AutoTune] Update DQN target net in 23 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 18:58:36 in 24 trial best: 9.73591423, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 2.4207
+[cur/total]=[2/5], loss = 0.6104
+[cur/total]=[3/5], loss = 0.2507
+[cur/total]=[4/5], loss = 0.2517
+[cur/total]=[5/5], loss = 0.4294
+[cur/total]=[1/5], loss = 0.4040
+[cur/total]=[2/5], loss = 0.3207
+[cur/total]=[3/5], loss = 0.2646
+[cur/total]=[4/5], loss = 0.2231
+[cur/total]=[5/5], loss = 0.1923
+[cur/total]=[1/5], loss = 10.7464
+[cur/total]=[2/5], loss = 6.7198
+[cur/total]=[3/5], loss = 4.7212
+[cur/total]=[4/5], loss = 3.6058
+[cur/total]=[5/5], loss = 2.9458
+[cur/total]=[1/5], loss = 254.5674
+[cur/total]=[2/5], loss = 211.2610
+[cur/total]=[3/5], loss = 177.1981
+[cur/total]=[4/5], loss = 150.6415
+[cur/total]=[5/5], loss = 129.8300
+[cur/total]=[1/5], loss = 110.6150
+[cur/total]=[2/5], loss = 97.8644
+[cur/total]=[3/5], loss = 87.7608
+[cur/total]=[4/5], loss = 79.5043
+[cur/total]=[5/5], loss = 72.5567
+[cur/total]=[1/5], loss = 214.9454
+[cur/total]=[2/5], loss = 177.7840
+[cur/total]=[3/5], loss = 151.5369
+[cur/total]=[4/5], loss = 132.8433
+[cur/total]=[5/5], loss = 118.7413
+[cur/total]=[1/5], loss = 5.6751
+[cur/total]=[2/5], loss = 4.7769
+[cur/total]=[3/5], loss = 4.9306
+[cur/total]=[4/5], loss = 5.8286
+[cur/total]=[5/5], loss = 7.2633
+[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 207.81903076, history best: 207.81903076171875
+[AutoTune] Warm in 1 trial best: 227.24795532, history best: 207.81903076171875
+[AutoTune] Warm in 2 trial best: 464.21917725, history best: 207.81903076171875
+Try Random Search: Current time: 2024-05-09 18:58:59 in trial 24
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:00:03 in 25 trial best: 151.15472412, history best: 2.135061264038086
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:03:18 in 26 trial best: 37.44600296, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 73.2498
+[cur/total]=[2/5], loss = 64.6902
+[cur/total]=[3/5], loss = 58.8643
+[cur/total]=[4/5], loss = 54.4725
+[cur/total]=[5/5], loss = 51.0231
+[cur/total]=[1/5], loss = 190.3408
+[cur/total]=[2/5], loss = 115.6244
+[cur/total]=[3/5], loss = 83.7995
+[cur/total]=[4/5], loss = 68.6818
+[cur/total]=[5/5], loss = 58.6376
+[cur/total]=[1/5], loss = 16.6946
+[cur/total]=[2/5], loss = 12.3218
+[cur/total]=[3/5], loss = 11.6572
+[cur/total]=[4/5], loss = 11.2929
+[cur/total]=[5/5], loss = 10.9933
+[cur/total]=[1/5], loss = 1234.9818
+[cur/total]=[2/5], loss = 1121.6207
+[cur/total]=[3/5], loss = 1019.7260
+[cur/total]=[4/5], loss = 927.8223
+[cur/total]=[5/5], loss = 844.3736
+[cur/total]=[1/5], loss = 3309.7566
+[cur/total]=[2/5], loss = 3124.0142
+[cur/total]=[3/5], loss = 2946.2456
+[cur/total]=[4/5], loss = 2776.6143
+[cur/total]=[5/5], loss = 2615.0461
+[cur/total]=[1/5], loss = 180.7229
+[cur/total]=[2/5], loss = 158.1276
+[cur/total]=[3/5], loss = 139.4331
+[cur/total]=[4/5], loss = 123.5696
+[cur/total]=[5/5], loss = 109.8957
+[cur/total]=[1/5], loss = 16.3100
+[cur/total]=[2/5], loss = 10.5065
+[cur/total]=[3/5], loss = 9.3560
+[cur/total]=[4/5], loss = 8.7763
+[cur/total]=[5/5], loss = 8.3830
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:05:57 in 27 trial best: 37.28116989, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 35.7842
+[cur/total]=[2/5], loss = 34.3226
+[cur/total]=[3/5], loss = 33.3848
+[cur/total]=[4/5], loss = 32.6346
+[cur/total]=[5/5], loss = 31.9580
+[cur/total]=[1/5], loss = 44.2845
+[cur/total]=[2/5], loss = 37.0185
+[cur/total]=[3/5], loss = 32.3765
+[cur/total]=[4/5], loss = 29.2270
+[cur/total]=[5/5], loss = 26.9743
+[cur/total]=[1/5], loss = 9.5504
+[cur/total]=[2/5], loss = 8.7795
+[cur/total]=[3/5], loss = 8.6119
+[cur/total]=[4/5], loss = 8.4654
+[cur/total]=[5/5], loss = 8.3241
+[cur/total]=[1/5], loss = 780.1041
+[cur/total]=[2/5], loss = 717.4413
+[cur/total]=[3/5], loss = 659.6235
+[cur/total]=[4/5], loss = 606.4064
+[cur/total]=[5/5], loss = 557.5092
+[cur/total]=[1/5], loss = 5976.3687
+[cur/total]=[2/5], loss = 5651.4971
+[cur/total]=[3/5], loss = 5343.3936
+[cur/total]=[4/5], loss = 5051.7573
+[cur/total]=[5/5], loss = 4775.7979
+[cur/total]=[1/5], loss = 78.0659
+[cur/total]=[2/5], loss = 71.4186
+[cur/total]=[3/5], loss = 65.8126
+[cur/total]=[4/5], loss = 60.9231
+[cur/total]=[5/5], loss = 56.5722
+[cur/total]=[1/5], loss = 7.3340
+[cur/total]=[2/5], loss = 6.8857
+[cur/total]=[3/5], loss = 6.7090
+[cur/total]=[4/5], loss = 6.5800
+[cur/total]=[5/5], loss = 6.4637
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:09:49 in 28 trial best: 36.27863693, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 30.0859
+[cur/total]=[2/5], loss = 27.8586
+[cur/total]=[3/5], loss = 27.1785
+[cur/total]=[4/5], loss = 26.6944
+[cur/total]=[5/5], loss = 26.2282
+[cur/total]=[1/5], loss = 34.4812
+[cur/total]=[2/5], loss = 27.8986
+[cur/total]=[3/5], loss = 26.5481
+[cur/total]=[4/5], loss = 25.8233
+[cur/total]=[5/5], loss = 25.2123
+[cur/total]=[1/5], loss = 8.8416
+[cur/total]=[2/5], loss = 8.5083
+[cur/total]=[3/5], loss = 8.3624
+[cur/total]=[4/5], loss = 8.2356
+[cur/total]=[5/5], loss = 8.1134
+[cur/total]=[1/5], loss = 378.2349
+[cur/total]=[2/5], loss = 354.8698
+[cur/total]=[3/5], loss = 333.1427
+[cur/total]=[4/5], loss = 312.8770
+[cur/total]=[5/5], loss = 293.9437
+[cur/total]=[1/5], loss = 3960.7578
+[cur/total]=[2/5], loss = 3758.0579
+[cur/total]=[3/5], loss = 3566.2893
+[cur/total]=[4/5], loss = 3384.6855
+[cur/total]=[5/5], loss = 3212.5566
+[cur/total]=[1/5], loss = 51.3579
+[cur/total]=[2/5], loss = 47.4951
+[cur/total]=[3/5], loss = 44.0846
+[cur/total]=[4/5], loss = 41.0532
+[cur/total]=[5/5], loss = 38.3470
+[cur/total]=[1/5], loss = 5.0297
+[cur/total]=[2/5], loss = 4.9357
+[cur/total]=[3/5], loss = 4.8518
+[cur/total]=[4/5], loss = 4.7709
+[cur/total]=[5/5], loss = 4.6923
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:14:13 in 29 trial best: 18.18819237, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 5.3478
+[cur/total]=[2/5], loss = 4.7309
+[cur/total]=[3/5], loss = 4.5932
+[cur/total]=[4/5], loss = 4.5227
+[cur/total]=[5/5], loss = 4.4641
+[cur/total]=[1/5], loss = 27.0489
+[cur/total]=[2/5], loss = 26.6433
+[cur/total]=[3/5], loss = 26.3012
+[cur/total]=[4/5], loss = 25.9822
+[cur/total]=[5/5], loss = 25.6760
+[cur/total]=[1/5], loss = 9.8435
+[cur/total]=[2/5], loss = 9.4826
+[cur/total]=[3/5], loss = 9.3354
+[cur/total]=[4/5], loss = 9.1995
+[cur/total]=[5/5], loss = 9.0707
+[cur/total]=[1/5], loss = 332.6446
+[cur/total]=[2/5], loss = 308.2518
+[cur/total]=[3/5], loss = 285.7315
+[cur/total]=[4/5], loss = 264.9515
+[cur/total]=[5/5], loss = 245.7845
+[cur/total]=[1/5], loss = 3293.9890
+[cur/total]=[2/5], loss = 3084.2603
+[cur/total]=[3/5], loss = 2887.8916
+[cur/total]=[4/5], loss = 2704.0635
+[cur/total]=[5/5], loss = 2531.9812
+[cur/total]=[1/5], loss = 132.1467
+[cur/total]=[2/5], loss = 107.5380
+[cur/total]=[3/5], loss = 87.1746
+[cur/total]=[4/5], loss = 70.6398
+[cur/total]=[5/5], loss = 57.3792
+[cur/total]=[1/5], loss = 4.1777
+[cur/total]=[2/5], loss = 3.9948
+[cur/total]=[3/5], loss = 3.9076
+[cur/total]=[4/5], loss = 3.8392
+[cur/total]=[5/5], loss = 3.7785
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:20:23 in 30 trial best: 18.18599701, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 25.9031
+[cur/total]=[2/5], loss = 24.4324
+[cur/total]=[3/5], loss = 23.6788
+[cur/total]=[4/5], loss = 23.0910
+[cur/total]=[5/5], loss = 22.5418
+[cur/total]=[1/5], loss = 20.9453
+[cur/total]=[2/5], loss = 20.4249
+[cur/total]=[3/5], loss = 20.0186
+[cur/total]=[4/5], loss = 19.6313
+[cur/total]=[5/5], loss = 19.2569
+[cur/total]=[1/5], loss = 10.6736
+[cur/total]=[2/5], loss = 10.4062
+[cur/total]=[3/5], loss = 10.1996
+[cur/total]=[4/5], loss = 10.0128
+[cur/total]=[5/5], loss = 9.8403
+[cur/total]=[1/5], loss = 260.3748
+[cur/total]=[2/5], loss = 239.1884
+[cur/total]=[3/5], loss = 219.9493
+[cur/total]=[4/5], loss = 202.4818
+[cur/total]=[5/5], loss = 186.6208
+[cur/total]=[1/5], loss = 1139.8719
+[cur/total]=[2/5], loss = 1085.7903
+[cur/total]=[3/5], loss = 1035.1161
+[cur/total]=[4/5], loss = 987.2233
+[cur/total]=[5/5], loss = 941.6898
+[cur/total]=[1/5], loss = 32.6621
+[cur/total]=[2/5], loss = 30.8225
+[cur/total]=[3/5], loss = 29.2858
+[cur/total]=[4/5], loss = 27.9495
+[cur/total]=[5/5], loss = 26.7574
+[cur/total]=[1/5], loss = 5.7794
+[cur/total]=[2/5], loss = 5.4418
+[cur/total]=[3/5], loss = 5.3114
+[cur/total]=[4/5], loss = 5.2031
+[cur/total]=[5/5], loss = 5.1030
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:26:24 in 31 trial best: 16.99670029, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 20.0107
+[cur/total]=[2/5], loss = 19.6020
+[cur/total]=[3/5], loss = 19.2112
+[cur/total]=[4/5], loss = 18.8308
+[cur/total]=[5/5], loss = 18.4837
+[cur/total]=[1/5], loss = 17.3775
+[cur/total]=[2/5], loss = 17.0381
+[cur/total]=[3/5], loss = 16.7271
+[cur/total]=[4/5], loss = 16.4280
+[cur/total]=[5/5], loss = 16.1375
+[cur/total]=[1/5], loss = 12.1221
+[cur/total]=[2/5], loss = 11.5473
+[cur/total]=[3/5], loss = 11.4025
+[cur/total]=[4/5], loss = 11.3163
+[cur/total]=[5/5], loss = 11.3771
+[cur/total]=[1/5], loss = 216.1537
+[cur/total]=[2/5], loss = 203.6170
+[cur/total]=[3/5], loss = 191.7548
+[cur/total]=[4/5], loss = 180.5503
+[cur/total]=[5/5], loss = 169.9779
+[cur/total]=[1/5], loss = 1437.6033
+[cur/total]=[2/5], loss = 1365.7142
+[cur/total]=[3/5], loss = 1297.3030
+[cur/total]=[4/5], loss = 1232.1572
+[cur/total]=[5/5], loss = 1170.0767
+[cur/total]=[1/5], loss = 32.3842
+[cur/total]=[2/5], loss = 30.0975
+[cur/total]=[3/5], loss = 28.2936
+[cur/total]=[4/5], loss = 26.8146
+[cur/total]=[5/5], loss = 25.5560
+[cur/total]=[1/5], loss = 3.7663
+[cur/total]=[2/5], loss = 3.7251
+[cur/total]=[3/5], loss = 3.7613
+[cur/total]=[4/5], loss = 3.9849
+[cur/total]=[5/5], loss = 4.4776
+[AutoTune] Update DQN target net in 31 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:33:10 in 32 trial best: 17.01548576, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 21.6964
+[cur/total]=[2/5], loss = 20.2828
+[cur/total]=[3/5], loss = 19.6402
+[cur/total]=[4/5], loss = 19.2006
+[cur/total]=[5/5], loss = 18.8205
+[cur/total]=[1/5], loss = 12.3120
+[cur/total]=[2/5], loss = 5.6371
+[cur/total]=[3/5], loss = 4.9801
+[cur/total]=[4/5], loss = 4.8960
+[cur/total]=[5/5], loss = 4.8439
+[cur/total]=[1/5], loss = 19.6186
+[cur/total]=[2/5], loss = 9.7918
+[cur/total]=[3/5], loss = 9.5467
+[cur/total]=[4/5], loss = 9.4120
+[cur/total]=[5/5], loss = 9.3000
+[cur/total]=[1/5], loss = 150.7179
+[cur/total]=[2/5], loss = 134.3918
+[cur/total]=[3/5], loss = 121.2777
+[cur/total]=[4/5], loss = 110.5741
+[cur/total]=[5/5], loss = 101.6269
+[cur/total]=[1/5], loss = 1503.8639
+[cur/total]=[2/5], loss = 1396.3995
+[cur/total]=[3/5], loss = 1302.0050
+[cur/total]=[4/5], loss = 1218.6016
+[cur/total]=[5/5], loss = 1144.1300
+[cur/total]=[1/5], loss = 65.8955
+[cur/total]=[2/5], loss = 42.6559
+[cur/total]=[3/5], loss = 30.8690
+[cur/total]=[4/5], loss = 25.0500
+[cur/total]=[5/5], loss = 21.7944
+[cur/total]=[1/5], loss = 4.1378
+[cur/total]=[2/5], loss = 3.5212
+[cur/total]=[3/5], loss = 3.2693
+[cur/total]=[4/5], loss = 3.1200
+[cur/total]=[5/5], loss = 3.0223
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:38:11 in 33 trial best: 14.82004547, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 7.9532
+[cur/total]=[2/5], loss = 7.4947
+[cur/total]=[3/5], loss = 7.4555
+[cur/total]=[4/5], loss = 7.4798
+[cur/total]=[5/5], loss = 7.5418
+[cur/total]=[1/5], loss = 10.7131
+[cur/total]=[2/5], loss = 10.0037
+[cur/total]=[3/5], loss = 9.8844
+[cur/total]=[4/5], loss = 9.7722
+[cur/total]=[5/5], loss = 9.6623
+[cur/total]=[1/5], loss = 6.6950
+[cur/total]=[2/5], loss = 7.2207
+[cur/total]=[3/5], loss = 8.3113
+[cur/total]=[4/5], loss = 9.5101
+[cur/total]=[5/5], loss = 10.5000
+[cur/total]=[1/5], loss = 100.5701
+[cur/total]=[2/5], loss = 92.6855
+[cur/total]=[3/5], loss = 85.6424
+[cur/total]=[4/5], loss = 79.2909
+[cur/total]=[5/5], loss = 73.5251
+[cur/total]=[1/5], loss = 1291.9600
+[cur/total]=[2/5], loss = 1207.6971
+[cur/total]=[3/5], loss = 1130.4288
+[cur/total]=[4/5], loss = 1059.2783
+[cur/total]=[5/5], loss = 993.5027
+[cur/total]=[1/5], loss = 27.4951
+[cur/total]=[2/5], loss = 21.2290
+[cur/total]=[3/5], loss = 17.3343
+[cur/total]=[4/5], loss = 14.8532
+[cur/total]=[5/5], loss = 13.1779
+[cur/total]=[1/5], loss = 2.1208
+[cur/total]=[2/5], loss = 2.0072
+[cur/total]=[3/5], loss = 2.1444
+[cur/total]=[4/5], loss = 2.5982
+[cur/total]=[5/5], loss = 3.3406
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:42:56 in 34 trial best: 14.65107059, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 20.7155
+[cur/total]=[2/5], loss = 22.0692
+[cur/total]=[3/5], loss = 23.4368
+[cur/total]=[4/5], loss = 23.9276
+[cur/total]=[5/5], loss = 23.9998
+[cur/total]=[1/5], loss = 9.6224
+[cur/total]=[2/5], loss = 8.7907
+[cur/total]=[3/5], loss = 8.6680
+[cur/total]=[4/5], loss = 8.5757
+[cur/total]=[5/5], loss = 8.4841
+[cur/total]=[1/5], loss = 18.2671
+[cur/total]=[2/5], loss = 19.0566
+[cur/total]=[3/5], loss = 19.5155
+[cur/total]=[4/5], loss = 19.9968
+[cur/total]=[5/5], loss = 20.3605
+[cur/total]=[1/5], loss = 74.9631
+[cur/total]=[2/5], loss = 68.7252
+[cur/total]=[3/5], loss = 63.2228
+[cur/total]=[4/5], loss = 58.3635
+[cur/total]=[5/5], loss = 54.0618
+[cur/total]=[1/5], loss = 519.8032
+[cur/total]=[2/5], loss = 486.4273
+[cur/total]=[3/5], loss = 455.3272
+[cur/total]=[4/5], loss = 426.3765
+[cur/total]=[5/5], loss = 399.4188
+[cur/total]=[1/5], loss = 9.7324
+[cur/total]=[2/5], loss = 8.6575
+[cur/total]=[3/5], loss = 8.0212
+[cur/total]=[4/5], loss = 7.6245
+[cur/total]=[5/5], loss = 7.3576
+[cur/total]=[1/5], loss = 4.8580
+[cur/total]=[2/5], loss = 7.1326
+[cur/total]=[3/5], loss = 8.9483
+[cur/total]=[4/5], loss = 9.7188
+[cur/total]=[5/5], loss = 10.1287
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:47:58 in 35 trial best: 13.72630692, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 20.9372
+[cur/total]=[2/5], loss = 18.4134
+[cur/total]=[3/5], loss = 18.6550
+[cur/total]=[4/5], loss = 18.9014
+[cur/total]=[5/5], loss = 19.0738
+[cur/total]=[1/5], loss = 10.6285
+[cur/total]=[2/5], loss = 10.4690
+[cur/total]=[3/5], loss = 10.3339
+[cur/total]=[4/5], loss = 10.2062
+[cur/total]=[5/5], loss = 10.0805
+[cur/total]=[1/5], loss = 17.5611
+[cur/total]=[2/5], loss = 11.8783
+[cur/total]=[3/5], loss = 9.7424
+[cur/total]=[4/5], loss = 8.6264
+[cur/total]=[5/5], loss = 8.0108
+[cur/total]=[1/5], loss = 31.7927
+[cur/total]=[2/5], loss = 28.8619
+[cur/total]=[3/5], loss = 26.5613
+[cur/total]=[4/5], loss = 24.6835
+[cur/total]=[5/5], loss = 23.0963
+[cur/total]=[1/5], loss = 820.9014
+[cur/total]=[2/5], loss = 764.8204
+[cur/total]=[3/5], loss = 713.0544
+[cur/total]=[4/5], loss = 665.1421
+[cur/total]=[5/5], loss = 620.6910
+[cur/total]=[1/5], loss = 13.4027
+[cur/total]=[2/5], loss = 11.8149
+[cur/total]=[3/5], loss = 10.9123
+[cur/total]=[4/5], loss = 10.3126
+[cur/total]=[5/5], loss = 9.8810
+[cur/total]=[1/5], loss = 10.2135
+[cur/total]=[2/5], loss = 10.6227
+[cur/total]=[3/5], loss = 11.0565
+[cur/total]=[4/5], loss = 11.4713
+[cur/total]=[5/5], loss = 11.7987
+[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.
+[AutoTune] Warm in 0 trial best: 148.14170837, history best: 148.14170837402344
+[AutoTune] Warm in 1 trial best: 209.85691833, history best: 148.14170837402344
+[AutoTune] Warm in 2 trial best: 153.99766541, history best: 148.14170837402344
+Try Random Search: Current time: 2024-05-09 19:48:12 in trial 35
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:49:18 in 36 trial best: 149.31642151, history best: 2.135061264038086
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:52:00 in 37 trial best: 11.22340202, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 108.8227
+[cur/total]=[2/5], loss = 51.7050
+[cur/total]=[3/5], loss = 27.9987
+[cur/total]=[4/5], loss = 16.8045
+[cur/total]=[5/5], loss = 12.0148
+[cur/total]=[1/5], loss = 2.8097
+[cur/total]=[2/5], loss = 1.3651
+[cur/total]=[3/5], loss = 1.2215
+[cur/total]=[4/5], loss = 1.1555
+[cur/total]=[5/5], loss = 1.1072
+[cur/total]=[1/5], loss = 14.1246
+[cur/total]=[2/5], loss = 14.7227
+[cur/total]=[3/5], loss = 22.4964
+[cur/total]=[4/5], loss = 26.9542
+[cur/total]=[5/5], loss = 27.9387
+[cur/total]=[1/5], loss = 5116.8550
+[cur/total]=[2/5], loss = 4780.3354
+[cur/total]=[3/5], loss = 4457.4580
+[cur/total]=[4/5], loss = 4150.9834
+[cur/total]=[5/5], loss = 3861.6343
+[cur/total]=[1/5], loss = 110.6803
+[cur/total]=[2/5], loss = 59.5292
+[cur/total]=[3/5], loss = 50.8217
+[cur/total]=[4/5], loss = 45.9555
+[cur/total]=[5/5], loss = 41.6529
+[cur/total]=[1/5], loss = 58.3920
+[cur/total]=[2/5], loss = 45.4748
+[cur/total]=[3/5], loss = 36.5214
+[cur/total]=[4/5], loss = 30.2335
+[cur/total]=[5/5], loss = 25.8577
+[cur/total]=[1/5], loss = 46.1575
+[cur/total]=[2/5], loss = 20.6378
+[cur/total]=[3/5], loss = 21.6321
+[cur/total]=[4/5], loss = 22.3864
+[cur/total]=[5/5], loss = 22.5512
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:55:50 in 38 trial best: 11.28651714, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 9.5807
+[cur/total]=[2/5], loss = 8.0214
+[cur/total]=[3/5], loss = 7.4556
+[cur/total]=[4/5], loss = 7.0496
+[cur/total]=[5/5], loss = 6.7248
+[cur/total]=[1/5], loss = 2.6869
+[cur/total]=[2/5], loss = 2.5299
+[cur/total]=[3/5], loss = 2.3876
+[cur/total]=[4/5], loss = 2.2590
+[cur/total]=[5/5], loss = 2.1428
+[cur/total]=[1/5], loss = 19.3225
+[cur/total]=[2/5], loss = 8.8389
+[cur/total]=[3/5], loss = 7.0645
+[cur/total]=[4/5], loss = 6.4017
+[cur/total]=[5/5], loss = 6.0232
+[cur/total]=[1/5], loss = 1726.9525
+[cur/total]=[2/5], loss = 1663.4275
+[cur/total]=[3/5], loss = 1602.2721
+[cur/total]=[4/5], loss = 1543.3281
+[cur/total]=[5/5], loss = 1486.4419
+[cur/total]=[1/5], loss = 46.3481
+[cur/total]=[2/5], loss = 41.7029
+[cur/total]=[3/5], loss = 37.7671
+[cur/total]=[4/5], loss = 34.3858
+[cur/total]=[5/5], loss = 31.4731
+[cur/total]=[1/5], loss = 25.5748
+[cur/total]=[2/5], loss = 24.1388
+[cur/total]=[3/5], loss = 23.0474
+[cur/total]=[4/5], loss = 22.1406
+[cur/total]=[5/5], loss = 21.3402
+[cur/total]=[1/5], loss = 15.7032
+[cur/total]=[2/5], loss = 6.1124
+[cur/total]=[3/5], loss = 5.6267
+[cur/total]=[4/5], loss = 5.3561
+[cur/total]=[5/5], loss = 5.1481
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 19:59:37 in 39 trial best: 11.25223446, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 5.5091
+[cur/total]=[2/5], loss = 5.1579
+[cur/total]=[3/5], loss = 4.8994
+[cur/total]=[4/5], loss = 4.6805
+[cur/total]=[5/5], loss = 4.4938
+[cur/total]=[1/5], loss = 2.3358
+[cur/total]=[2/5], loss = 2.1512
+[cur/total]=[3/5], loss = 1.9919
+[cur/total]=[4/5], loss = 1.8542
+[cur/total]=[5/5], loss = 1.7350
+[cur/total]=[1/5], loss = 5.4355
+[cur/total]=[2/5], loss = 5.2792
+[cur/total]=[3/5], loss = 5.1351
+[cur/total]=[4/5], loss = 4.9994
+[cur/total]=[5/5], loss = 4.8704
+[cur/total]=[1/5], loss = 2628.8359
+[cur/total]=[2/5], loss = 2515.1062
+[cur/total]=[3/5], loss = 2405.5315
+[cur/total]=[4/5], loss = 2300.2185
+[cur/total]=[5/5], loss = 2199.1230
+[cur/total]=[1/5], loss = 283.8540
+[cur/total]=[2/5], loss = 259.8849
+[cur/total]=[3/5], loss = 237.4800
+[cur/total]=[4/5], loss = 216.6776
+[cur/total]=[5/5], loss = 197.4464
+[cur/total]=[1/5], loss = 20.2717
+[cur/total]=[2/5], loss = 19.2039
+[cur/total]=[3/5], loss = 18.4158
+[cur/total]=[4/5], loss = 17.7515
+[cur/total]=[5/5], loss = 17.1476
+[cur/total]=[1/5], loss = 4.3572
+[cur/total]=[2/5], loss = 4.2350
+[cur/total]=[3/5], loss = 4.1301
+[cur/total]=[4/5], loss = 4.0326
+[cur/total]=[5/5], loss = 3.9408
+[AutoTune] Update DQN target net in 39 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:03:17 in 40 trial best: 11.27570820, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 6.2031
+[cur/total]=[2/5], loss = 5.8311
+[cur/total]=[3/5], loss = 5.5895
+[cur/total]=[4/5], loss = 5.3911
+[cur/total]=[5/5], loss = 5.2220
+[cur/total]=[1/5], loss = 3.4153
+[cur/total]=[2/5], loss = 3.0644
+[cur/total]=[3/5], loss = 2.8019
+[cur/total]=[4/5], loss = 2.6051
+[cur/total]=[5/5], loss = 2.4565
+[cur/total]=[1/5], loss = 7.7796
+[cur/total]=[2/5], loss = 6.5916
+[cur/total]=[3/5], loss = 6.3402
+[cur/total]=[4/5], loss = 6.1386
+[cur/total]=[5/5], loss = 5.9568
+[cur/total]=[1/5], loss = 1475.4890
+[cur/total]=[2/5], loss = 1428.4696
+[cur/total]=[3/5], loss = 1382.8973
+[cur/total]=[4/5], loss = 1338.7061
+[cur/total]=[5/5], loss = 1295.8312
+[cur/total]=[1/5], loss = 171.1761
+[cur/total]=[2/5], loss = 149.3610
+[cur/total]=[3/5], loss = 133.0946
+[cur/total]=[4/5], loss = 120.4350
+[cur/total]=[5/5], loss = 110.0660
+[cur/total]=[1/5], loss = 17.1306
+[cur/total]=[2/5], loss = 13.4991
+[cur/total]=[3/5], loss = 11.4710
+[cur/total]=[4/5], loss = 10.3756
+[cur/total]=[5/5], loss = 9.7636
+[cur/total]=[1/5], loss = 8.0900
+[cur/total]=[2/5], loss = 4.6156
+[cur/total]=[3/5], loss = 4.0244
+[cur/total]=[4/5], loss = 3.7305
+[cur/total]=[5/5], loss = 3.5329
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:06:56 in 41 trial best: 3.64873815, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 5.5054
+[cur/total]=[2/5], loss = 5.1950
+[cur/total]=[3/5], loss = 5.0033
+[cur/total]=[4/5], loss = 4.8465
+[cur/total]=[5/5], loss = 4.7082
+[cur/total]=[1/5], loss = 2.8360
+[cur/total]=[2/5], loss = 2.7302
+[cur/total]=[3/5], loss = 2.6389
+[cur/total]=[4/5], loss = 2.5593
+[cur/total]=[5/5], loss = 2.4886
+[cur/total]=[1/5], loss = 5.4428
+[cur/total]=[2/5], loss = 5.2734
+[cur/total]=[3/5], loss = 5.1179
+[cur/total]=[4/5], loss = 4.9736
+[cur/total]=[5/5], loss = 4.8384
+[cur/total]=[1/5], loss = 1087.3936
+[cur/total]=[2/5], loss = 1056.7706
+[cur/total]=[3/5], loss = 1026.8953
+[cur/total]=[4/5], loss = 997.7322
+[cur/total]=[5/5], loss = 969.2531
+[cur/total]=[1/5], loss = 25.4024
+[cur/total]=[2/5], loss = 23.7451
+[cur/total]=[3/5], loss = 22.3878
+[cur/total]=[4/5], loss = 21.2504
+[cur/total]=[5/5], loss = 20.2764
+[cur/total]=[1/5], loss = 8.4281
+[cur/total]=[2/5], loss = 8.0839
+[cur/total]=[3/5], loss = 7.8319
+[cur/total]=[4/5], loss = 7.6224
+[cur/total]=[5/5], loss = 7.4347
+[cur/total]=[1/5], loss = 2.9588
+[cur/total]=[2/5], loss = 2.6984
+[cur/total]=[3/5], loss = 2.5350
+[cur/total]=[4/5], loss = 2.4050
+[cur/total]=[5/5], loss = 2.2946
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:10:25 in 42 trial best: 2.10390806, history best: 2.135061264038086
+[cur/total]=[1/5], loss = 4.6239
+[cur/total]=[2/5], loss = 4.3272
+[cur/total]=[3/5], loss = 4.1311
+[cur/total]=[4/5], loss = 3.9725
+[cur/total]=[5/5], loss = 3.8343
+[cur/total]=[1/5], loss = 2.4019
+[cur/total]=[2/5], loss = 2.2884
+[cur/total]=[3/5], loss = 2.1918
+[cur/total]=[4/5], loss = 2.1091
+[cur/total]=[5/5], loss = 2.0381
+[cur/total]=[1/5], loss = 6.0323
+[cur/total]=[2/5], loss = 5.7278
+[cur/total]=[3/5], loss = 5.4505
+[cur/total]=[4/5], loss = 5.1933
+[cur/total]=[5/5], loss = 4.9535
+[cur/total]=[1/5], loss = 842.8344
+[cur/total]=[2/5], loss = 820.2813
+[cur/total]=[3/5], loss = 798.1780
+[cur/total]=[4/5], loss = 776.5098
+[cur/total]=[5/5], loss = 755.2622
+[cur/total]=[1/5], loss = 90.1732
+[cur/total]=[2/5], loss = 82.8040
+[cur/total]=[3/5], loss = 76.0141
+[cur/total]=[4/5], loss = 69.7537
+[cur/total]=[5/5], loss = 63.9829
+[cur/total]=[1/5], loss = 6.8100
+[cur/total]=[2/5], loss = 6.5484
+[cur/total]=[3/5], loss = 6.3088
+[cur/total]=[4/5], loss = 6.0860
+[cur/total]=[5/5], loss = 5.8768
+[cur/total]=[1/5], loss = 2.2634
+[cur/total]=[2/5], loss = 1.9491
+[cur/total]=[3/5], loss = 1.8638
+[cur/total]=[4/5], loss = 1.7983
+[cur/total]=[5/5], loss = 1.7396
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:13:33 in 43 trial best: 2.04462504, history best: 2.103908061981201
+[cur/total]=[1/5], loss = 3.5257
+[cur/total]=[2/5], loss = 3.1525
+[cur/total]=[3/5], loss = 2.9372
+[cur/total]=[4/5], loss = 2.7908
+[cur/total]=[5/5], loss = 2.6839
+[cur/total]=[1/5], loss = 1.6242
+[cur/total]=[2/5], loss = 1.5453
+[cur/total]=[3/5], loss = 1.4811
+[cur/total]=[4/5], loss = 1.4287
+[cur/total]=[5/5], loss = 1.3853
+[cur/total]=[1/5], loss = 4.0083
+[cur/total]=[2/5], loss = 3.8587
+[cur/total]=[3/5], loss = 3.7678
+[cur/total]=[4/5], loss = 3.6833
+[cur/total]=[5/5], loss = 3.6027
+[cur/total]=[1/5], loss = 738.3137
+[cur/total]=[2/5], loss = 718.2123
+[cur/total]=[3/5], loss = 698.4570
+[cur/total]=[4/5], loss = 679.0383
+[cur/total]=[5/5], loss = 659.9481
+[cur/total]=[1/5], loss = 20.3171
+[cur/total]=[2/5], loss = 19.4598
+[cur/total]=[3/5], loss = 18.7617
+[cur/total]=[4/5], loss = 18.1733
+[cur/total]=[5/5], loss = 17.6595
+[cur/total]=[1/5], loss = 21.4758
+[cur/total]=[2/5], loss = 12.0283
+[cur/total]=[3/5], loss = 9.0198
+[cur/total]=[4/5], loss = 8.3133
+[cur/total]=[5/5], loss = 7.9807
+[cur/total]=[1/5], loss = 3.0843
+[cur/total]=[2/5], loss = 2.9660
+[cur/total]=[3/5], loss = 2.8714
+[cur/total]=[4/5], loss = 2.7840
+[cur/total]=[5/5], loss = 2.7015
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:16:46 in 44 trial best: 2.03343487, history best: 2.0446250438690186
+[cur/total]=[1/5], loss = 2.9112
+[cur/total]=[2/5], loss = 2.6285
+[cur/total]=[3/5], loss = 2.4116
+[cur/total]=[4/5], loss = 2.2418
+[cur/total]=[5/5], loss = 2.1072
+[cur/total]=[1/5], loss = 1.3849
+[cur/total]=[2/5], loss = 1.3331
+[cur/total]=[3/5], loss = 1.2890
+[cur/total]=[4/5], loss = 1.2506
+[cur/total]=[5/5], loss = 1.2163
+[cur/total]=[1/5], loss = 4.6630
+[cur/total]=[2/5], loss = 4.5190
+[cur/total]=[3/5], loss = 4.3919
+[cur/total]=[4/5], loss = 4.2706
+[cur/total]=[5/5], loss = 4.1538
+[cur/total]=[1/5], loss = 639.6341
+[cur/total]=[2/5], loss = 620.8355
+[cur/total]=[3/5], loss = 602.3491
+[cur/total]=[4/5], loss = 584.1695
+[cur/total]=[5/5], loss = 566.2935
+[cur/total]=[1/5], loss = 17.2630
+[cur/total]=[2/5], loss = 16.7774
+[cur/total]=[3/5], loss = 16.3425
+[cur/total]=[4/5], loss = 15.9461
+[cur/total]=[5/5], loss = 15.5788
+[cur/total]=[1/5], loss = 8.3156
+[cur/total]=[2/5], loss = 7.0782
+[cur/total]=[3/5], loss = 6.3904
+[cur/total]=[4/5], loss = 6.0120
+[cur/total]=[5/5], loss = 5.7818
+[cur/total]=[1/5], loss = 5.0115
+[cur/total]=[2/5], loss = 4.8530
+[cur/total]=[3/5], loss = 4.7551
+[cur/total]=[4/5], loss = 4.6672
+[cur/total]=[5/5], loss = 4.5862
+[AutoTune] Q searching Current time: 2024-05-09 20:19:57 in 45 trial best: 2.03655148, history best: 2.0334348678588867
+[cur/total]=[1/5], loss = 2.8538
+[cur/total]=[2/5], loss = 2.5494
+[cur/total]=[3/5], loss = 2.4677
+[cur/total]=[4/5], loss = 2.4149
+[cur/total]=[5/5], loss = 2.3662
+[cur/total]=[1/5], loss = 1.4366
+[cur/total]=[2/5], loss = 1.3439
+[cur/total]=[3/5], loss = 1.2779
+[cur/total]=[4/5], loss = 1.2287
+[cur/total]=[5/5], loss = 1.1900
+[cur/total]=[1/5], loss = 6.3748
+[cur/total]=[2/5], loss = 6.1115
+[cur/total]=[3/5], loss = 5.9070
+[cur/total]=[4/5], loss = 5.7088
+[cur/total]=[5/5], loss = 5.5166
+[cur/total]=[1/5], loss = 551.6626
+[cur/total]=[2/5], loss = 534.8347
+[cur/total]=[3/5], loss = 518.3076
+[cur/total]=[4/5], loss = 502.0781
+[cur/total]=[5/5], loss = 486.1437
+[cur/total]=[1/5], loss = 9.6472
+[cur/total]=[2/5], loss = 9.3988
+[cur/total]=[3/5], loss = 9.1875
+[cur/total]=[4/5], loss = 8.9993
+[cur/total]=[5/5], loss = 8.8261
+[cur/total]=[1/5], loss = 6.0639
+[cur/total]=[2/5], loss = 5.8923
+[cur/total]=[3/5], loss = 5.7391
+[cur/total]=[4/5], loss = 5.5944
+[cur/total]=[5/5], loss = 5.4542
+[cur/total]=[1/5], loss = 5.8987
+[cur/total]=[2/5], loss = 5.5601
+[cur/total]=[3/5], loss = 5.4375
+[cur/total]=[4/5], loss = 5.3480
+[cur/total]=[5/5], loss = 5.2762
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:23:15 in 46 trial best: 2.03170681, history best: 2.0334348678588867
+[cur/total]=[1/5], loss = 2.9814
+[cur/total]=[2/5], loss = 2.2512
+[cur/total]=[3/5], loss = 1.8729
+[cur/total]=[4/5], loss = 1.6597
+[cur/total]=[5/5], loss = 1.5330
+[cur/total]=[1/5], loss = 1.0454
+[cur/total]=[2/5], loss = 1.0115
+[cur/total]=[3/5], loss = 0.9846
+[cur/total]=[4/5], loss = 0.9627
+[cur/total]=[5/5], loss = 0.9442
+[cur/total]=[1/5], loss = 6.0819
+[cur/total]=[2/5], loss = 5.8759
+[cur/total]=[3/5], loss = 5.6780
+[cur/total]=[4/5], loss = 5.4856
+[cur/total]=[5/5], loss = 5.2980
+[cur/total]=[1/5], loss = 15.1639
+[cur/total]=[2/5], loss = 14.5596
+[cur/total]=[3/5], loss = 13.9766
+[cur/total]=[4/5], loss = 13.4143
+[cur/total]=[5/5], loss = 12.8723
+[cur/total]=[1/5], loss = 11.7864
+[cur/total]=[2/5], loss = 11.6194
+[cur/total]=[3/5], loss = 11.4533
+[cur/total]=[4/5], loss = 11.2881
+[cur/total]=[5/5], loss = 11.1236
+[cur/total]=[1/5], loss = 6.0517
+[cur/total]=[2/5], loss = 5.7909
+[cur/total]=[3/5], loss = 5.5421
+[cur/total]=[4/5], loss = 5.3039
+[cur/total]=[5/5], loss = 5.0757
+[cur/total]=[1/5], loss = 8.0874
+[cur/total]=[2/5], loss = 7.8269
+[cur/total]=[3/5], loss = 7.6396
+[cur/total]=[4/5], loss = 7.4923
+[cur/total]=[5/5], loss = 7.3751
+[AutoTune] Q searching Current time: 2024-05-09 20:26:42 in 47 trial best: 2.03470898, history best: 2.0317068099975586
+[cur/total]=[1/5], loss = 2.5214
+[cur/total]=[2/5], loss = 2.2624
+[cur/total]=[3/5], loss = 2.1399
+[cur/total]=[4/5], loss = 2.0357
+[cur/total]=[5/5], loss = 1.9430
+[cur/total]=[1/5], loss = 1.8806
+[cur/total]=[2/5], loss = 1.7757
+[cur/total]=[3/5], loss = 1.6983
+[cur/total]=[4/5], loss = 1.6387
+[cur/total]=[5/5], loss = 1.5906
+[cur/total]=[1/5], loss = 1.6290
+[cur/total]=[2/5], loss = 1.5178
+[cur/total]=[3/5], loss = 1.4666
+[cur/total]=[4/5], loss = 1.4219
+[cur/total]=[5/5], loss = 1.3818
+[cur/total]=[1/5], loss = 195.2344
+[cur/total]=[2/5], loss = 186.8445
+[cur/total]=[3/5], loss = 178.6464
+[cur/total]=[4/5], loss = 170.6514
+[cur/total]=[5/5], loss = 162.8670
+[cur/total]=[1/5], loss = 53.8231
+[cur/total]=[2/5], loss = 46.7844
+[cur/total]=[3/5], loss = 40.5036
+[cur/total]=[4/5], loss = 34.9906
+[cur/total]=[5/5], loss = 30.2112
+[cur/total]=[1/5], loss = 4.3454
+[cur/total]=[2/5], loss = 4.1982
+[cur/total]=[3/5], loss = 4.0635
+[cur/total]=[4/5], loss = 3.9357
+[cur/total]=[5/5], loss = 3.8130
+[cur/total]=[1/5], loss = 3.7214
+[cur/total]=[2/5], loss = 3.5499
+[cur/total]=[3/5], loss = 3.4406
+[cur/total]=[4/5], loss = 3.3446
+[cur/total]=[5/5], loss = 3.2580
+[AutoTune] Update DQN target net in 47 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:30:00 in 48 trial best: 2.05442929, history best: 2.0317068099975586
+[cur/total]=[1/5], loss = 3.0296
+[cur/total]=[2/5], loss = 1.9655
+[cur/total]=[3/5], loss = 1.6654
+[cur/total]=[4/5], loss = 1.5416
+[cur/total]=[5/5], loss = 1.4518
+[cur/total]=[1/5], loss = 0.7417
+[cur/total]=[2/5], loss = 0.6003
+[cur/total]=[3/5], loss = 0.5594
+[cur/total]=[4/5], loss = 0.5403
+[cur/total]=[5/5], loss = 0.5248
+[cur/total]=[1/5], loss = 5.5068
+[cur/total]=[2/5], loss = 5.1053
+[cur/total]=[3/5], loss = 4.8483
+[cur/total]=[4/5], loss = 4.6042
+[cur/total]=[5/5], loss = 4.3711
+[cur/total]=[1/5], loss = 11.9762
+[cur/total]=[2/5], loss = 11.6962
+[cur/total]=[3/5], loss = 11.4222
+[cur/total]=[4/5], loss = 11.1543
+[cur/total]=[5/5], loss = 10.8920
+[cur/total]=[1/5], loss = 27.8096
+[cur/total]=[2/5], loss = 23.9564
+[cur/total]=[3/5], loss = 20.8776
+[cur/total]=[4/5], loss = 18.4091
+[cur/total]=[5/5], loss = 16.4303
+[cur/total]=[1/5], loss = 6.8710
+[cur/total]=[2/5], loss = 4.5238
+[cur/total]=[3/5], loss = 3.6155
+[cur/total]=[4/5], loss = 3.3001
+[cur/total]=[5/5], loss = 3.1360
+[cur/total]=[1/5], loss = 10.5089
+[cur/total]=[2/5], loss = 9.1299
+[cur/total]=[3/5], loss = 8.1635
+[cur/total]=[4/5], loss = 7.4294
+[cur/total]=[5/5], loss = 6.8483
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:33:22 in 49 trial best: 2.04140329, history best: 2.0317068099975586
+[cur/total]=[1/5], loss = 1.4386
+[cur/total]=[2/5], loss = 1.1320
+[cur/total]=[3/5], loss = 1.0790
+[cur/total]=[4/5], loss = 1.0343
+[cur/total]=[5/5], loss = 0.9937
+[cur/total]=[1/5], loss = 0.4300
+[cur/total]=[2/5], loss = 0.3964
+[cur/total]=[3/5], loss = 0.3719
+[cur/total]=[4/5], loss = 0.3529
+[cur/total]=[5/5], loss = 0.3377
+[cur/total]=[1/5], loss = 3.4372
+[cur/total]=[2/5], loss = 3.2945
+[cur/total]=[3/5], loss = 3.1576
+[cur/total]=[4/5], loss = 3.0257
+[cur/total]=[5/5], loss = 2.8986
+[cur/total]=[1/5], loss = 213.9263
+[cur/total]=[2/5], loss = 202.9768
+[cur/total]=[3/5], loss = 192.3405
+[cur/total]=[4/5], loss = 182.0450
+[cur/total]=[5/5], loss = 172.1064
+[cur/total]=[1/5], loss = 17.6751
+[cur/total]=[2/5], loss = 15.2045
+[cur/total]=[3/5], loss = 13.2583
+[cur/total]=[4/5], loss = 11.7328
+[cur/total]=[5/5], loss = 10.5385
+[cur/total]=[1/5], loss = 3.9915
+[cur/total]=[2/5], loss = 3.5771
+[cur/total]=[3/5], loss = 3.3156
+[cur/total]=[4/5], loss = 3.1255
+[cur/total]=[5/5], loss = 2.9692
+[cur/total]=[1/5], loss = 8.6087
+[cur/total]=[2/5], loss = 8.2074
+[cur/total]=[3/5], loss = 7.9034
+[cur/total]=[4/5], loss = 7.6676
+[cur/total]=[5/5], loss = 7.4848
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:36:28 in 50 trial best: 2.02577996, history best: 2.0317068099975586
+[cur/total]=[1/5], loss = 1.7088
+[cur/total]=[2/5], loss = 1.6130
+[cur/total]=[3/5], loss = 1.5344
+[cur/total]=[4/5], loss = 1.4642
+[cur/total]=[5/5], loss = 1.4007
+[cur/total]=[1/5], loss = 0.4106
+[cur/total]=[2/5], loss = 0.4426
+[cur/total]=[3/5], loss = 0.4655
+[cur/total]=[4/5], loss = 0.4740
+[cur/total]=[5/5], loss = 0.4799
+[cur/total]=[1/5], loss = 2.6402
+[cur/total]=[2/5], loss = 2.6336
+[cur/total]=[3/5], loss = 2.8146
+[cur/total]=[4/5], loss = 3.1058
+[cur/total]=[5/5], loss = 3.2932
+[cur/total]=[1/5], loss = 27.7887
+[cur/total]=[2/5], loss = 25.9660
+[cur/total]=[3/5], loss = 24.2295
+[cur/total]=[4/5], loss = 22.5826
+[cur/total]=[5/5], loss = 21.0258
+[cur/total]=[1/5], loss = 13.8452
+[cur/total]=[2/5], loss = 12.5324
+[cur/total]=[3/5], loss = 11.5791
+[cur/total]=[4/5], loss = 10.7710
+[cur/total]=[5/5], loss = 10.0704
+[cur/total]=[1/5], loss = 3.8240
+[cur/total]=[2/5], loss = 3.5646
+[cur/total]=[3/5], loss = 3.3220
+[cur/total]=[4/5], loss = 3.0959
+[cur/total]=[5/5], loss = 2.8856
+[cur/total]=[1/5], loss = 5.7273
+[cur/total]=[2/5], loss = 5.5298
+[cur/total]=[3/5], loss = 5.4093
+[cur/total]=[4/5], loss = 5.3233
+[cur/total]=[5/5], loss = 5.2578
+[AutoTune] Q searching Current time: 2024-05-09 20:39:37 in 51 trial best: 2.04060936, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 1.6026
+[cur/total]=[2/5], loss = 1.5019
+[cur/total]=[3/5], loss = 1.4191
+[cur/total]=[4/5], loss = 1.3522
+[cur/total]=[5/5], loss = 1.3023
+[cur/total]=[1/5], loss = 0.4594
+[cur/total]=[2/5], loss = 0.4290
+[cur/total]=[3/5], loss = 0.4131
+[cur/total]=[4/5], loss = 0.4015
+[cur/total]=[5/5], loss = 0.3918
+[cur/total]=[1/5], loss = 2.0973
+[cur/total]=[2/5], loss = 1.5667
+[cur/total]=[3/5], loss = 1.3690
+[cur/total]=[4/5], loss = 1.2616
+[cur/total]=[5/5], loss = 1.1908
+[cur/total]=[1/5], loss = 7.2380
+[cur/total]=[2/5], loss = 6.7234
+[cur/total]=[3/5], loss = 6.2614
+[cur/total]=[4/5], loss = 5.8466
+[cur/total]=[5/5], loss = 5.4737
+[cur/total]=[1/5], loss = 7.2968
+[cur/total]=[2/5], loss = 6.9931
+[cur/total]=[3/5], loss = 6.7002
+[cur/total]=[4/5], loss = 6.4155
+[cur/total]=[5/5], loss = 6.1426
+[cur/total]=[1/5], loss = 4.5968
+[cur/total]=[2/5], loss = 3.7908
+[cur/total]=[3/5], loss = 3.3473
+[cur/total]=[4/5], loss = 3.0730
+[cur/total]=[5/5], loss = 2.8682
+[cur/total]=[1/5], loss = 6.9165
+[cur/total]=[2/5], loss = 6.5912
+[cur/total]=[3/5], loss = 6.3663
+[cur/total]=[4/5], loss = 6.2135
+[cur/total]=[5/5], loss = 6.1106
+[AutoTune] Q searching Current time: 2024-05-09 20:42:25 in 52 trial best: 2.02741051, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 1.2983
+[cur/total]=[2/5], loss = 1.0792
+[cur/total]=[3/5], loss = 0.9347
+[cur/total]=[4/5], loss = 0.8379
+[cur/total]=[5/5], loss = 0.7692
+[cur/total]=[1/5], loss = 0.5624
+[cur/total]=[2/5], loss = 0.5400
+[cur/total]=[3/5], loss = 0.5240
+[cur/total]=[4/5], loss = 0.5098
+[cur/total]=[5/5], loss = 0.4965
+[cur/total]=[1/5], loss = 1.0684
+[cur/total]=[2/5], loss = 0.8926
+[cur/total]=[3/5], loss = 0.8605
+[cur/total]=[4/5], loss = 0.8315
+[cur/total]=[5/5], loss = 0.8053
+[cur/total]=[1/5], loss = 19.2090
+[cur/total]=[2/5], loss = 17.6472
+[cur/total]=[3/5], loss = 16.2039
+[cur/total]=[4/5], loss = 14.8704
+[cur/total]=[5/5], loss = 13.6392
+[cur/total]=[1/5], loss = 9.4964
+[cur/total]=[2/5], loss = 8.9370
+[cur/total]=[3/5], loss = 8.5441
+[cur/total]=[4/5], loss = 8.2161
+[cur/total]=[5/5], loss = 7.9195
+[cur/total]=[1/5], loss = 3.0215
+[cur/total]=[2/5], loss = 1.9078
+[cur/total]=[3/5], loss = 1.7083
+[cur/total]=[4/5], loss = 1.6360
+[cur/total]=[5/5], loss = 1.5729
+[cur/total]=[1/5], loss = 6.5847
+[cur/total]=[2/5], loss = 6.3730
+[cur/total]=[3/5], loss = 6.2686
+[cur/total]=[4/5], loss = 6.1865
+[cur/total]=[5/5], loss = 6.1213
+[AutoTune] Q searching Current time: 2024-05-09 20:45:11 in 53 trial best: 2.06615996, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 2.1192
+[cur/total]=[2/5], loss = 0.8553
+[cur/total]=[3/5], loss = 0.7807
+[cur/total]=[4/5], loss = 0.7458
+[cur/total]=[5/5], loss = 0.7333
+[cur/total]=[1/5], loss = 0.2559
+[cur/total]=[2/5], loss = 0.2451
+[cur/total]=[3/5], loss = 0.2368
+[cur/total]=[4/5], loss = 0.2296
+[cur/total]=[5/5], loss = 0.2232
+[cur/total]=[1/5], loss = 0.5578
+[cur/total]=[2/5], loss = 0.5264
+[cur/total]=[3/5], loss = 0.5042
+[cur/total]=[4/5], loss = 0.4874
+[cur/total]=[5/5], loss = 0.4736
+[cur/total]=[1/5], loss = 12.3203
+[cur/total]=[2/5], loss = 11.2319
+[cur/total]=[3/5], loss = 10.2309
+[cur/total]=[4/5], loss = 9.3131
+[cur/total]=[5/5], loss = 8.4738
+[cur/total]=[1/5], loss = 7.2135
+[cur/total]=[2/5], loss = 6.2485
+[cur/total]=[3/5], loss = 5.6294
+[cur/total]=[4/5], loss = 5.2076
+[cur/total]=[5/5], loss = 4.8903
+[cur/total]=[1/5], loss = 3.6259
+[cur/total]=[2/5], loss = 3.4466
+[cur/total]=[3/5], loss = 3.2776
+[cur/total]=[4/5], loss = 3.1181
+[cur/total]=[5/5], loss = 2.9678
+[cur/total]=[1/5], loss = 5.5432
+[cur/total]=[2/5], loss = 5.1007
+[cur/total]=[3/5], loss = 5.0001
+[cur/total]=[4/5], loss = 4.9317
+[cur/total]=[5/5], loss = 4.8793
+[AutoTune] Q searching Current time: 2024-05-09 20:47:57 in 54 trial best: 2.11891890, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 0.9285
+[cur/total]=[2/5], loss = 0.8163
+[cur/total]=[3/5], loss = 0.7584
+[cur/total]=[4/5], loss = 0.7179
+[cur/total]=[5/5], loss = 0.6872
+[cur/total]=[1/5], loss = 0.5069
+[cur/total]=[2/5], loss = 0.4383
+[cur/total]=[3/5], loss = 0.4270
+[cur/total]=[4/5], loss = 0.4259
+[cur/total]=[5/5], loss = 0.4289
+[cur/total]=[1/5], loss = 1.0618
+[cur/total]=[2/5], loss = 1.0112
+[cur/total]=[3/5], loss = 0.9653
+[cur/total]=[4/5], loss = 0.9258
+[cur/total]=[5/5], loss = 0.8981
+[cur/total]=[1/5], loss = 4.5799
+[cur/total]=[2/5], loss = 4.4044
+[cur/total]=[3/5], loss = 4.2371
+[cur/total]=[4/5], loss = 4.0781
+[cur/total]=[5/5], loss = 3.9271
+[cur/total]=[1/5], loss = 4.2092
+[cur/total]=[2/5], loss = 4.0281
+[cur/total]=[3/5], loss = 3.8556
+[cur/total]=[4/5], loss = 3.6913
+[cur/total]=[5/5], loss = 3.5346
+[cur/total]=[1/5], loss = 3.3747
+[cur/total]=[2/5], loss = 3.1996
+[cur/total]=[3/5], loss = 3.0503
+[cur/total]=[4/5], loss = 2.9181
+[cur/total]=[5/5], loss = 2.7984
+[cur/total]=[1/5], loss = 6.1116
+[cur/total]=[2/5], loss = 5.8431
+[cur/total]=[3/5], loss = 5.6616
+[cur/total]=[4/5], loss = 5.5400
+[cur/total]=[5/5], loss = 5.4577
+[AutoTune] Q searching Current time: 2024-05-09 20:50:47 in 55 trial best: 2.04212809, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 0.5845
+[cur/total]=[2/5], loss = 0.5327
+[cur/total]=[3/5], loss = 0.5008
+[cur/total]=[4/5], loss = 0.4798
+[cur/total]=[5/5], loss = 0.4645
+[cur/total]=[1/5], loss = 0.0821
+[cur/total]=[2/5], loss = 0.0604
+[cur/total]=[3/5], loss = 0.0503
+[cur/total]=[4/5], loss = 0.0443
+[cur/total]=[5/5], loss = 0.0404
+[cur/total]=[1/5], loss = 0.5286
+[cur/total]=[2/5], loss = 0.4705
+[cur/total]=[3/5], loss = 0.4452
+[cur/total]=[4/5], loss = 0.4294
+[cur/total]=[5/5], loss = 0.4176
+[cur/total]=[1/5], loss = 1.6841
+[cur/total]=[2/5], loss = 1.6423
+[cur/total]=[3/5], loss = 1.6020
+[cur/total]=[4/5], loss = 1.5628
+[cur/total]=[5/5], loss = 1.5248
+[cur/total]=[1/5], loss = 3.1187
+[cur/total]=[2/5], loss = 2.8166
+[cur/total]=[3/5], loss = 2.6692
+[cur/total]=[4/5], loss = 2.5301
+[cur/total]=[5/5], loss = 2.3987
+[cur/total]=[1/5], loss = 9.7532
+[cur/total]=[2/5], loss = 5.0717
+[cur/total]=[3/5], loss = 3.5092
+[cur/total]=[4/5], loss = 3.1355
+[cur/total]=[5/5], loss = 2.9678
+[cur/total]=[1/5], loss = 9.1595
+[cur/total]=[2/5], loss = 5.6445
+[cur/total]=[3/5], loss = 5.3282
+[cur/total]=[4/5], loss = 5.1523
+[cur/total]=[5/5], loss = 5.0533
+[AutoTune] Update DQN target net in 55 trial.
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 20:53:43 in 56 trial best: 2.10173607, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 0.6558
+[cur/total]=[2/5], loss = 0.4695
+[cur/total]=[3/5], loss = 0.4287
+[cur/total]=[4/5], loss = 0.4020
+[cur/total]=[5/5], loss = 0.3825
+[cur/total]=[1/5], loss = 0.4835
+[cur/total]=[2/5], loss = 0.3799
+[cur/total]=[3/5], loss = 0.3633
+[cur/total]=[4/5], loss = 0.3640
+[cur/total]=[5/5], loss = 0.3691
+[cur/total]=[1/5], loss = 1.4446
+[cur/total]=[2/5], loss = 1.6388
+[cur/total]=[3/5], loss = 1.7783
+[cur/total]=[4/5], loss = 1.8613
+[cur/total]=[5/5], loss = 1.9337
+[cur/total]=[1/5], loss = 356.8098
+[cur/total]=[2/5], loss = 330.2069
+[cur/total]=[3/5], loss = 304.5903
+[cur/total]=[4/5], loss = 280.3154
+[cur/total]=[5/5], loss = 257.5175
+[cur/total]=[1/5], loss = 5.9791
+[cur/total]=[2/5], loss = 4.8509
+[cur/total]=[3/5], loss = 4.0459
+[cur/total]=[4/5], loss = 3.4651
+[cur/total]=[5/5], loss = 3.0501
+[cur/total]=[1/5], loss = 2.3653
+[cur/total]=[2/5], loss = 2.0954
+[cur/total]=[3/5], loss = 1.8757
+[cur/total]=[4/5], loss = 1.6972
+[cur/total]=[5/5], loss = 1.5514
+[cur/total]=[1/5], loss = 4.6652
+[cur/total]=[2/5], loss = 3.8338
+[cur/total]=[3/5], loss = 3.5378
+[cur/total]=[4/5], loss = 3.3131
+[cur/total]=[5/5], loss = 3.1229
+[AutoTune] Q searching Current time: 2024-05-09 20:56:39 in 57 trial best: 2.10888267, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 1.8727
+[cur/total]=[2/5], loss = 1.1506
+[cur/total]=[3/5], loss = 1.2582
+[cur/total]=[4/5], loss = 1.4245
+[cur/total]=[5/5], loss = 1.5195
+[cur/total]=[1/5], loss = 0.2501
+[cur/total]=[2/5], loss = 0.2221
+[cur/total]=[3/5], loss = 0.2128
+[cur/total]=[4/5], loss = 0.2054
+[cur/total]=[5/5], loss = 0.1987
+[cur/total]=[1/5], loss = 1.5078
+[cur/total]=[2/5], loss = 0.9398
+[cur/total]=[3/5], loss = 0.8877
+[cur/total]=[4/5], loss = 0.8492
+[cur/total]=[5/5], loss = 0.8134
+[cur/total]=[1/5], loss = 3.7119
+[cur/total]=[2/5], loss = 3.6112
+[cur/total]=[3/5], loss = 3.5136
+[cur/total]=[4/5], loss = 3.4189
+[cur/total]=[5/5], loss = 3.3269
+[cur/total]=[1/5], loss = 14.6660
+[cur/total]=[2/5], loss = 10.1607
+[cur/total]=[3/5], loss = 7.5835
+[cur/total]=[4/5], loss = 6.1999
+[cur/total]=[5/5], loss = 5.4448
+[cur/total]=[1/5], loss = 0.8054
+[cur/total]=[2/5], loss = 0.7611
+[cur/total]=[3/5], loss = 0.7240
+[cur/total]=[4/5], loss = 0.6906
+[cur/total]=[5/5], loss = 0.6601
+[cur/total]=[1/5], loss = 3.9037
+[cur/total]=[2/5], loss = 2.9012
+[cur/total]=[3/5], loss = 2.4904
+[cur/total]=[4/5], loss = 2.2452
+[cur/total]=[5/5], loss = 2.0542
+[AutoTune] Q searching Current time: 2024-05-09 20:59:49 in 58 trial best: 2.03548932, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 0.6148
+[cur/total]=[2/5], loss = 0.5452
+[cur/total]=[3/5], loss = 0.5112
+[cur/total]=[4/5], loss = 0.4882
+[cur/total]=[5/5], loss = 0.4711
+[cur/total]=[1/5], loss = 0.1179
+[cur/total]=[2/5], loss = 0.1043
+[cur/total]=[3/5], loss = 0.1015
+[cur/total]=[4/5], loss = 0.0995
+[cur/total]=[5/5], loss = 0.0978
+[cur/total]=[1/5], loss = 0.7198
+[cur/total]=[2/5], loss = 0.6774
+[cur/total]=[3/5], loss = 0.6453
+[cur/total]=[4/5], loss = 0.6188
+[cur/total]=[5/5], loss = 0.5958
+[cur/total]=[1/5], loss = 164.2719
+[cur/total]=[2/5], loss = 149.2316
+[cur/total]=[3/5], loss = 135.1395
+[cur/total]=[4/5], loss = 122.0769
+[cur/total]=[5/5], loss = 110.0499
+[cur/total]=[1/5], loss = 2.4205
+[cur/total]=[2/5], loss = 1.9366
+[cur/total]=[3/5], loss = 1.7505
+[cur/total]=[4/5], loss = 1.6415
+[cur/total]=[5/5], loss = 1.5539
+[cur/total]=[1/5], loss = 1.1336
+[cur/total]=[2/5], loss = 1.0982
+[cur/total]=[3/5], loss = 1.0656
+[cur/total]=[4/5], loss = 1.0350
+[cur/total]=[5/5], loss = 1.0058
+[cur/total]=[1/5], loss = 2.4127
+[cur/total]=[2/5], loss = 1.8067
+[cur/total]=[3/5], loss = 1.7134
+[cur/total]=[4/5], loss = 1.6390
+[cur/total]=[5/5], loss = 1.5750
+[AutoTune] Q searching Current time: 2024-05-09 21:02:25 in 59 trial best: 2.11883402, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 0.3317
+[cur/total]=[2/5], loss = 0.3223
+[cur/total]=[3/5], loss = 0.3140
+[cur/total]=[4/5], loss = 0.3064
+[cur/total]=[5/5], loss = 0.2993
+[cur/total]=[1/5], loss = 0.2451
+[cur/total]=[2/5], loss = 0.2245
+[cur/total]=[3/5], loss = 0.2202
+[cur/total]=[4/5], loss = 0.2228
+[cur/total]=[5/5], loss = 0.2269
+[cur/total]=[1/5], loss = 0.8320
+[cur/total]=[2/5], loss = 0.7699
+[cur/total]=[3/5], loss = 0.7209
+[cur/total]=[4/5], loss = 0.6807
+[cur/total]=[5/5], loss = 0.6492
+[cur/total]=[1/5], loss = 227.6997
+[cur/total]=[2/5], loss = 207.3888
+[cur/total]=[3/5], loss = 188.5476
+[cur/total]=[4/5], loss = 171.1754
+[cur/total]=[5/5], loss = 155.2232
+[cur/total]=[1/5], loss = 3.9019
+[cur/total]=[2/5], loss = 2.0105
+[cur/total]=[3/5], loss = 1.2509
+[cur/total]=[4/5], loss = 0.9976
+[cur/total]=[5/5], loss = 0.9035
+[cur/total]=[1/5], loss = 5.4870
+[cur/total]=[2/5], loss = 3.4040
+[cur/total]=[3/5], loss = 2.6977
+[cur/total]=[4/5], loss = 2.4216
+[cur/total]=[5/5], loss = 2.2255
+[cur/total]=[1/5], loss = 2.7089
+[cur/total]=[2/5], loss = 1.7762
+[cur/total]=[3/5], loss = 1.5665
+[cur/total]=[4/5], loss = 1.5044
+[cur/total]=[5/5], loss = 1.4650
+[AutoTune] Q searching Current time: 2024-05-09 21:05:29 in 60 trial best: 2.17559481, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 0.3562
+[cur/total]=[2/5], loss = 0.2084
+[cur/total]=[3/5], loss = 0.1894
+[cur/total]=[4/5], loss = 0.1806
+[cur/total]=[5/5], loss = 0.1743
+[cur/total]=[1/5], loss = 0.3682
+[cur/total]=[2/5], loss = 0.2783
+[cur/total]=[3/5], loss = 0.2561
+[cur/total]=[4/5], loss = 0.2523
+[cur/total]=[5/5], loss = 0.2542
+[cur/total]=[1/5], loss = 1.8033
+[cur/total]=[2/5], loss = 1.6831
+[cur/total]=[3/5], loss = 1.5735
+[cur/total]=[4/5], loss = 1.4722
+[cur/total]=[5/5], loss = 1.3780
+[cur/total]=[1/5], loss = 2.0719
+[cur/total]=[2/5], loss = 2.0013
+[cur/total]=[3/5], loss = 1.9352
+[cur/total]=[4/5], loss = 1.8732
+[cur/total]=[5/5], loss = 1.8146
+[cur/total]=[1/5], loss = 3.6390
+[cur/total]=[2/5], loss = 3.4152
+[cur/total]=[3/5], loss = 3.2344
+[cur/total]=[4/5], loss = 3.0729
+[cur/total]=[5/5], loss = 2.9252
+[cur/total]=[1/5], loss = 2.3123
+[cur/total]=[2/5], loss = 2.0827
+[cur/total]=[3/5], loss = 1.8838
+[cur/total]=[4/5], loss = 1.7114
+[cur/total]=[5/5], loss = 1.5614
+[cur/total]=[1/5], loss = 1.8784
+[cur/total]=[2/5], loss = 1.7417
+[cur/total]=[3/5], loss = 1.6876
+[cur/total]=[4/5], loss = 1.6441
+[cur/total]=[5/5], loss = 1.6058
+[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Warm in 0 trial best: 344.83505249, history best: 344.8350524902344
+[AutoTune] Warm in 1 trial best: 149.52795410, history best: 149.5279541015625
+[AutoTune] Warm in 2 trial best: 21.77739143, history best: 21.77739143371582
+Try Random Search: Current time: 2024-05-09 21:06:10 in trial 60
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 21:07:39 in 61 trial best: 16.07807541, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 41.3975
+[cur/total]=[2/5], loss = 24.3053
+[cur/total]=[3/5], loss = 19.9004
+[cur/total]=[4/5], loss = 18.0196
+[cur/total]=[5/5], loss = 16.4398
+[cur/total]=[1/5], loss = 22.1848
+[cur/total]=[2/5], loss = 6.8012
+[cur/total]=[3/5], loss = 5.5620
+[cur/total]=[4/5], loss = 4.6307
+[cur/total]=[5/5], loss = 3.9336
+[cur/total]=[1/5], loss = 4.9557
+[cur/total]=[2/5], loss = 3.9104
+[cur/total]=[3/5], loss = 3.6913
+[cur/total]=[4/5], loss = 3.8757
+[cur/total]=[5/5], loss = 3.9702
+[cur/total]=[1/5], loss = 451.0893
+[cur/total]=[2/5], loss = 284.6241
+[cur/total]=[3/5], loss = 170.7319
+[cur/total]=[4/5], loss = 99.7370
+[cur/total]=[5/5], loss = 58.0553
+[cur/total]=[1/5], loss = 82.6245
+[cur/total]=[2/5], loss = 31.7190
+[cur/total]=[3/5], loss = 10.2548
+[cur/total]=[4/5], loss = 4.0373
+[cur/total]=[5/5], loss = 2.4069
+[cur/total]=[1/5], loss = 18.1709
+[cur/total]=[2/5], loss = 6.9295
+[cur/total]=[3/5], loss = 3.9180
+[cur/total]=[4/5], loss = 2.7489
+[cur/total]=[5/5], loss = 2.1747
+[cur/total]=[1/5], loss = 2.5172
+[cur/total]=[2/5], loss = 2.0763
+[cur/total]=[3/5], loss = 2.0989
+[cur/total]=[4/5], loss = 2.2433
+[cur/total]=[5/5], loss = 2.3630
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 21:10:40 in 62 trial best: 14.45818901, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 15.2976
+[cur/total]=[2/5], loss = 10.4861
+[cur/total]=[3/5], loss = 9.1945
+[cur/total]=[4/5], loss = 8.4589
+[cur/total]=[5/5], loss = 7.9839
+[cur/total]=[1/5], loss = 67.6735
+[cur/total]=[2/5], loss = 12.3476
+[cur/total]=[3/5], loss = 2.9481
+[cur/total]=[4/5], loss = 2.4527
+[cur/total]=[5/5], loss = 2.3426
+[cur/total]=[1/5], loss = 8.6337
+[cur/total]=[2/5], loss = 12.4406
+[cur/total]=[3/5], loss = 14.2260
+[cur/total]=[4/5], loss = 14.7204
+[cur/total]=[5/5], loss = 14.9445
+[cur/total]=[1/5], loss = 228.6692
+[cur/total]=[2/5], loss = 183.9452
+[cur/total]=[3/5], loss = 148.1495
+[cur/total]=[4/5], loss = 119.4575
+[cur/total]=[5/5], loss = 96.4271
+[cur/total]=[1/5], loss = 8.9411
+[cur/total]=[2/5], loss = 4.8579
+[cur/total]=[3/5], loss = 3.7625
+[cur/total]=[4/5], loss = 3.3707
+[cur/total]=[5/5], loss = 3.1413
+[cur/total]=[1/5], loss = 11.2580
+[cur/total]=[2/5], loss = 7.5983
+[cur/total]=[3/5], loss = 6.6194
+[cur/total]=[4/5], loss = 6.3164
+[cur/total]=[5/5], loss = 6.1332
+[cur/total]=[1/5], loss = 5.0963
+[cur/total]=[2/5], loss = 3.2994
+[cur/total]=[3/5], loss = 3.2639
+[cur/total]=[4/5], loss = 3.2645
+[cur/total]=[5/5], loss = 3.2756
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 21:14:31 in 63 trial best: 20.76461411, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 5.7323
+[cur/total]=[2/5], loss = 5.5909
+[cur/total]=[3/5], loss = 5.4627
+[cur/total]=[4/5], loss = 5.3413
+[cur/total]=[5/5], loss = 5.2247
+[cur/total]=[1/5], loss = 2.3917
+[cur/total]=[2/5], loss = 2.2689
+[cur/total]=[3/5], loss = 2.1743
+[cur/total]=[4/5], loss = 2.0917
+[cur/total]=[5/5], loss = 2.0162
+[cur/total]=[1/5], loss = 11.2891
+[cur/total]=[2/5], loss = 4.2681
+[cur/total]=[3/5], loss = 2.7035
+[cur/total]=[4/5], loss = 2.1566
+[cur/total]=[5/5], loss = 1.9234
+[cur/total]=[1/5], loss = 103.7026
+[cur/total]=[2/5], loss = 88.4649
+[cur/total]=[3/5], loss = 75.4171
+[cur/total]=[4/5], loss = 64.3216
+[cur/total]=[5/5], loss = 54.9300
+[cur/total]=[1/5], loss = 7.4204
+[cur/total]=[2/5], loss = 6.6684
+[cur/total]=[3/5], loss = 5.9990
+[cur/total]=[4/5], loss = 5.4070
+[cur/total]=[5/5], loss = 4.8856
+[cur/total]=[1/5], loss = 11.8673
+[cur/total]=[2/5], loss = 10.3371
+[cur/total]=[3/5], loss = 9.8209
+[cur/total]=[4/5], loss = 9.3667
+[cur/total]=[5/5], loss = 8.9451
+[cur/total]=[1/5], loss = 5.9729
+[cur/total]=[2/5], loss = 3.2476
+[cur/total]=[3/5], loss = 2.6391
+[cur/total]=[4/5], loss = 2.4777
+[cur/total]=[5/5], loss = 2.4043
+[AutoTune] Update DQN target net in 63 trial.
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 21:19:48 in 64 trial best: 16.03363037, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 5.6011
+[cur/total]=[2/5], loss = 5.4600
+[cur/total]=[3/5], loss = 5.3359
+[cur/total]=[4/5], loss = 5.2284
+[cur/total]=[5/5], loss = 5.1295
+[cur/total]=[1/5], loss = 3.2346
+[cur/total]=[2/5], loss = 2.6317
+[cur/total]=[3/5], loss = 2.3190
+[cur/total]=[4/5], loss = 2.1449
+[cur/total]=[5/5], loss = 2.0372
+[cur/total]=[1/5], loss = 3.0052
+[cur/total]=[2/5], loss = 1.9675
+[cur/total]=[3/5], loss = 1.7271
+[cur/total]=[4/5], loss = 1.6145
+[cur/total]=[5/5], loss = 1.5403
+[cur/total]=[1/5], loss = 84.8812
+[cur/total]=[2/5], loss = 73.3074
+[cur/total]=[3/5], loss = 63.6143
+[cur/total]=[4/5], loss = 55.4653
+[cur/total]=[5/5], loss = 48.5869
+[cur/total]=[1/5], loss = 27.6354
+[cur/total]=[2/5], loss = 15.7936
+[cur/total]=[3/5], loss = 10.2235
+[cur/total]=[4/5], loss = 7.7063
+[cur/total]=[5/5], loss = 6.3472
+[cur/total]=[1/5], loss = 27.8244
+[cur/total]=[2/5], loss = 18.9355
+[cur/total]=[3/5], loss = 13.4465
+[cur/total]=[4/5], loss = 10.1696
+[cur/total]=[5/5], loss = 8.1876
+[cur/total]=[1/5], loss = 2.7533
+[cur/total]=[2/5], loss = 2.6512
+[cur/total]=[3/5], loss = 2.5870
+[cur/total]=[4/5], loss = 2.5316
+[cur/total]=[5/5], loss = 2.4807
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 21:25:18 in 65 trial best: 7.18881941, history best: 2.025779962539673
+[cur/total]=[1/5], loss = 5.1753
+[cur/total]=[2/5], loss = 5.0666
+[cur/total]=[3/5], loss = 5.0058
+[cur/total]=[4/5], loss = 4.9545
+[cur/total]=[5/5], loss = 4.9221
+[cur/total]=[1/5], loss = 1.9133
+[cur/total]=[2/5], loss = 1.8544
+[cur/total]=[3/5], loss = 1.8052
+[cur/total]=[4/5], loss = 1.7620
+[cur/total]=[5/5], loss = 1.7227
+[cur/total]=[1/5], loss = 1.4781
+[cur/total]=[2/5], loss = 1.4213
+[cur/total]=[3/5], loss = 1.3752
+[cur/total]=[4/5], loss = 1.3353
+[cur/total]=[5/5], loss = 1.2997
+[cur/total]=[1/5], loss = 39.0950
+[cur/total]=[2/5], loss = 35.8761
+[cur/total]=[3/5], loss = 33.0079
+[cur/total]=[4/5], loss = 30.4453
+[cur/total]=[5/5], loss = 28.1500
+[cur/total]=[1/5], loss = 4.3443
+[cur/total]=[2/5], loss = 4.0179
+[cur/total]=[3/5], loss = 3.7583
+[cur/total]=[4/5], loss = 3.5461
+[cur/total]=[5/5], loss = 3.3679
+[cur/total]=[1/5], loss = 10.1077
+[cur/total]=[2/5], loss = 8.0701
+[cur/total]=[3/5], loss = 7.5914
+[cur/total]=[4/5], loss = 7.2718
+[cur/total]=[5/5], loss = 7.0179
+[cur/total]=[1/5], loss = 3.7508
+[cur/total]=[2/5], loss = 3.5120
+[cur/total]=[3/5], loss = 3.3787
+[cur/total]=[4/5], loss = 3.2816
+[cur/total]=[5/5], loss = 3.2012
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2024-05-09 21:29:46 in 66 trial best: 7.26008415, history best: 2.025779962539673

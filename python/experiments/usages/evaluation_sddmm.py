@@ -66,9 +66,9 @@ def EvaluationSpMM(platform):
                 writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
 
 if __name__ == "__main__":
-    EvaluationSpMM(platform = "epyc")
+    EvaluationSpMM(platform = "xeon")
 
 
 
 
-# nohup python evaluation_sddmm.py > ../log/usages_epyc_evaluation_sddmm_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_sddmm.py > ../log/usages_xeon_evaluation_sddmm_$(date +%Y%m%d%H%M).log 2>&1 & 
