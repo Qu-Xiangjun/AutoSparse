@@ -825,4 +825,4 @@ if __name__ == "__main__":
 # nohup python ANNSearch.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
 # nohup python ANNSearch.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
 
-# nohup python ANNSearch.py > ./log/xeon_evaluation_usages$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python ANNSearch.py > ./log/epyc_evaluation_usages$(date +%Y%m%d%H%M).log 2>&1 & 
