@@ -60,3 +60,13 @@ Trec6_16x16_9,q_sa_searching,2 i 2 i0 32768 i1 1 k 2 k0 128 k1 64 1 A 4 i0 k0 i1
 crystk01_2x16_1,q_sa_searching,2 i 2 i0 2048 i1 1 k 2 k0 256 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 0 i1 0 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 i1 k0 j0 k1 j1 i0 None j0 16 128 2,4.330864429473877,1.57938496
 t2dal_a_8x4_3,q_sa_searching,2 i 2 i0 16384 i1 1 k 2 k0 128 k1 64 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 j0 32 128 4,2.57241153717041,1.90124188
 EX1_8x8_4,q_sa_searching,2 i 2 i0 4096 i1 1 k 2 k0 256 k1 16 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 0 1 j 2 j0 32 j1 4 6 i0 k0 j0 i1 k1 j1 i0 j1 None 0 128 4,3.1011152267456055,1.4770415599999998
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+crystk01_2x16_1,q_sa_searching,2 k 2 k0 32768 k1 2 i 2 i0 2048 i1 1 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 0 k0 1 k1 0 1 j 2 j0 128 j1 1 6 i0 k0 i1 j0 j1 k1 i0 None j0 128 128 2,4.073049068450928,1.5158460200000001
+nemspmm1_16x4_0,q_sa_searching,2 k 2 k0 32 k1 256 i 2 i0 4096 i1 1 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 1 k0 1 k1 1 1 j 2 j0 16 j1 8 6 i0 j0 i1 k0 k1 j1 i0 None None 0 128 1,2.8460533618927,0.9930154999999999
+net100,q_sa_searching,2 k 2 k0 64 k1 256 i 2 i0 16384 i1 1 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 i1 k0 j0 k1 j1 i0 j1 j0 32 128 8,3.7213027477264404,3.0538149
+net150,q_sa_searching,2 k 2 k0 128 k1 256 i 2 i0 1024 i1 32 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 0 k0 2 k1 1 1 j 2 j0 32 j1 4 6 i0 i1 k0 j0 k1 j1 i0 j1 None 0 128 1,5.733036994934082,5.159150059999999
+pf2177,q_sa_searching,2 k 2 k0 32 k1 256 i 2 i0 4096 i1 2 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 1 k0 0 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 k0 32 128 4,1.9204751253128052,1.19594268
+t2dal_a_8x4_3,q_sa_searching,2 k 2 k0 128 k1 64 i 2 i0 16384 i1 1 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 0 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 j0 k1 j1 i1 i0 i1 j0 32 128 4,2.7699949741363525,1.9368695600000003
+vanbody,q_sa_searching,2 k 2 k0 128 k1 256 i 2 i0 8192 i1 4 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 1 k1 1 1 j 2 j0 32 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 None 0 128 4,4.250060081481934,3.09214518

@@ -1,0 +1,190 @@
+TTAAGG,../../../dataset/mtx_demo_dataset/mhd4800a.mtx,4800,4800,102252, gen: 23.748000 ms,0.887000 ms,0.000000,GFlops: 0.098806,21.456157,1.517215 
+Time = 16.558000 ms, 0.305000 ms, 17.253000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vanbody.mtx,47072,47072,2336898, gen: 16.517000 ms,8.338000 ms,0.000000,GFlops: 0.821532,11.122293,33.962298 
+Time = 45.513000 ms, 13.447000 ms, 17.615000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net100.mtx,29920,29920,2033200, gen: 25.360000 ms,10.210000 ms,0.000000,GFlops: 1.676952,10.296313,31.096857 
+Time = 19.399000 ms, 12.638000 ms, 16.738000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cfd1.mtx,70656,70656,1828364, gen: 23.577000 ms,4.077000 ms,0.000000,GFlops: 1.174239,5.374330,20.835129 
+Time = 24.913000 ms, 21.773000 ms, 22.465000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/crystk01_2x16_1.mtx,2048,65536,1041952, gen: 45.376000 ms,13.533000 ms,0.000000,GFlops: 0.927726,2.524414,11.522732 
+Time = 17.970000 ms, 26.416000 ms, 23.149000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cca.mtx,49152,49152,139264, gen: 16.987000 ms,3.734000 ms,0.000000,GFlops: 0.053582,1.071390,2.322579 
+Time = 41.585000 ms, 8.319000 ms, 15.350000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/msc10848.mtx,10848,10848,1229778, gen: 24.710000 ms,3.849000 ms,0.000000,GFlops: 0.388963,22.597127,94.484744 
+Time = 50.587000 ms, 3.483000 ms, 3.332000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/NACA0015_16x8_9.mtx,131072,4096,3174656, gen: 22.990000 ms,13.832000 ms,0.000000,GFlops: 2.132878,39.482702,78.447098 
+Time = 23.815000 ms, 5.146000 ms, 10.360000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/conf5_0-4x4-18.mtx,3072,3072,119808, gen: 11.430000 ms,1.869000 ms,0.000000,GFlops: 0.061679,26.259288,75.917941 
+Time = 31.079000 ms, 0.292000 ms, 0.404000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/t2dal_a_8x4_3.mtx,16384,8192,1511360, gen: 27.057000 ms,3.695000 ms,0.000000,GFlops: 1.915994,20.223090,38.509820 
+Time = 12.621000 ms, 4.783000 ms, 10.047000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/pf2177.mtx,9728,9728,725144, gen: 12.169000 ms,3.767000 ms,0.000000,GFlops: 1.494757,0.604365,21.201104 
+Time = 7.762000 ms, 76.790000 ms, 8.756000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trefethen_20000.mtx,20000,20000,554466, gen: 24.316000 ms,5.717000 ms,0.000000,GFlops: 0.826328,4.716351,12.772725 
+Time = 10.736000 ms, 7.524000 ms, 11.113000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trec6_16x16_9.mtx,32768,8192,163840, gen: 18.198000 ms,1.368000 ms,0.000000,GFlops: 0.114573,17.050016,46.551654 
+Time = 22.880000 ms, 0.615000 ms, 0.901000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx,4096,8192,701760, gen: 29.323000 ms,3.967000 ms,0.000000,GFlops: 0.609431,41.662931,97.636174 
+Time = 18.424000 ms, 1.078000 ms, 1.840000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/EX1_8x8_4.mtx,4096,4096,1151680, gen: 16.856000 ms,4.325000 ms,0.000000,GFlops: 1.404595,125.140102,216.786824 
+Time = 13.119000 ms, 0.589000 ms, 1.360000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/bcsstk38.mtx,8032,8032,355460, gen: 25.323000 ms,5.248000 ms,0.000000,GFlops: 0.095160,15.798222,3.727278 
+Time = 59.766000 ms, 1.440000 ms, 24.414000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net150.mtx,43520,43520,3121200, gen: 25.506000 ms,5.519000 ms,0.000000,GFlops: 1.306283,17.447533,31.175466 
+Time = 38.230000 ms, 11.449000 ms, 25.630000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Chevron3_4x16_1.mtx,131072,8192,4611968, gen: 23.490000 ms,9.479000 ms,0.000000,GFlops: 2.103580,15.976506,35.188025 
+Time = 35.079000 ms, 18.475000 ms, 33.553000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx,65536,4096,4580587, gen: 24.043000 ms,10.436000 ms,0.000000,GFlops: 5.549284,42.108240,156.204912 
+Time = 13.207000 ms, 6.962000 ms, 7.507000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/mhd4800a.mtx,4800,4800,102252, gen: 16.653000 ms,4.160000 ms,0.000000,GFlops: 0.247696,13.894115,54.195677 
+Time = 6.605000 ms, 0.471000 ms, 0.483000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vanbody.mtx,47072,47072,2336898, gen: 19.040000 ms,10.975000 ms,0.000000,GFlops: 0.676871,4.084817,18.076078 
+Time = 55.240000 ms, 36.614000 ms, 33.096000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net100.mtx,29920,29920,2033200, gen: 38.537000 ms,6.201000 ms,0.000000,GFlops: 2.960342,19.511891,24.922155 
+Time = 10.989000 ms, 6.669000 ms, 20.885000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cfd1.mtx,70656,70656,1828364, gen: 54.990000 ms,8.157000 ms,0.000000,GFlops: 1.031553,5.629524,20.591315 
+Time = 28.359000 ms, 20.786000 ms, 22.731000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/crystk01_2x16_1.mtx,2048,65536,1041952, gen: 24.175000 ms,12.962000 ms,0.000000,GFlops: 0.507218,4.506347,7.290958 
+Time = 32.868000 ms, 14.798000 ms, 36.585000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cca.mtx,49152,49152,139264, gen: 36.296000 ms,5.931000 ms,0.000000,GFlops: 0.065004,0.377409,1.918299 
+Time = 34.278000 ms, 23.616000 ms, 18.585000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/msc10848.mtx,10848,10848,1229778, gen: 23.044000 ms,5.959000 ms,0.000000,GFlops: 1.488723,20.448374,8.783883 
+Time = 13.217000 ms, 3.849000 ms, 35.841000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/NACA0015_16x8_9.mtx,131072,4096,3174656, gen: 34.199000 ms,21.666000 ms,0.000000,GFlops: 2.084048,72.537659,61.443406 
+Time = 24.373000 ms, 2.801000 ms, 13.227000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/conf5_0-4x4-18.mtx,3072,3072,119808, gen: 15.209000 ms,1.352000 ms,0.000000,GFlops: 0.071378,20.392851,73.551194 
+Time = 26.856000 ms, 0.376000 ms, 0.417000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/t2dal_a_8x4_3.mtx,16384,8192,1511360, gen: 27.758000 ms,4.746000 ms,0.000000,GFlops: 0.570271,23.324582,43.822422 
+Time = 42.404000 ms, 4.147000 ms, 8.829000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/pf2177.mtx,9728,9728,725144, gen: 34.313000 ms,3.314000 ms,0.000000,GFlops: 1.285574,4.992923,4.665884 
+Time = 9.025000 ms, 9.295000 ms, 39.786000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trefethen_20000.mtx,20000,20000,554466, gen: 57.695000 ms,4.812000 ms,0.000000,GFlops: 0.136255,1.744547,10.586463 
+Time = 65.109000 ms, 20.341000 ms, 13.408000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trec6_16x16_9.mtx,32768,8192,163840, gen: 19.376000 ms,1.288000 ms,0.000000,GFlops: 0.248336,18.428401,46.551654 
+Time = 10.556000 ms, 0.569000 ms, 0.901000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx,4096,8192,701760, gen: 18.888000 ms,4.256000 ms,0.000000,GFlops: 0.454379,86.204683,162.285962 
+Time = 24.711000 ms, 0.521000 ms, 1.107000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/EX1_8x8_4.mtx,4096,4096,1151680, gen: 93.985000 ms,14.301000 ms,0.000000,GFlops: 1.309844,122.032318,196.553387 
+Time = 14.068000 ms, 0.604000 ms, 1.500000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/bcsstk38.mtx,8032,8032,355460, gen: 33.914000 ms,2.722000 ms,0.000000,GFlops: 0.398386,1.660543,3.737688 
+Time = 14.276000 ms, 13.700000 ms, 24.346000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net150.mtx,43520,43520,3121200, gen: 24.894000 ms,3.891000 ms,0.000000,GFlops: 1.831690,22.286824,45.724017 
+Time = 27.264000 ms, 8.963000 ms, 17.475000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Chevron3_4x16_1.mtx,131072,8192,4611968, gen: 23.783000 ms,8.579000 ms,0.000000,GFlops: 1.402134,27.269582,78.386921 
+Time = 52.628000 ms, 10.824000 ms, 15.062000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx,65536,4096,4580587, gen: 25.008000 ms,15.478000 ms,0.000000,GFlops: 9.917374,37.613237,137.535805 
+Time = 7.390000 ms, 7.794000 ms, 8.526000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/mhd4800a.mtx,4800,4800,102252, gen: 39.504000 ms,1.298000 ms,0.000000,GFlops: 0.047262,0.971804,58.691731 
+Time = 34.616000 ms, 6.734000 ms, 0.446000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vanbody.mtx,47072,47072,2336898, gen: 24.641000 ms,10.548000 ms,0.000000,GFlops: 1.189488,15.429843,35.282253 
+Time = 31.434000 ms, 9.693000 ms, 16.956000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net100.mtx,29920,29920,2033200, gen: 22.770000 ms,11.678000 ms,0.000000,GFlops: 2.164850,5.671656,24.829423 
+Time = 15.027000 ms, 22.943000 ms, 20.963000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cfd1.mtx,70656,70656,1828364, gen: 51.800000 ms,11.433000 ms,0.000000,GFlops: 0.982826,5.358334,24.146780 
+Time = 29.765000 ms, 21.838000 ms, 19.384000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/crystk01_2x16_1.mtx,2048,65536,1041952, gen: 23.625000 ms,10.787000 ms,0.000000,GFlops: 0.293456,2.400293,20.236682 
+Time = 56.810000 ms, 27.782000 ms, 13.181000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cca.mtx,49152,49152,139264, gen: 17.522000 ms,4.994000 ms,0.000000,GFlops: 0.148410,0.384160,1.756841 
+Time = 15.014000 ms, 23.201000 ms, 20.293000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/msc10848.mtx,10848,10848,1229778, gen: 22.475000 ms,2.413000 ms,0.000000,GFlops: 1.311501,14.983018,36.912084 
+Time = 15.003000 ms, 5.253000 ms, 8.529000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/NACA0015_16x8_9.mtx,131072,4096,3174656, gen: 27.010000 ms,19.668000 ms,0.000000,GFlops: 1.254030,66.637581,76.881273 
+Time = 40.505000 ms, 3.049000 ms, 10.571000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/conf5_0-4x4-18.mtx,3072,3072,119808, gen: 18.955000 ms,1.150000 ms,0.000000,GFlops: 0.258520,10.142476,33.337878 
+Time = 7.415000 ms, 0.756000 ms, 0.920000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/t2dal_a_8x4_3.mtx,16384,8192,1511360, gen: 23.420000 ms,2.710000 ms,0.000000,GFlops: 1.633241,52.683573,57.833806 
+Time = 14.806000 ms, 1.836000 ms, 6.690000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/pf2177.mtx,9728,9728,725144, gen: 13.591000 ms,4.045000 ms,0.000000,GFlops: 1.159187,14.439706,20.325946 
+Time = 10.009000 ms, 3.214000 ms, 9.133000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trefethen_20000.mtx,20000,20000,554466, gen: 26.472000 ms,3.836000 ms,0.000000,GFlops: 0.211825,3.661730,9.870197 
+Time = 41.881000 ms, 9.691000 ms, 14.381000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trec6_16x16_9.mtx,32768,8192,163840, gen: 13.763000 ms,1.758000 ms,0.000000,GFlops: 0.336298,0.453968,4.831591 
+Time = 7.795000 ms, 23.098000 ms, 8.681000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx,4096,8192,701760, gen: 12.361000 ms,5.960000 ms,0.000000,GFlops: 0.257816,58.480000,111.584199 
+Time = 43.551000 ms, 0.768000 ms, 1.610000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/EX1_8x8_4.mtx,4096,4096,1151680, gen: 35.894000 ms,9.883000 ms,0.000000,GFlops: 2.719433,125.780751,195.381100 
+Time = 6.776000 ms, 0.586000 ms, 1.509000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/bcsstk38.mtx,8032,8032,355460, gen: 17.938000 ms,1.583000 ms,0.000000,GFlops: 0.835885,1.148962,117.720259 
+Time = 6.804000 ms, 19.800000 ms, 0.773000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net150.mtx,43520,43520,3121200, gen: 17.323000 ms,5.592000 ms,0.000000,GFlops: 1.805597,8.841535,47.803003 
+Time = 27.658000 ms, 22.593000 ms, 16.715000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Chevron3_4x16_1.mtx,131072,8192,4611968, gen: 26.640000 ms,12.571000 ms,0.000000,GFlops: 2.205167,22.327228,134.686722 
+Time = 33.463000 ms, 13.220000 ms, 8.766000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx,65536,4096,4580587, gen: 23.837000 ms,11.358000 ms,0.000000,GFlops: 1.743823,57.617447,103.488683 
+Time = 42.028000 ms, 5.088000 ms, 11.331000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/mhd4800a.mtx,4800,4800,102252, gen: 51.229000 ms,2.292000 ms,0.000000,GFlops: 0.039080,7.051862,27.013944 
+Time = 41.864000 ms, 0.928000 ms, 0.969000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vanbody.mtx,47072,47072,2336898, gen: 20.957000 ms,5.511000 ms,0.000000,GFlops: 3.541761,6.827109,29.001643 
+Time = 10.557000 ms, 21.907000 ms, 20.628000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net100.mtx,29920,29920,2033200, gen: 24.510000 ms,5.571000 ms,0.000000,GFlops: 1.286835,44.532786,34.506709 
+Time = 25.280000 ms, 2.922000 ms, 15.084000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cfd1.mtx,70656,70656,1828364, gen: 24.709000 ms,3.929000 ms,0.000000,GFlops: 1.413980,10.573353,22.720314 
+Time = 20.689000 ms, 11.067000 ms, 20.601000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/crystk01_2x16_1.mtx,2048,65536,1041952, gen: 51.030000 ms,10.410000 ms,0.000000,GFlops: 1.437547,5.535397,16.151360 
+Time = 11.597000 ms, 12.047000 ms, 16.515000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cca.mtx,49152,49152,139264, gen: 16.588000 ms,2.443000 ms,0.000000,GFlops: 0.082573,0.550179,1.722632 
+Time = 26.985000 ms, 16.200000 ms, 20.696000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/msc10848.mtx,10848,10848,1229778, gen: 22.856000 ms,2.841000 ms,0.000000,GFlops: 0.409082,17.150968,24.875408 
+Time = 48.099000 ms, 4.589000 ms, 12.656000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/NACA0015_16x8_9.mtx,131072,4096,3174656, gen: 22.189000 ms,13.619000 ms,0.000000,GFlops: 1.240373,32.887340,117.122343 
+Time = 40.951000 ms, 6.178000 ms, 6.939000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/conf5_0-4x4-18.mtx,3072,3072,119808, gen: 58.305000 ms,1.628000 ms,0.000000,GFlops: 0.034901,24.814602,33.778467 
+Time = 54.924000 ms, 0.309000 ms, 0.908000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/t2dal_a_8x4_3.mtx,16384,8192,1511360, gen: 28.049000 ms,5.780000 ms,0.000000,GFlops: 2.840569,11.532972,54.570968 
+Time = 8.513000 ms, 8.387000 ms, 7.090000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/pf2177.mtx,9728,9728,725144, gen: 18.734000 ms,3.693000 ms,0.000000,GFlops: 0.854241,13.014362,19.250945 
+Time = 13.582000 ms, 3.566000 ms, 9.643000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trefethen_20000.mtx,20000,20000,554466, gen: 13.607000 ms,7.926000 ms,0.000000,GFlops: 0.403817,4.772808,6.117982 
+Time = 21.969000 ms, 7.435000 ms, 23.201000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trec6_16x16_9.mtx,32768,8192,163840, gen: 14.326000 ms,1.571000 ms,0.000000,GFlops: 0.173951,14.604123,49.991704 
+Time = 15.070000 ms, 0.718000 ms, 0.839000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx,4096,8192,701760, gen: 18.917000 ms,7.114000 ms,0.000000,GFlops: 0.364835,56.995736,21.468757 
+Time = 30.776000 ms, 0.788000 ms, 8.368000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/EX1_8x8_4.mtx,4096,4096,1151680, gen: 23.708000 ms,10.825000 ms,0.000000,GFlops: 1.917270,131.152171,121.229474 
+Time = 9.611000 ms, 0.562000 ms, 2.432000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/bcsstk38.mtx,8032,8032,355460, gen: 18.132000 ms,4.031000 ms,0.000000,GFlops: 0.187349,34.573617,83.484183 
+Time = 30.357000 ms, 0.658000 ms, 1.090000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net150.mtx,43520,43520,3121200, gen: 27.046000 ms,4.282000 ms,0.000000,GFlops: 2.735495,24.507030,22.317949 
+Time = 18.256000 ms, 8.151000 ms, 35.802000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Chevron3_4x16_1.mtx,131072,8192,4611968, gen: 21.686000 ms,10.825000 ms,0.000000,GFlops: 5.929885,22.973689,124.634626 
+Time = 12.444000 ms, 12.848000 ms, 9.473000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx,65536,4096,4580587, gen: 23.804000 ms,15.397000 ms,0.000000,GFlops: 5.649379,57.090081,69.320777 
+Time = 12.973000 ms, 5.135000 ms, 16.916000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/mhd4800a.mtx,4800,4800,102252, gen: 24.303000 ms,24.214000 ms,0.000000,GFlops: 0.132989,17.686832,76.316362 
+Time = 12.302000 ms, 0.370000 ms, 0.343000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vanbody.mtx,47072,47072,2336898, gen: 35.296000 ms,4.589000 ms,0.000000,GFlops: 0.627903,6.937632,24.117956 
+Time = 59.548000 ms, 21.558000 ms, 24.805000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net100.mtx,29920,29920,2033200, gen: 24.033000 ms,6.011000 ms,0.000000,GFlops: 0.597363,13.533521,14.334082 
+Time = 54.458000 ms, 9.615000 ms, 36.312000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cfd1.mtx,70656,70656,1828364, gen: 24.815000 ms,8.579000 ms,0.000000,GFlops: 0.677768,4.224531,27.064946 
+Time = 43.162000 ms, 27.699000 ms, 17.294000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/crystk01_2x16_1.mtx,2048,65536,1041952, gen: 24.316000 ms,17.325000 ms,0.000000,GFlops: 0.267103,5.317777,9.024892 
+Time = 62.415000 ms, 12.540000 ms, 29.556000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/cca.mtx,49152,49152,139264, gen: 17.992000 ms,3.227000 ms,0.000000,GFlops: 0.181363,1.008360,2.099622 
+Time = 12.286000 ms, 8.839000 ms, 16.980000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/msc10848.mtx,10848,10848,1229778, gen: 22.400000 ms,2.843000 ms,0.000000,GFlops: 1.298690,2.908243,13.010835 
+Time = 15.151000 ms, 27.063000 ms, 24.197000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/NACA0015_16x8_9.mtx,131072,4096,3174656, gen: 19.705000 ms,8.491000 ms,0.000000,GFlops: 4.507054,28.528220,91.223699 
+Time = 11.270000 ms, 7.122000 ms, 8.909000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/conf5_0-4x4-18.mtx,3072,3072,119808, gen: 13.713000 ms,0.827000 ms,0.000000,GFlops: 0.044414,22.289860,65.396264 
+Time = 43.160000 ms, 0.344000 ms, 0.469000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/t2dal_a_8x4_3.mtx,16384,8192,1511360, gen: 39.151000 ms,7.600000 ms,0.000000,GFlops: 2.068939,8.954549,40.968674 
+Time = 11.688000 ms, 10.802000 ms, 9.444000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/pf2177.mtx,9728,9728,725144, gen: 18.469000 ms,3.019000 ms,0.000000,GFlops: 0.807679,2.782494,18.022997 
+Time = 14.365000 ms, 16.679000 ms, 10.300000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trefethen_20000.mtx,20000,20000,554466, gen: 26.792000 ms,4.337000 ms,0.000000,GFlops: 1.069623,6.057669,14.791923 
+Time = 8.294000 ms, 5.858000 ms, 9.596000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Trec6_16x16_9.mtx,32768,8192,163840, gen: 11.042000 ms,2.486000 ms,0.000000,GFlops: 0.041739,30.131494,42.153809 
+Time = 62.805000 ms, 0.348000 ms, 0.995000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx,4096,8192,701760, gen: 18.984000 ms,2.875000 ms,0.000000,GFlops: 1.233728,104.205661,164.364648 
+Time = 9.101000 ms, 0.431000 ms, 1.093000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/EX1_8x8_4.mtx,4096,4096,1151680, gen: 33.602000 ms,5.033000 ms,0.000000,GFlops: 2.392169,140.932161,208.213333 
+Time = 7.703000 ms, 0.523000 ms, 1.416000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/bcsstk38.mtx,8032,8032,355460, gen: 17.969000 ms,1.974000 ms,0.000000,GFlops: 0.433191,41.362618,58.145534 
+Time = 13.129000 ms, 0.550000 ms, 1.565000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/net150.mtx,43520,43520,3121200, gen: 19.002000 ms,7.043000 ms,0.000000,GFlops: 3.430833,23.614706,38.090633 
+Time = 14.556000 ms, 8.459000 ms, 20.977000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/Chevron3_4x16_1.mtx,131072,8192,4611968, gen: 28.577000 ms,7.401000 ms,0.000000,GFlops: 2.092366,43.222427,72.526802 
+Time = 35.267000 ms, 6.829000 ms, 16.279000 ms
+TTAAGG,../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx,65536,4096,4580587, gen: 17.255000 ms,12.720000 ms,0.000000,GFlops: 1.992534,24.664106,95.359053 
+Time = 36.782000 ms, 11.886000 ms, 12.297000 ms
