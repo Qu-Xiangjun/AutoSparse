@@ -22,7 +22,7 @@ def Evaluation(platform):
         writer.writerow(["name", "method", "config command", "csr_time", "best_time"])
 
     mtx_names = [
-        # 'strides_mask',
+        'strides_mask',
         'encoder.layer.10.output.dense.weight', # 768 3072
         'encoder.layer.11.output.dense.weight',
         'encoder.layer.8.output.dense.weight',

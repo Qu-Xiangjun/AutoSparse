@@ -725,48 +725,48 @@ if __name__ == "__main__":
     # with open(matrix_total_file) as f:
     #     matrix_names = f.read().splitlines()
 
-    matrix_names = [
-        "bcsstk38",
-        "mhd4800a",
-        "conf5_0-4x4-18",
-        "cca",
-        "Trefethen_20000",
-        "pf2177",
-        "msc10848",
-        "cfd1",
-        "net100",
-        "vanbody",
-        "net150",
-        "Chevron3_4x16_1",
-        "vibrobox_1x1_0",
-        "NACA0015_16x8_9",
-        "nemspmm1_16x4_0",
-        "Trec6_16x16_9",
-        "crystk01_2x16_1",
-        "t2dal_a_8x4_3",
-        "EX1_8x8_4"
-    ]
+    # matrix_names = [
+    #     "bcsstk38",
+    #     "mhd4800a",
+    #     "conf5_0-4x4-18",
+    #     "cca",
+    #     "Trefethen_20000",
+    #     "pf2177",
+    #     "msc10848",
+    #     "cfd1",
+    #     "net100",
+    #     "vanbody",
+    #     "net150",
+    #     "Chevron3_4x16_1",
+    #     "vibrobox_1x1_0",
+    #     "NACA0015_16x8_9",
+    #     "nemspmm1_16x4_0",
+    #     "Trec6_16x16_9",
+    #     "crystk01_2x16_1",
+    #     "t2dal_a_8x4_3",
+    #     "EX1_8x8_4"
+    # ]
 
-    for task_name in ["SDDMM"]: # "SpMM" "SpMV",
-        for name in matrix_names:
-            print(f"task {task_name} for matrix {name}")
-            save_dirpath_prefix = os.path.join(
-                waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
-            )
-            if not os.path.exists(save_dirpath_prefix):
-                os.makedirs(save_dirpath_prefix)
+    # for task_name in ["SDDMM"]: # "SpMM" "SpMV",
+    #     for name in matrix_names:
+    #         print(f"task {task_name} for matrix {name}")
+    #         save_dirpath_prefix = os.path.join(
+    #             waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
+    #         )
+    #         if not os.path.exists(save_dirpath_prefix):
+    #             os.makedirs(save_dirpath_prefix)
 
-            result = ANNS3(
-                task_name, name + '.csr', 100, 150, 60, 
-                save_res=True, 
-                save_dirpath=save_dirpath_prefix
-            )
-            res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_" + task_name + ".txt"), 'a')
-            string = "{0} {1} {2} {3} {4} \n".format(
-                task_name, name, result[0], result[1], result[2]
-            )
-            res_f.write(string)
-            res_f.close()
+    #         result = ANNS3(
+    #             task_name, name + '.csr', 100, 150, 60, 
+    #             save_res=True, 
+    #             save_dirpath=save_dirpath_prefix
+    #         )
+    #         res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_" + task_name + ".txt"), 'a')
+    #         string = "{0} {1} {2} {3} {4} \n".format(
+    #             task_name, name, result[0], result[1], result[2]
+    #         )
+    #         res_f.write(string)
+    #         res_f.close()
 
     # task_name = 'SpMV'
     # id, schedules, value = ANNS3(task_name, "Trec6_16x16_9.csr")
@@ -774,5 +774,55 @@ if __name__ == "__main__":
 
     # test_spmm()
 
+    mtx_names = [
+        'strides_mask',
+        'encoder.layer.10.output.dense.weight', # 768 3072
+        'encoder.layer.11.output.dense.weight',
+        'encoder.layer.8.output.dense.weight',
+        'encoder.layer.9.intermediate.dense.weight', # 3072 768
+        'encoder.layer.9.output.dense.weight'
+    ]
+    task_name = 'SpMM'
+    for name in mtx_names:
+        print(f"task {task_name} for matrix {name}")
+        save_dirpath_prefix = os.path.join(
+            waco_prefix, "baseline", "waco", task_name, platform+"_evaluation_usages_spmm", name
+        )
+        if not os.path.exists(save_dirpath_prefix):
+            os.makedirs(save_dirpath_prefix)
+        result = ANNS3(
+            task_name, name + '.csr', 100, 100, 60, 
+            save_res=True, 
+            save_dirpath=save_dirpath_prefix
+        )
+        res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_usages_spmm_" + task_name + ".txt"), 'a')
+        string = "{0} {1} {2} {3} {4} \n".format(
+            task_name, name, result[0], result[1], result[2]
+        )
+        res_f.write(string)
+        res_f.close()
+    
+    name = "strides_mask"
+    task_name = "SDDMM"
+    print(f"task {task_name} for matrix {name}")
+    save_dirpath_prefix = os.path.join(
+        waco_prefix, "baseline", "waco", task_name, platform+"_evaluation_usages_sddmm", name
+    )
+    if not os.path.exists(save_dirpath_prefix):
+        os.makedirs(save_dirpath_prefix)
+    result = ANNS3(
+        task_name, name + '.csr', 100, 100, 60, 
+        save_res=True, 
+        save_dirpath=save_dirpath_prefix
+    )
+    res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_usages_sddmm_" + task_name + ".txt"), 'a')
+    string = "{0} {1} {2} {3} {4} \n".format(
+        task_name, name, result[0], result[1], result[2]
+    )
+    res_f.write(string)
+    res_f.close()
+
 # nohup python ANNSearch.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
 # nohup python ANNSearch.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+
+# nohup python ANNSearch.py > ./log/xeon_evaluation_usages$(date +%Y%m%d%H%M).log 2>&1 & 
