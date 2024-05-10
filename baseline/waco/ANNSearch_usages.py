@@ -35,7 +35,7 @@ def SpMVTask(filename):
     func = Build(C)
     return C, func
 
-def SpMMTask(filename):
+def SpMMTask(filename, axis_j = 256):
     # Create task by Autosparse
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
     mtx_filepath = os.path.join(
@@ -49,7 +49,7 @@ def SpMMTask(filename):
     i = Axis(int(num_row), ModeType.DENSE, "i")
     k = Axis(int(num_col), ModeType.COMPRESSED, "k")
     k_ = Axis(int(num_col), ModeType.DENSE, "k")
-    j = Axis(128, ModeType.DENSE, "j")
+    j = Axis(axis_j, ModeType.DENSE, "j")
     """Tensor declaration"""
     A = Tensor((i, k), is_sparse=True)
     B = Tensor((k_, j), is_sparse=False)
@@ -61,7 +61,7 @@ def SpMMTask(filename):
     func = Build(C)
     return C, func
 
-def SDDMMTask(filename):
+def SDDMMTask(filename, axis_j = 256):
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
     mtx_filepath = os.path.join(
         autosparse_prefix, "dataset", "demo_dataset", filename
@@ -74,8 +74,8 @@ def SDDMMTask(filename):
     i = Axis(int(num_row), ModeType.DENSE, "i")
     j = Axis(int(num_col), ModeType.COMPRESSED, "j")
     i_ = Axis(int(num_row), ModeType.DENSE, "i")
-    k_ = Axis(128, ModeType.DENSE, "k")
-    k__ = Axis(128, ModeType.DENSE, "k")
+    k_ = Axis(axis_j, ModeType.DENSE, "k")
+    k__ = Axis(axis_j, ModeType.DENSE, "k")
     j_ = Axis(int(num_col), ModeType.DENSE, "j")
     i__ = Axis(int(num_row), ModeType.DENSE, "i")
     j__ = Axis(int(num_col), ModeType.COMPRESSED, "j")
@@ -518,7 +518,7 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
 
 def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", 
           warm_number = 100, trials = 500, k = 60, 
-          save_res = False, save_dirpath: str = ""):
+          save_res = False, save_dirpath: str = "", axis_j = 256):
     print(f"[WACO ANNS] Searching task {task_name} for matrix {matrix_filename}"
         f" with warm_number = {warm_number}, trials = {trials} and k = {k}")
 
@@ -568,10 +568,10 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
         st, func = SpMVTask(matrix_filename)
         createScheuleFunc = CreateSpMVSchedule
     elif task_name == "SpMM":
-        st, func = SpMMTask(matrix_filename)
+        st, func = SpMMTask(matrix_filename, axis_j = axis_j)
         createScheuleFunc = CreateSpMMSchedule
     elif task_name == "SDDMM":
-        st, func = SDDMMTask(matrix_filename)
+        st, func = SDDMMTask(matrix_filename, axis_j = axis_j)
         createScheuleFunc = CreateSDDMMSchedule
     else:
         assert False, "Error task name."
@@ -721,58 +721,60 @@ if __name__ == "__main__":
     waco_prefix = os.getenv("AUTOSPARSE_HOME")
     platform = "xeon" # epyc xeon
 
-    matrix_total_file = os.path.join(waco_prefix, "dataset", "total.txt")
-    with open(matrix_total_file) as f:
-        matrix_names = f.read().splitlines()
-
-    matrix_names = [
-        "bcsstk38",
-        "mhd4800a",
-        "conf5_0-4x4-18",
-        "cca",
-        "Trefethen_20000",
-        "pf2177",
-        "msc10848",
-        "cfd1",
-        "net100",
-        "vanbody",
-        "net150",
-        "Chevron3_4x16_1",
-        "vibrobox_1x1_0",
-        "NACA0015_16x8_9",
-        "nemspmm1_16x4_0",
-        "Trec6_16x16_9",
-        "crystk01_2x16_1",
-        "t2dal_a_8x4_3",
-        "EX1_8x8_4"
+    mtx_names = [
+        'strides_mask',
+        'encoder.layer.10.output.dense.weight', # 768 3072
+        'encoder.layer.11.output.dense.weight',
+        'encoder.layer.8.output.dense.weight',
+        'encoder.layer.9.intermediate.dense.weight', # 3072 768
+        'encoder.layer.9.output.dense.weight'
     ]
-
-    for task_name in ["SDDMM"]: # "SpMM" "SpMV",
-        for name in matrix_names:
-            print(f"task {task_name} for matrix {name}")
-            save_dirpath_prefix = os.path.join(
-                waco_prefix, "baseline", "waco", task_name, platform+"_evaluation", name
-            )
-            if not os.path.exists(save_dirpath_prefix):
-                os.makedirs(save_dirpath_prefix)
-
-            result = ANNS3(
-                task_name, name + '.csr', 100, 150, 60, 
-                save_res=True, 
-                save_dirpath=save_dirpath_prefix
-            )
-            res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_" + task_name + ".txt"), 'a')
-            string = "{0} {1} {2} {3} {4} \n".format(
-                task_name, name, result[0], result[1], result[2]
-            )
-            res_f.write(string)
-            res_f.close()
-
-    # task_name = 'SpMV'
-    # id, schedules, value = ANNS3(task_name, "Trec6_16x16_9.csr")
-    # print(schedules + f" {value:.8f}")
-
-    # test_spmm()
+    task_name = 'SpMM'
+    for name in mtx_names:
+        if name == 'strides_mask':
+            axis_j = 256
+        elif 'intermediate' in name:
+            axis_j = 3072
+        else:
+            axis_j = 768
+        print(f"task {task_name} for matrix {name}")
+        save_dirpath_prefix = os.path.join(
+            waco_prefix, "baseline", "waco", task_name, platform+"_evaluation_usages_spmm", name
+        )
+        if not os.path.exists(save_dirpath_prefix):
+            os.makedirs(save_dirpath_prefix)
+        result = ANNS3(
+            task_name, name + '.csr', 100, 100, 60, 
+            save_res=True, 
+            save_dirpath=save_dirpath_prefix,
+            axis_j = axis_j
+        )
+        res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_usages_spmm_" + task_name + ".txt"), 'a')
+        string = "{0} {1} {2} {3} {4} \n".format(
+            task_name, name, result[0], result[1], result[2]
+        )
+        res_f.write(string)
+        res_f.close()
+    
+    name = "strides_mask"
+    task_name = "SDDMM"
+    print(f"task {task_name} for matrix {name}")
+    save_dirpath_prefix = os.path.join(
+        waco_prefix, "baseline", "waco", task_name, platform+"_evaluation_usages_sddmm", name
+    )
+    if not os.path.exists(save_dirpath_prefix):
+        os.makedirs(save_dirpath_prefix)
+    result = ANNS3(
+        task_name, name + '.csr', 100, 100, 60, 
+        save_res=True, 
+        save_dirpath=save_dirpath_prefix
+    )
+    res_f = open(os.path.join(waco_prefix, "baseline", "waco", platform+"_result_usages_sddmm_" + task_name + ".txt"), 'a')
+    string = "{0} {1} {2} {3} {4} \n".format(
+        task_name, name, result[0], result[1], result[2]
+    )
+    res_f.write(string)
+    res_f.close()
 
 # nohup python ANNSearch.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
 # nohup python ANNSearch.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 

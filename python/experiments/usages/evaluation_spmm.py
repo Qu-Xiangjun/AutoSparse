@@ -31,6 +31,7 @@ def Evaluation(platform):
     ]
 
     for mtx in mtx_names:
+        mtx = '_'.join(mtx.split('.'))
         for method in search_methods:
             mtx_filepath = os.path.join(
                 autosparse_prefix, "python", "experiments", 'usages', mtx+'.csr'
@@ -71,9 +72,9 @@ def Evaluation(platform):
                 writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
 
 if __name__ == "__main__":
-    Evaluation(platform = "xeon")
+    Evaluation(platform = "epyc")
 
 
 
 
-# nohup python evaluation_spmm.py > ../log/usages_xeon_evaluation_spmm_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_spmm.py > ../log/usages_epyc_evaluation_spmm_$(date +%Y%m%d%H%M).log 2>&1 & 
