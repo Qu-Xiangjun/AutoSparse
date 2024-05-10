@@ -14,7 +14,7 @@ platform = 'xeon'
 if platform == 'epyc':
     os.environ["TVM_NUM_THREADS"] = "128"
 else:
-    os.environ["TVM_NUM_THREADS"] = "64"
+    os.environ["TVM_NUM_THREADS"] = "16"
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -281,19 +281,19 @@ if __name__ == "__main__":
         'encoder.layer.9.intermediate.dense.weight', # 3072 768
         'encoder.layer.9.output.dense.weight'
     ]
-    for name in mtx_names:
-        if name == 'strides_mask':
-            tune_for_spmm(name, 256)
-        elif 'intermediate' in name:
-            tune_for_spmm(name, 3072)
-        else:
-            tune_for_spmm(name, 768)
     # for name in mtx_names:
     #     if name == 'strides_mask':
-    #         evaluate_best_record(name, 256)
+    #         tune_for_spmm(name, 256)
     #     elif 'intermediate' in name:
-    #         evaluate_best_record(name, 3072)
+    #         tune_for_spmm(name, 3072)
     #     else:
-    #         evaluate_best_record(name, 768)
+    #         tune_for_spmm(name, 768)
+    for name in mtx_names:
+        if name == 'strides_mask':
+            evaluate_best_record(name, 256)
+        elif 'intermediate' in name:
+            evaluate_best_record(name, 3072)
+        else:
+            evaluate_best_record(name, 768)
 
 # nohup python tune_sparse_x86_usages.py > ./log/xeon_evaluation_usgaes_$(date +%Y%m%d%H%M).log 2>&1 & 

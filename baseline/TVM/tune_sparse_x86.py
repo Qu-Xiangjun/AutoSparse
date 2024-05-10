@@ -9,12 +9,12 @@ from tvm.auto_scheduler import _ffi_api
 from tvm.topi.utils import get_const_tuple
 from tvm.topi.sparse.utils import random_bsr_matrix
 
-platform = 'epyc'
+platform = 'xeon'
 
 if platform == 'epyc':
     os.environ["TVM_NUM_THREADS"] = "128"
 else:
-    os.environ["TVM_NUM_THREADS"] = "64"
+    os.environ["TVM_NUM_THREADS"] = "32"
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -284,4 +284,4 @@ if __name__ == "__main__":
     for name in matrix_names:
         evaluate_best_record(name)
 
-# nohup python tune_sparse_x86.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python tune_sparse_x86.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 

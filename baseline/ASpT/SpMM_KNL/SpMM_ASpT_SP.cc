@@ -50,7 +50,7 @@ double time_in_mill_now() {
 #define SPBF (SPBSIZE / 32)
 #define STHRESHOLD (1024/2*1)
 #define SSTRIDE (STHRESHOLD / SPBF)
-#define NTHREAD (68)
+#define NTHREAD (16)
 #define SC_SIZE (2048)
 
 //#define SIM_VALUE
@@ -282,7 +282,7 @@ struct timeval starttime0;
 
 	// filtering(WILL)
 	//memcpy(csr_e1[0], csr_e0, sizeof(int)*ne);
-        #pragma omp parallel for num_threads(68) schedule(dynamic, 1)
+        #pragma omp parallel for num_threads(16) schedule(dynamic, 1)
 	for(int row_panel=0; row_panel<nr/BH; row_panel++) {
 		for(int i=row_panel*BH; i<(row_panel+1)*BH; i++) {
 			for(int j=csr_v[i]; j<csr_v[i+1]; j++) {
@@ -294,7 +294,7 @@ struct timeval starttime0;
 
 	gettimeofday(&starttime, NULL);
 
-        #pragma omp parallel for num_threads(68) schedule(dynamic, 1)
+        #pragma omp parallel for num_threads(16) schedule(dynamic, 1)
 	for(int row_panel=0; row_panel<nr/BH; row_panel++) {
 		int tid = omp_get_thread_num();
 		int i, j, t_sum=0;
@@ -376,7 +376,7 @@ struct timeval starttime0;
 
 ////gettimeofday(&tt2, NULL);
 
-        #pragma omp parallel for num_threads(68) schedule(dynamic, 1)
+        #pragma omp parallel for num_threads(16) schedule(dynamic, 1)
 	for(int row_panel=0; row_panel<nr/BH; row_panel++) {
 		int tid = omp_get_thread_num();
 	    if(mcsr_chk[row_panel] == 0) {
@@ -534,7 +534,7 @@ void mprocess()
 
         memset(vout, 0, sizeof(FTYPE)*nr*sc);
 	#pragma vector aligned
-	#pragma omp parallel for num_threads(68)
+	#pragma omp parallel for num_threads(16)
         for(int i=0;i<nc*sc;i++) {
                 vin[i] = (FTYPE)(rand()%1048576)/1048576;
 #ifdef SIM_VALUE
@@ -554,7 +554,7 @@ for(int loop=0;loop<ITER;loop++) {
         #pragma ivdep
         #pragma vector aligned
         #pragma temporal (vin)
-        #pragma omp parallel for num_threads(136) schedule(dynamic, 1)
+        #pragma omp parallel for num_threads(32) schedule(dynamic, 1)
 	for(int row_panel=0; row_panel<nr/BH; row_panel ++) {
 		//dense
 		int stride;
@@ -646,7 +646,7 @@ for(int loop=0;loop<ITER;loop++) {
         #pragma ivdep
         #pragma vector aligned
         #pragma temporal (vin)
-        #pragma omp parallel for num_threads(136) schedule(dynamic, 1)
+        #pragma omp parallel for num_threads(32) schedule(dynamic, 1)
 	for(int row_panel=0; row_panel<nr/BH; row_panel ++) {
 		//dense
 		int stride;
@@ -726,7 +726,7 @@ for(int loop=0;loop<ITER;loop++) {
 	#pragma ivdep
         #pragma vector aligned
         #pragma temporal (vin)
-        #pragma omp parallel for num_threads(136) schedule(dynamic, 1)
+        #pragma omp parallel for num_threads(32) schedule(dynamic, 1)
 	for(int row_panel=0; row_panel<special_p;row_panel ++) {
 		int i=special[row_panel];
 

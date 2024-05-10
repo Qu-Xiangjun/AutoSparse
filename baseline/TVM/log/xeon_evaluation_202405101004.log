@@ -1,0 +1,39 @@
+nohup: ignoring input
+bcsstk38: num_row = 8032, num_col = 8032, nnz = 355460
+bcsstk38 Execution time of this operator: 17.168 ms
+cca: num_row = 49152, num_col = 49152, nnz = 139264
+cca Execution time of this operator: 65.525 ms
+cfd1: num_row = 70656, num_col = 70656, nnz = 1828364
+cfd1 Execution time of this operator: 181.974 ms
+Chevron3_4x16_1: num_row = 131072, num_col = 8192, nnz = 4611968
+Chevron3_4x16_1 Execution time of this operator: 46.344 ms
+conf5_0-4x4-18: num_row = 3072, num_col = 3072, nnz = 119808
+conf5_0-4x4-18 Execution time of this operator: 4.310 ms
+crystk01_2x16_1: num_row = 2048, num_col = 65536, nnz = 1041952
+crystk01_2x16_1 Execution time of this operator: 36.805 ms
+EX1_8x8_4: num_row = 4096, num_col = 4096, nnz = 1151680
+EX1_8x8_4 Execution time of this operator: 8.306 ms
+mhd4800a: num_row = 4800, num_col = 4800, nnz = 102252
+mhd4800a Execution time of this operator: 1.700 ms
+msc10848: num_row = 10848, num_col = 10848, nnz = 1229778
+msc10848 Execution time of this operator: 50.121 ms
+NACA0015_16x8_9: num_row = 131072, num_col = 4096, nnz = 3174656
+NACA0015_16x8_9 Execution time of this operator: 35.261 ms
+nemspmm1_16x4_0: num_row = 4096, num_col = 8192, nnz = 701760
+nemspmm1_16x4_0 Execution time of this operator: 7.082 ms
+net100: num_row = 29920, num_col = 29920, nnz = 2033200
+net100 Execution time of this operator: 313.442 ms
+net150: num_row = 43520, num_col = 43520, nnz = 3121200
+net150 Execution time of this operator: 392.106 ms
+pf2177: num_row = 9728, num_col = 9728, nnz = 725144
+pf2177 Execution time of this operator: 250.126 ms
+t2dal_a_8x4_3: num_row = 16384, num_col = 8192, nnz = 1511360
+t2dal_a_8x4_3 Execution time of this operator: 19.837 ms
+Trec6_16x16_9: num_row = 32768, num_col = 8192, nnz = 163840
+Trec6_16x16_9 Execution time of this operator: 1.391 ms
+Trefethen_20000: num_row = 20000, num_col = 20000, nnz = 554466
+Trefethen_20000 Execution time of this operator: 46.547 ms
+vanbody: num_row = 47072, num_col = 47072, nnz = 2336898
+vanbody Execution time of this operator: 104.796 ms
+vibrobox_1x1_0: num_row = 65536, num_col = 4096, nnz = 4580587
+vibrobox_1x1_0 Execution time of this operator: 183.247 ms
