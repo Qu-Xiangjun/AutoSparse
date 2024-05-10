@@ -1,0 +1,7 @@
+name,method,config command,csr_time,best_time
+strides_mask,q_sa_searching,2 i 2 i0 2048 i1 2 k 2 k0 16 k1 256 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 1 k0 0 k1 1 1 j 2 j0 32 j1 8 6 i0 i1 k0 j0 k1 j1 i0 j1 j0 32 128 1,1.7837210893630981,0.85880156
+encoder.layer.10.output.dense.weight,q_sa_searching,2 i 2 i0 256 i1 2 k 2 k0 128 k1 16 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 1 k1 0 1 j 2 j0 64 j1 8 6 i0 k0 i1 j0 k1 j1 i0 j1 j0 64 128 1,5.800766468048096,0.46529542
+encoder.layer.11.output.dense.weight,q_sa_searching,2 i 2 i0 512 i1 1 k 2 k0 128 k1 16 1 A 4 i0 k0 i1 k1 A 4 i0 0 i1 1 k0 1 k1 0 1 j 2 j0 128 j1 4 6 i0 k0 i1 j0 k1 j1 i0 j1 j0 128 128 1,5.077028274536133,0.4540524000000001
+encoder.layer.8.output.dense.weight,q_sa_searching,2 i 2 i0 512 i1 1 k 2 k0 8 k1 256 1 A 4 i0 k0 k1 i1 A 4 i0 1 i1 0 k0 0 k1 1 1 j 2 j0 32 j1 16 6 i0 j0 k0 k1 i1 j1 i0 None None 0 128 1,3.570335865020752,0.26096102
+encoder.layer.9.intermediate.dense.weight,q_sa_searching,2 i 2 i0 8 i1 256 k 2 k0 4 k1 128 1 A 4 k0 i0 i1 k1 A 4 i0 0 i1 1 k0 1 k1 1 1 j 2 j0 256 j1 8 6 j0 k0 i0 i1 k1 j1 j0 None None 0 128 1,39.51425552368164,0.83659042
+encoder.layer.9.output.dense.weight,q_sa_searching,2 i 2 i0 512 i1 1 k 2 k0 32 k1 64 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 1 k0 1 k1 1 1 j 2 j0 128 j1 4 6 i0 k0 j0 i1 k1 j1 i0 None None 0 128 1,2.8231146335601807,0.12412008000000001
