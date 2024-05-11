@@ -1,0 +1,371 @@
+nohup: ignoring input
+No GPU available, using CPU instead.
+task SDDMM for matrix strides_mask
+[WACO ANNS] Searching task SDDMM for matrix strides_mask.csr with warm_number = 100, trials = 100 and k = 60
+Using device: cpu
+Embedd all super schedule.
+  0%|          | 0/19263 [00:00<?, ?it/s]  1%|          | 103/19263 [00:00<00:18, 1021.10it/s]  1%|          | 218/19263 [00:00<00:17, 1089.75it/s]  2%|▏         | 337/19263 [00:00<00:16, 1133.25it/s]  2%|▏         | 465/19263 [00:00<00:15, 1187.97it/s]  3%|▎         | 601/19263 [00:00<00:14, 1248.20it/s]  4%|▍         | 739/19263 [00:00<00:14, 1292.16it/s]  5%|▍         | 895/19263 [00:00<00:13, 1376.34it/s]  6%|▌         | 1069/19263 [00:00<00:12, 1491.43it/s]  6%|▋         | 1235/19263 [00:00<00:11, 1541.33it/s]  7%|▋         | 1401/19263 [00:01<00:11, 1577.06it/s]  8%|▊         | 1563/19263 [00:01<00:11, 1589.49it/s]  9%|▉         | 1735/19263 [00:01<00:10, 1627.30it/s] 10%|▉         | 1916/19263 [00:01<00:10, 1680.91it/s] 11%|█         | 2112/19263 [00:01<00:09, 1764.05it/s] 12%|█▏        | 2300/19263 [00:01<00:09, 1796.85it/s] 13%|█▎        | 2496/19263 [00:01<00:09, 1845.06it/s] 14%|█▍        | 2684/19263 [00:01<00:08, 1855.12it/s] 15%|█▍        | 2877/19263 [00:01<00:08, 1874.76it/s] 16%|█▌        | 3072/19263 [00:01<00:08, 1894.99it/s] 17%|█▋        | 3271/19263 [00:02<00:08, 1921.88it/s] 18%|█▊        | 3466/19263 [00:02<00:08, 1928.79it/s] 19%|█▉        | 3664/19263 [00:02<00:08, 1942.10it/s] 20%|██        | 3870/19263 [00:02<00:07, 1977.21it/s] 21%|██        | 4069/19263 [00:02<00:07, 1979.41it/s] 22%|██▏       | 4273/19263 [00:02<00:07, 1995.93it/s] 23%|██▎       | 4484/19263 [00:02<00:07, 2028.78it/s] 24%|██▍       | 4691/19263 [00:02<00:07, 2037.78it/s] 25%|██▌       | 4895/19263 [00:02<00:07, 2019.48it/s] 26%|██▋       | 5098/19263 [00:02<00:07, 2019.05it/s] 28%|██▊       | 5305/19263 [00:03<00:06, 2032.54it/s] 29%|██▊       | 5520/19263 [00:03<00:06, 2067.18it/s] 30%|██▉       | 5727/19263 [00:03<00:06, 2064.57it/s] 31%|███       | 5945/19263 [00:03<00:06, 2098.13it/s] 32%|███▏      | 6155/19263 [00:03<00:06, 2024.60it/s] 33%|███▎      | 6359/19263 [00:03<00:06, 2022.41it/s] 34%|███▍      | 6575/19263 [00:03<00:06, 2062.41it/s] 35%|███▌      | 6785/19263 [00:03<00:06, 2071.88it/s] 36%|███▋      | 7007/19263 [00:03<00:05, 2113.92it/s] 38%|███▊      | 7225/19263 [00:03<00:05, 2130.94it/s] 39%|███▊      | 7440/19263 [00:04<00:05, 2136.03it/s] 40%|███▉      | 7671/19263 [00:04<00:05, 2186.35it/s] 41%|████      | 7890/19263 [00:04<00:05, 2182.83it/s] 42%|████▏     | 8109/19263 [00:04<00:05, 2179.73it/s] 43%|████▎     | 8333/19263 [00:04<00:04, 2197.57it/s] 44%|████▍     | 8560/19263 [00:04<00:04, 2218.82it/s] 46%|████▌     | 8789/19263 [00:04<00:04, 2239.01it/s] 47%|████▋     | 9025/19263 [00:04<00:04, 2274.85it/s] 48%|████▊     | 9256/19263 [00:04<00:04, 2284.11it/s] 49%|████▉     | 9485/19263 [00:04<00:04, 2236.51it/s] 50%|█████     | 9716/19263 [00:05<00:04, 2255.70it/s] 52%|█████▏    | 9948/19263 [00:05<00:04, 2272.33it/s] 53%|█████▎    | 10183/19263 [00:05<00:03, 2291.74it/s] 54%|█████▍    | 10413/19263 [00:05<00:03, 2216.26it/s] 55%|█████▌    | 10636/19263 [00:05<00:03, 2209.90it/s] 56%|█████▋    | 10872/19263 [00:05<00:03, 2253.78it/s] 58%|█████▊    | 11106/19263 [00:05<00:03, 2277.32it/s] 59%|█████▉    | 11335/19263 [00:05<00:03, 2266.65it/s] 60%|██████    | 11571/19263 [00:05<00:03, 2293.47it/s] 61%|██████▏   | 11807/19263 [00:05<00:03, 2311.75it/s] 63%|██████▎   | 12042/19263 [00:06<00:03, 2322.61it/s] 64%|██████▎   | 12275/19263 [00:06<00:03, 2312.12it/s] 65%|██████▍   | 12520/19263 [00:06<00:02, 2352.77it/s] 66%|██████▋   | 12772/19263 [00:06<00:02, 2401.38it/s] 68%|██████▊   | 13021/19263 [00:06<00:02, 2425.42it/s] 69%|██████▉   | 13273/19263 [00:06<00:02, 2452.40it/s] 70%|███████   | 13523/19263 [00:06<00:02, 2461.80it/s] 71%|███████▏  | 13773/19263 [00:06<00:02, 2471.11it/s] 73%|███████▎  | 14021/19263 [00:06<00:02, 2452.68it/s] 74%|███████▍  | 14267/19263 [00:06<00:02, 2376.27it/s] 75%|███████▌  | 14509/19263 [00:07<00:01, 2387.59it/s] 77%|███████▋  | 14749/19263 [00:07<00:01, 2390.07it/s] 78%|███████▊  | 15002/19263 [00:07<00:01, 2430.36it/s] 79%|███████▉  | 15260/19263 [00:07<00:01, 2473.50it/s] 81%|████████  | 15514/19263 [00:07<00:01, 2491.01it/s] 82%|████████▏ | 15771/19263 [00:07<00:01, 2512.85it/s] 83%|████████▎ | 16038/19263 [00:07<00:01, 2559.45it/s] 85%|████████▍ | 16295/19263 [00:07<00:01, 2549.08it/s] 86%|████████▌ | 16556/19263 [00:07<00:01, 2565.88it/s] 87%|████████▋ | 16813/19263 [00:07<00:00, 2536.54it/s] 89%|████████▊ | 17073/19263 [00:08<00:00, 2554.73it/s] 90%|████████▉ | 17335/19263 [00:08<00:00, 2572.03it/s] 91%|█████████▏| 17600/19263 [00:08<00:00, 2594.87it/s] 93%|█████████▎| 17870/19263 [00:08<00:00, 2623.40it/s] 94%|█████████▍| 18140/19263 [00:08<00:00, 2644.19it/s] 96%|█████████▌| 18405/19263 [00:08<00:00, 2633.53it/s] 97%|█████████▋| 18679/19263 [00:08<00:00, 2664.97it/s] 98%|█████████▊| 18946/19263 [00:08<00:00, 2647.28it/s]100%|█████████▉| 19218/19263 [00:08<00:00, 2668.08it/s]100%|██████████| 19263/19263 [00:08<00:00, 2163.81it/s]
+  0%|          | 0/2888 [00:00<?, ?it/s]  2%|▏         | 50/2888 [00:00<00:05, 494.56it/s]  4%|▎         | 108/2888 [00:00<00:05, 541.87it/s]  6%|▌         | 167/2888 [00:00<00:04, 560.90it/s]  8%|▊         | 225/2888 [00:00<00:04, 567.70it/s] 10%|▉         | 283/2888 [00:00<00:04, 571.94it/s] 12%|█▏        | 341/2888 [00:00<00:06, 415.51it/s] 14%|█▍        | 400/2888 [00:00<00:05, 459.56it/s] 16%|█▌        | 459/2888 [00:00<00:04, 494.19it/s] 18%|█▊        | 518/2888 [00:01<00:04, 519.56it/s] 20%|█▉        | 577/2888 [00:01<00:04, 538.81it/s] 22%|██▏       | 636/2888 [00:01<00:04, 551.39it/s] 24%|██▍       | 694/2888 [00:01<00:03, 559.18it/s] 26%|██▌       | 753/2888 [00:01<00:03, 566.46it/s] 28%|██▊       | 813/2888 [00:01<00:03, 572.83it/s] 30%|███       | 872/2888 [00:01<00:03, 576.90it/s] 32%|███▏      | 931/2888 [00:01<00:03, 561.68it/s] 34%|███▍      | 988/2888 [00:01<00:03, 557.06it/s] 36%|███▌      | 1044/2888 [00:02<00:05, 350.04it/s] 38%|███▊      | 1095/2888 [00:02<00:04, 382.91it/s] 40%|███▉      | 1153/2888 [00:02<00:04, 426.93it/s] 42%|████▏     | 1212/2888 [00:02<00:03, 466.51it/s] 44%|████▍     | 1269/2888 [00:02<00:03, 492.82it/s] 46%|████▌     | 1327/2888 [00:02<00:03, 515.73it/s] 48%|████▊     | 1384/2888 [00:02<00:02, 529.94it/s] 50%|████▉     | 1443/2888 [00:02<00:02, 544.75it/s] 52%|█████▏    | 1500/2888 [00:02<00:02, 540.51it/s] 54%|█████▍    | 1559/2888 [00:03<00:02, 553.82it/s] 56%|█████▌    | 1618/2888 [00:03<00:02, 560.90it/s] 58%|█████▊    | 1675/2888 [00:03<00:04, 279.36it/s] 60%|██████    | 1734/2888 [00:03<00:03, 331.99it/s] 62%|██████▏   | 1787/2888 [00:03<00:02, 370.04it/s] 64%|██████▍   | 1843/2888 [00:03<00:02, 410.70it/s] 66%|██████▌   | 1901/2888 [00:04<00:02, 450.00it/s] 68%|██████▊   | 1960/2888 [00:04<00:01, 484.64it/s] 70%|██████▉   | 2018/2888 [00:04<00:01, 509.71it/s] 72%|███████▏  | 2078/2888 [00:04<00:01, 528.59it/s] 74%|███████▍  | 2138/2888 [00:04<00:01, 539.61it/s] 76%|███████▌  | 2198/2888 [00:04<00:01, 541.09it/s] 78%|███████▊  | 2258/2888 [00:04<00:01, 545.35it/s] 80%|████████  | 2318/2888 [00:04<00:01, 544.29it/s] 82%|████████▏ | 2378/2888 [00:04<00:00, 546.08it/s] 84%|████████▍ | 2434/2888 [00:05<00:01, 237.23it/s] 86%|████████▌ | 2488/2888 [00:05<00:01, 281.41it/s] 88%|████████▊ | 2543/2888 [00:05<00:01, 327.66it/s] 90%|████████▉ | 2591/2888 [00:05<00:00, 349.25it/s] 92%|█████████▏| 2645/2888 [00:05<00:00, 390.62it/s] 94%|█████████▎| 2701/2888 [00:05<00:00, 430.56it/s] 96%|█████████▌| 2760/2888 [00:06<00:00, 470.23it/s] 98%|█████████▊| 2820/2888 [00:06<00:00, 503.20it/s]100%|█████████▉| 2876/2888 [00:06<00:00, 506.21it/s]100%|██████████| 2888/2888 [00:06<00:00, 459.85it/s]strides_mask.csr num_row=4096, num_col=4096, num_nonezero=264192
+[WACO ANNS] CSR origin time = 27.26682854 ms
+[WACO ANNS] Warm up 100 times.
+[WACO ANNS] Warm up 0 times = 268.68517100 		 32 128 2 j1 j0 i1 i0 k1 k0 0 0 1 1 j1 48 4
+[WACO ANNS] Warm up 1 times = 554.01516100 		 64 8 16 j1 i1 j0 i0 k1 k0 1 0 0 1 j1 48 16
+[WACO ANNS] Warm up 2 times = 236.01871500 		 128 8 2 j1 j0 i1 i0 k1 k0 0 0 0 0 j1 48 4
+[WACO ANNS] Warm up 3 times = 41.36157460 		 1 8 128 i1 j1 k1 j0 i0 k0 0 1 1 0 i1 48 8
+[WACO ANNS] Warm up 4 times = 5.86375898 		 1 128 64 i1 j1 j0 k1 i0 k0 0 1 1 0 i1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 5 times = inf 		 128 64 16 j1 i1 i0 j0 k1 k0 1 0 1 0 j1 48 2
+[WACO ANNS] Warm up 6 times = 194.80267100 		 64 16 8 i1 j1 k1 i0 j0 k0 1 0 1 0 i1 48 4
+[WACO ANNS] Warm up 7 times = 35.09428274 		 256 128 64 i1 i0 k1 j1 j0 k0 1 1 0 0 i1 48 1
+[WACO ANNS] Warm up 8 times = inf 		 32 1 2 i1 j1 j0 i0 k1 k0 0 1 1 0 i1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 9 times = inf 		 1 64 1 j1 i1 j0 i0 k1 k0 0 0 1 1 j1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 10 times = inf 		 128 256 8 k1 j1 i1 i0 j0 k0 1 0 1 0 j1 48 4
+[WACO ANNS] Warm up 11 times = inf 		 256 8 4 i1 i0 j1 j0 k1 k0 1 1 0 1 i1 48 4
+[WACO ANNS] Warm up 12 times = 60.16903780 		 128 128 32 i1 j1 j0 k1 i0 k0 1 0 0 1 i1 48 4
+[WACO ANNS] Warm up 13 times = inf 		 128 1 32 j1 i1 k1 i0 j0 k0 0 0 1 1 j1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 14 times = inf 		 8 1 1 j1 i1 i0 j0 k1 k0 1 0 1 1 j1 48 16
+[WACO ANNS] Warm up 15 times = 170.66934700 		 64 2 8 k1 i1 i0 j1 j0 k0 0 1 1 0 i1 48 2
+TimeoutError -------------------------
+[WACO ANNS] Warm up 16 times = inf 		 16 2 128 j1 k1 i1 j0 i0 k0 1 0 1 0 j1 48 2
+TimeoutError -------------------------
+[WACO ANNS] Warm up 17 times = inf 		 1 256 8 j1 i1 k1 j0 i0 k0 1 1 1 0 j1 48 32
+[WACO ANNS] Warm up 18 times = 340.32215000 		 1 256 4 j1 j0 i1 i0 k1 k0 0 0 1 0 j1 48 8
+[WACO ANNS] Warm up 19 times = 167.10527200 		 1 16 32 j1 k1 j0 i1 i0 k0 0 1 0 1 j1 48 8
+[WACO ANNS] Warm up 20 times = 300.73248100 		 32 4 2 j1 j0 i1 i0 k1 k0 1 0 0 0 j1 48 32
+[WACO ANNS] Warm up 21 times = inf 		 32 16 64 j1 i1 k1 j0 i0 k0 0 1 0 1 j1 48 16
+TimeoutError -------------------------
+[WACO ANNS] Warm up 22 times = inf 		 64 16 64 i1 k1 j1 i0 j0 k0 0 0 0 0 i1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 23 times = inf 		 8 1 128 j1 k1 i1 j0 i0 k0 0 0 0 0 j1 48 32
+[WACO ANNS] Warm up 24 times = inf 		 32 4 4 i1 j1 i0 j0 k1 k0 0 1 1 1 i1 48 16
+[WACO ANNS] Warm up 25 times = inf 		 128 256 8 j1 k1 j0 i1 i0 k0 0 1 1 0 j1 48 2
+TimeoutError -------------------------
+[WACO ANNS] Warm up 26 times = inf 		 1 8 64 j1 j0 i1 i0 k1 k0 0 1 0 0 j1 48 32
+[WACO ANNS] Warm up 27 times = 141.29495200 		 64 16 8 j1 j0 i1 i0 k1 k0 0 0 1 0 j1 48 2
+TimeoutError -------------------------
+[WACO ANNS] Warm up 28 times = inf 		 8 32 2 j1 i1 j0 i0 k1 k0 1 1 1 0 j1 48 8
+[WACO ANNS] Warm up 29 times = inf 		 2 1 1 i1 j1 k1 j0 i0 k0 0 1 0 1 i1 48 8
+[WACO ANNS] Warm up 30 times = 30.75249714 		 128 128 64 k1 j1 j0 i1 i0 k0 1 0 0 1 j1 48 4
+[WACO ANNS] Warm up 31 times = inf 		 256 8 32 j1 j0 k1 i1 i0 k0 1 1 1 0 j1 48 32
+[WACO ANNS] Warm up 32 times = inf 		 128 4 2 i1 j1 j0 i0 k1 k0 0 1 1 1 i1 48 2
+[WACO ANNS] Warm up 33 times = 33.73973804 		 16 64 16 i1 i0 j1 k1 j0 k0 1 1 0 0 i1 48 2
+[WACO ANNS] Warm up 34 times = 291.41770000 		 2 2 8 k1 i1 j1 j0 i0 k0 0 0 0 1 i1 48 32
+[WACO ANNS] Warm up 35 times = inf 		 32 256 4 j1 i1 j0 i0 k1 k0 0 1 1 1 j1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 36 times = inf 		 1 4 64 j1 i1 j0 i0 k1 k0 0 0 0 0 j1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 37 times = inf 		 64 4 16 j1 i1 i0 k1 j0 k0 0 0 1 0 j1 48 4
+TimeoutError -------------------------
+[WACO ANNS] Warm up 38 times = inf 		 4 16 32 k1 i1 i0 j1 j0 k0 0 0 1 0 i1 48 8
+[WACO ANNS] Warm up 39 times = inf 		 256 2 2 i1 j1 i0 j0 k1 k0 1 1 0 1 i1 48 4
+[WACO ANNS] Warm up 40 times = 16.66089814 		 64 64 1 i1 j1 i0 j0 k1 k0 1 0 1 1 i1 48 2
+[WACO ANNS] Warm up 41 times = inf 		 256 1 8 j1 j0 k1 i1 i0 k0 0 1 0 1 j1 48 16
+TimeoutError -------------------------
+[WACO ANNS] Warm up 42 times = inf 		 64 64 8 k1 j1 i1 i0 j0 k0 1 1 1 0 j1 48 4
+[WACO ANNS] Warm up 43 times = inf 		 16 128 2 i1 j1 i0 j0 k1 k0 1 1 1 0 i1 48 2
+TimeoutError -------------------------
+[WACO ANNS] Warm up 44 times = inf 		 16 4 16 i1 j1 k1 j0 i0 k0 1 1 0 0 i1 48 4
+[WACO ANNS] Warm up 45 times = 150.77339900 		 32 2 8 i1 i0 k1 j1 j0 k0 0 1 0 0 i1 48 8
+[WACO ANNS] Warm up 46 times = inf 		 256 32 8 i1 j1 k1 j0 i0 k0 1 1 1 0 i1 48 32
+[WACO ANNS] Warm up 47 times = inf 		 32 16 1 i1 j1 k1 i0 j0 k0 0 1 1 1 i1 48 16
+[WACO ANNS] Warm up 48 times = inf 		 64 16 16 k1 j1 j0 i1 i0 k0 0 1 0 0 j1 48 8
+[WACO ANNS] Warm up 49 times = 18.50414632 		 1 64 64 k1 i1 j1 i0 j0 k0 1 1 1 0 i1 48 4
+[WACO ANNS] Warm up 50 times = inf 		 1 256 2 i1 j1 i0 j0 k1 k0 0 1 0 1 i1 48 16
+[WACO ANNS] Warm up 51 times = inf 		 16 16 4 i1 j1 i0 j0 k1 k0 0 0 1 1 i1 48 1
+[WACO ANNS] Warm up 52 times = inf 		 4 1 32 j1 k1 i1 i0 j0 k0 1 0 1 1 j1 48 16
+[WACO ANNS] Warm up 53 times = 765.80250700 		 256 256 128 j1 i1 i0 k1 j0 k0 1 0 1 0 j1 48 4
+[WACO ANNS] Warm up 54 times = inf 		 64 8 16 j1 i1 i0 j0 k1 k0 1 1 0 1 j1 48 8
+[WACO ANNS] Warm up 55 times = inf 		 32 64 8 i1 j1 i0 k1 j0 k0 0 0 1 1 i1 48 1
+[WACO ANNS] Warm up 56 times = inf 		 64 32 8 i1 j1 i0 j0 k1 k0 1 0 0 1 i1 48 2
+[WACO ANNS] Warm up 57 times = 52.22678550 		 128 64 4 i1 j1 i0 j0 k1 k0 0 0 1 0 i1 48 4
+[WACO ANNS] Warm up 58 times = inf 		 64 16 128 i1 j1 j0 k1 i0 k0 0 1 0 0 i1 48 2
+TimeoutError -------------------------
+[WACO ANNS] Warm up 59 times = inf 		 8 32 32 j1 j0 i1 i0 k1 k0 0 1 0 1 j1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 60 times = inf 		 1 8 64 k1 j1 j0 i1 i0 k0 0 0 1 1 j1 48 4
+[WACO ANNS] Warm up 61 times = 56.88072116 		 64 128 8 j1 j0 i1 k1 i0 k0 1 0 0 1 j1 48 1
+[WACO ANNS] Warm up 62 times = inf 		 128 64 64 i1 j1 k1 j0 i0 k0 0 1 1 0 i1 48 16
+[WACO ANNS] Warm up 63 times = inf 		 32 4 16 i1 j1 k1 j0 i0 k0 0 1 1 1 i1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 64 times = inf 		 2 256 16 j1 i1 i0 j0 k1 k0 0 0 1 0 j1 48 1
+[WACO ANNS] Warm up 65 times = 14.00734328 		 4 2 2 i1 i0 j1 j0 k1 k0 1 0 0 0 i1 48 16
+[WACO ANNS] Warm up 66 times = inf 		 128 4 64 i1 i0 j1 j0 k1 k0 1 1 0 1 i1 48 16
+[WACO ANNS] Warm up 67 times = 17.84162822 		 4 32 128 i1 k1 i0 j1 j0 k0 0 1 1 0 i1 48 1
+[WACO ANNS] Warm up 68 times = inf 		 4 64 2 i1 j1 i0 j0 k1 k0 0 0 0 1 i1 48 4
+[WACO ANNS] Warm up 69 times = 200.53160500 		 8 1 64 i1 i0 j1 k1 j0 k0 0 1 0 0 i1 48 16
+[WACO ANNS] Warm up 70 times = 10.61168276 		 4 256 4 i1 j1 i0 j0 k1 k0 1 1 1 0 i1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 71 times = inf 		 1 4 8 j1 i1 i0 j0 k1 k0 0 0 1 1 j1 48 8
+[WACO ANNS] Warm up 72 times = inf 		 4 1 128 j1 k1 i1 j0 i0 k0 1 1 0 1 j1 48 16
+TimeoutError -------------------------
+[WACO ANNS] Warm up 73 times = inf 		 16 4 1 j1 i1 i0 j0 k1 k0 0 0 0 1 j1 48 1
+[WACO ANNS] Warm up 74 times = 51.63091138 		 16 128 32 i1 j1 i0 j0 k1 k0 1 1 0 0 i1 48 32
+TimeoutError -------------------------
+[WACO ANNS] Warm up 75 times = inf 		 4 8 8 i1 j1 i0 k1 j0 k0 1 1 1 0 i1 48 4
+[WACO ANNS] Warm up 76 times = 153.22036400 		 128 8 8 j1 i1 j0 k1 i0 k0 0 0 0 0 j1 48 32
+[WACO ANNS] Warm up 77 times = 19.58870232 		 16 256 128 i1 i0 j1 k1 j0 k0 1 0 1 0 i1 48 8
+[WACO ANNS] Warm up 78 times = 17.56659492 		 8 256 4 i1 j1 j0 i0 k1 k0 1 0 0 1 i1 48 16
+[WACO ANNS] Warm up 79 times = 29.12045534 		 128 1 1 i1 i0 j1 j0 k1 k0 0 0 0 0 i1 48 2
+[WACO ANNS] Warm up 80 times = 45.30495964 		 32 2 64 i1 j1 i0 j0 k1 k0 0 0 0 0 i1 48 16
+[WACO ANNS] Warm up 81 times = inf 		 4 64 2 i1 j1 i0 j0 k1 k0 0 0 0 1 i1 48 32
+[WACO ANNS] Warm up 82 times = 9.72607348 		 4 128 4 i1 j1 j0 i0 k1 k0 0 0 1 0 i1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 83 times = inf 		 16 256 8 k1 j1 i1 i0 j0 k0 1 1 1 0 j1 48 1
+TimeoutError -------------------------
+[WACO ANNS] Warm up 84 times = inf 		 8 64 128 j1 k1 i1 j0 i0 k0 1 0 0 0 j1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 85 times = inf 		 16 256 32 j1 i1 j0 i0 k1 k0 1 1 0 0 j1 48 8
+[WACO ANNS] Warm up 86 times = inf 		 1 1 128 k1 i1 j1 i0 j0 k0 1 0 0 1 i1 48 16
+[WACO ANNS] Warm up 87 times = 183.75728600 		 16 32 8 j1 j0 k1 i1 i0 k0 0 0 0 0 j1 48 4
+[WACO ANNS] Warm up 88 times = 18.38977636 		 8 2 64 i1 j1 j0 i0 k1 k0 1 0 1 1 i1 48 16
+[WACO ANNS] Warm up 89 times = inf 		 16 32 64 k1 j1 j0 i1 i0 k0 1 1 0 0 j1 48 4
+[WACO ANNS] Warm up 90 times = inf 		 32 1 1 j1 i1 k1 j0 i0 k0 1 1 0 1 j1 48 1
+[WACO ANNS] Warm up 91 times = 225.12126500 		 4 64 16 j1 k1 j0 i1 i0 k0 0 0 0 0 j1 48 32
+[WACO ANNS] Warm up 92 times = 264.33046000 		 16 32 16 k1 j1 j0 i1 i0 k0 1 0 0 1 j1 48 16
+[WACO ANNS] Warm up 93 times = 147.53866100 		 256 128 16 i1 j1 k1 j0 i0 k0 1 0 1 0 i1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 94 times = inf 		 8 16 2 j1 i1 i0 j0 k1 k0 1 0 1 1 j1 48 8
+TimeoutError -------------------------
+[WACO ANNS] Warm up 95 times = inf 		 64 32 16 j1 k1 i1 i0 j0 k0 1 0 0 1 j1 48 1
+[WACO ANNS] Warm up 96 times = inf 		 32 8 32 i1 j1 k1 j0 i0 k0 0 1 0 1 i1 48 1
+[WACO ANNS] Warm up 97 times = 10.89357538 		 2 128 2 i1 j1 j0 i0 k1 k0 0 0 0 0 i1 48 16
+[WACO ANNS] Warm up 98 times = inf 		 4 8 32 i1 j1 j0 i0 k1 k0 0 1 0 0 i1 48 32
+TimeoutError -------------------------
+[WACO ANNS] Warm up 99 times = inf 		 64 4 8 j1 k1 i1 i0 j0 k0 0 0 1 0 j1 48 2
+[WACO ANNS] Find best id in warm up for 64 4 8 j1 k1 i1 i0 j0 k0 0 0 1 0 j1 48 2 = 5.863758979999999
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 0 trial best: 13.42910020, history best: 5.86375898
+[WACO ANNS] Search in 1 trial best: inf, history best: 5.86375898
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 2 trial best: 16.68055528, history best: 5.86375898
+[WACO ANNS] Search in 3 trial best: inf, history best: 5.86375898
+TimeoutError -------------------------
+[WACO ANNS] Search in 4 trial best: 3.24201878, history best: 5.86375898
+[WACO ANNS] Search in 5 trial best: 3.43179302, history best: 3.24201878
+[WACO ANNS] Search in 6 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 7 trial best: 4.26377290, history best: 3.24201878
+[WACO ANNS] Search in 8 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 9 trial best: 7.61737260, history best: 3.24201878
+[WACO ANNS] Search in 10 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 11 trial best: 4.54827568, history best: 3.24201878
+[WACO ANNS] Search in 12 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 13 trial best: 3.73639090, history best: 3.24201878
+[WACO ANNS] Search in 14 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 15 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 16 trial best: 3.76464494, history best: 3.24201878
+[WACO ANNS] Search in 17 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 18 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 19 trial best: 17.83666590, history best: 3.24201878
+[WACO ANNS] Search in 20 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 21 trial best: 10.27645518, history best: 3.24201878
+[WACO ANNS] Search in 22 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 23 trial best: 5.15071144, history best: 3.24201878
+[WACO ANNS] Search in 24 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 25 trial best: 10.13953882, history best: 3.24201878
+[WACO ANNS] Search in 26 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 27 trial best: 20.74821446, history best: 3.24201878
+[WACO ANNS] Search in 28 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 29 trial best: 5.01242528, history best: 3.24201878
+[WACO ANNS] Search in 30 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 31 trial best: 10.28904996, history best: 3.24201878
+[WACO ANNS] Search in 32 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 33 trial best: 4.18799374, history best: 3.24201878
+[WACO ANNS] Search in 34 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 35 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 36 trial best: 4.63080622, history best: 3.24201878
+[WACO ANNS] Search in 37 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 38 trial best: 6.02117220, history best: 3.24201878
+[WACO ANNS] Search in 39 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 40 trial best: 29.47175354, history best: 3.24201878
+[WACO ANNS] Search in 41 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+[WACO ANNS] Search in 42 trial best: 6.16119776, history best: 3.24201878
+[WACO ANNS] Search in 43 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 44 trial best: 9.32907412, history best: 3.24201878
+[WACO ANNS] Search in 45 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 46 trial best: 3.62358644, history best: 3.24201878
+[WACO ANNS] Search in 47 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 48 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 49 trial best: 20.34122036, history best: 3.24201878
+[WACO ANNS] Search in 50 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 51 trial best: 4.16493466, history best: 3.24201878
+[WACO ANNS] Search in 52 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 53 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 54 trial best: 4.48466210, history best: 3.24201878
+[WACO ANNS] Search in 55 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 56 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+[WACO ANNS] Search in 57 trial best: 5.62641858, history best: 3.24201878
+[WACO ANNS] Search in 58 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 59 trial best: 3.43217600, history best: 3.24201878
+[WACO ANNS] Search in 60 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+[WACO ANNS] Search in 61 trial best: 3.44124392, history best: 3.24201878
+[WACO ANNS] Search in 62 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 63 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 64 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 65 trial best: 18.28429378, history best: 3.24201878
+[WACO ANNS] Search in 66 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 67 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 68 trial best: 6.14783016, history best: 3.24201878
+[WACO ANNS] Search in 69 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+[WACO ANNS] Search in 70 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 71 trial best: 9.96744306, history best: 3.24201878
+[WACO ANNS] Search in 72 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 73 trial best: 10.72238092, history best: 3.24201878
+[WACO ANNS] Search in 74 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 75 trial best: 5.72330698, history best: 3.24201878
+[WACO ANNS] Search in 76 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+[WACO ANNS] Search in 77 trial best: 3.49690290, history best: 3.24201878
+[WACO ANNS] Search in 78 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+[WACO ANNS] Search in 79 trial best: 23.63565832, history best: 3.24201878
+[WACO ANNS] Search in 80 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 81 trial best: 3.54052094, history best: 3.24201878
+[WACO ANNS] Search in 82 trial best: inf, history best: 3.24201878
+[WACO ANNS] Search in 83 trial best: 3.44036094, history best: 3.24201878
+[WACO ANNS] Search in 84 trial best: inf, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 85 trial best: 3.22837556, history best: 3.24201878
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 86 trial best: 1562.34398000, history best: 3.22837556
+[WACO ANNS] Search in 87 trial best: 9.82497638, history best: 3.22837556
+[WACO ANNS] Search in 88 trial best: inf, history best: 3.22837556
+[WACO ANNS] Search in 89 trial best: 3.97119478, history best: 3.22837556
+[WACO ANNS] Search in 90 trial best: inf, history best: 3.22837556
+[WACO ANNS] Search in 91 trial best: inf, history best: 3.22837556
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+TimeoutError -------------------------
+[WACO ANNS] Search in 92 trial best: 21.18139770, history best: 3.22837556
+[WACO ANNS] Search in 93 trial best: inf, history best: 3.22837556
+[WACO ANNS] Search in 94 trial best: 4.35296532, history best: 3.22837556
+[WACO ANNS] Search in 95 trial best: inf, history best: 3.22837556
+[WACO ANNS] Search in 96 trial best: 3.54142494, history best: 3.22837556
+[WACO ANNS] Search in 97 trial best: inf, history best: 3.22837556
+TimeoutError -------------------------
+[WACO ANNS] Search in 98 trial best: 4.69383670, history best: 3.22837556
+[WACO ANNS] Search in 99 trial best: inf, history best: 3.22837556
+
