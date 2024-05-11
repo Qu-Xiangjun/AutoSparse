@@ -14,7 +14,7 @@ platform = 'xeon'
 if platform == 'epyc':
     os.environ["TVM_NUM_THREADS"] = "128"
 else:
-    os.environ["TVM_NUM_THREADS"] = "32"
+    os.environ["TVM_NUM_THREADS"] = "16"
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -280,7 +280,6 @@ if __name__ == "__main__":
         matrix_names = f.read().splitlines()
     # for name in matrix_names:
     #     tune_for_spmm(name)
-    # tune_for_spmm("nemspmm1_16x4_0")
     for name in matrix_names:
         evaluate_best_record(name)
 
