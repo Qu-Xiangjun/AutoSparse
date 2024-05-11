@@ -4,3 +4,9 @@ SpMM encoder.layer.11.output.dense.weight 347631 2 128 8 i1 k1 i0 k0 j1 j0 1 1 0
 SpMM encoder.layer.8.output.dense.weight 382305 2 32 64 i1 j1 k1 i0 k0 j0 0 1 0 0 i1 48 1 0.07340672 
 SpMM encoder.layer.9.intermediate.dense.weight 27290 1 64 8 i1 k1 i0 j1 k0 j0 0 0 0 0 i1 48 1 0.07644964 
 SpMM encoder.layer.9.output.dense.weight 48383 2 64 16 i1 k1 i0 j1 k0 j0 0 1 0 0 i1 48 1 0.043556 
+SpMM strides_mask 397582 1 256 16 i1 i0 k1 j1 k0 j0 1 0 0 0 i1 48 2 0.8931662399999999 
+SpMM encoder.layer.10.output.dense.weight 21584 1 1 8 i1 k1 j1 i0 k0 j0 0 1 0 1 i1 48 1 0.48579976 
+SpMM encoder.layer.11.output.dense.weight 48383 2 64 16 i1 k1 i0 j1 k0 j0 0 1 0 0 i1 48 1 0.5784772 
+SpMM encoder.layer.8.output.dense.weight 77782 1 1 8 i1 j1 i0 k1 k0 j0 0 1 0 1 i1 48 1 0.2350556 
+SpMM encoder.layer.9.intermediate.dense.weight 16314 1 4 16 i1 i0 k1 k0 j1 j0 0 0 1 0 i1 48 1 1.6552903799999998 
+SpMM encoder.layer.9.output.dense.weight 77782 1 1 8 i1 j1 i0 k1 k0 j0 0 1 0 1 i1 48 1 0.11194858 
