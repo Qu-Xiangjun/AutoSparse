@@ -22,7 +22,7 @@ def Evaluation(platform):
         writer.writerow(["name", "method", "config command", "csr_time", "best_time"])
 
     mtx_names = [
-        'strides_mask',
+        # 'strides_mask',
         'encoder.layer.10.output.dense.weight', # 768 3072
         'encoder.layer.11.output.dense.weight',
         'encoder.layer.8.output.dense.weight',
@@ -31,7 +31,6 @@ def Evaluation(platform):
     ]
 
     for mtx in mtx_names:
-        mtx = '_'.join(mtx.split('.'))
         for method in search_methods:
             mtx_filepath = os.path.join(
                 autosparse_prefix, "python", "experiments", 'usages', mtx+'.csr'
@@ -72,9 +71,9 @@ def Evaluation(platform):
                 writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
 
 if __name__ == "__main__":
-    Evaluation(platform = "epyc")
+    Evaluation(platform = "xeon")
 
 
 
 
-# nohup python evaluation_spmm.py > ../log/usages_epyc_evaluation_spmm_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_spmm.py > ../log/usages_xeon_evaluation_spmm_$(date +%Y%m%d%H%M).log 2>&1 & 
