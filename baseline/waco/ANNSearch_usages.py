@@ -719,15 +719,15 @@ def test_spmm():
 
 if __name__ == "__main__":
     waco_prefix = os.getenv("AUTOSPARSE_HOME")
-    platform = "epyc" # epyc xeon
+    platform = "xeon" # epyc xeon
 
     mtx_names = [
-        # 'strides_mask',
-        # 'encoder.layer.10.output.dense.weight', # 768 3072
-        # 'encoder.layer.11.output.dense.weight',
-        # 'encoder.layer.8.output.dense.weight',
-        # 'encoder.layer.9.intermediate.dense.weight', # 3072 768
-        # 'encoder.layer.9.output.dense.weight'
+        'strides_mask',
+        'encoder.layer.10.output.dense.weight', # 768 3072
+        'encoder.layer.11.output.dense.weight',
+        'encoder.layer.8.output.dense.weight',
+        'encoder.layer.9.intermediate.dense.weight', # 3072 768
+        'encoder.layer.9.output.dense.weight'
     ]
     task_name = 'SpMM'
     for name in mtx_names:
@@ -780,4 +780,4 @@ if __name__ == "__main__":
 # nohup python ANNSearch.py > ./log/epyc_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
 # nohup python ANNSearch.py > ./log/xeon_evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
 
-# nohup python ANNSearch_usages.py > ./log/epyc_evaluation_usages$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python ANNSearch_usages.py > ./log/xeon_evaluation_usages$(date +%Y%m%d%H%M).log 2>&1 & 
