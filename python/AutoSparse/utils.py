@@ -142,6 +142,13 @@ def write_mtx_from_coo(num_row, num_col, coo, filepath):
     sparse_matrix = coo_matrix((coo[:, 2], (coo[:, 0], coo[:, 1])), shape=(num_row, num_col))
     mmwrite(filepath, sparse_matrix)
 
+def get_all_files_in_directory(directory):
+    file_names = []
+    for filename in os.listdir(directory):
+        if os.path.isfile(os.path.join(directory, filename)):
+            file_names.append(filename)
+    return file_names
+
 
 
 if __name__ == "__main__":

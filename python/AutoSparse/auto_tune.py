@@ -1686,6 +1686,7 @@ def AutoTune(
     # Save explored space.
     if save_schedule_data:
         agent_group.SaveScheduleData(os.path.join(save_dirpath, sparse_prefix, method+"schedule_data.pth"))
+        agent_group.SaveScheduleDataWithTxt(os.path.join(save_dirpath, sparse_prefix+'.txt'))
         print("[AutoSparse][AutoTune] Save explored shcedule history and value.")
 
     config = agent_group.GetConfigFfromIndices(indices)
