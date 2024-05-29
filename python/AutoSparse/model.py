@@ -642,10 +642,12 @@ class DQNAgentGroup(object):
     def SaveScheduleData(self, filepath: str):
         """ Save AutoSparse schedule config and value. """
         assert "pth" in filepath.split(".")
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         torch.save(self.schedule_data, filepath)
     
     def SaveScheduleDataWithTxt(self, filepath: str):
         """ Save AutoSparse schedule config and value. """
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, 'a') as file:
             for item in self.schedule_data:
                 file.write(f"{item[0]} {item[1]}\n")

@@ -21,7 +21,7 @@ def make_dataset():
     have_collected_mtx = set(have_collected_mtx)
 
     for mtx in tqdm(mtx_names, total=len(mtx_names)):
-        if (task_name+'_'+mtx) in have_collected_mtx:
+        if (mtx+'.txt') in have_collected_mtx:
             continue
         mtx_filepath = os.path.join(
             autosparse_prefix, "dataset", "csr_dataset", mtx+'.csr'
@@ -82,7 +82,7 @@ def make_dataset():
             raise ValueError()
         
         AutoTune(
-            Res_Tensor, method = "random_searching", population_size=100, trial = 5,
+            Res_Tensor, method = "random_searching", population_size=100, trial = 40,
             early_stop=100, save_schedule_data=True,
             save_dirpath = os.path.join(autosparse_prefix, "cost_model", platform, task_name)
         )
