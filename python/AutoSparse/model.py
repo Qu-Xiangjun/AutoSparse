@@ -642,7 +642,15 @@ class DQNAgentGroup(object):
     def SaveScheduleData(self, filepath: str):
         """ Save AutoSparse schedule config and value. """
         assert "pth" in filepath.split(".")
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         torch.save(self.schedule_data, filepath)
+    
+    def SaveScheduleDataWithTxt(self, filepath: str):
+        """ Save AutoSparse schedule config and value. """
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        with open(filepath, 'a') as file:
+            for item in self.schedule_data:
+                file.write(f"{item[0]} {item[1]}\n")
     
     @staticmethod
     def LoadScheduleData(filepath: str):
@@ -652,6 +660,14 @@ class DQNAgentGroup(object):
         data_val = [element[1] for element in data]
         idx = torch.argmin(torch.tensor(data_val))
         return data, data[idx][0], data[idx][1]
-
-
+     
+    @staticmethod
+    def LoadScheduleDataFromTxt(self, filepath: str):
+        data = []
+        with open(filepath, 'r') as file:
+            for line in file:
+                parts = line.split()
+                value = parts[-1]
+                data.append([' '.join(parts[:-1]), float(value)])
+        return data
 

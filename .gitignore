@@ -4,8 +4,9 @@ __pycache__/
 taco_kernel.c
 taco_kernel.so
 bin/
-origin_dataset/*.csr
+waco_dataset/*.csr
 build/
 CollectedData*
 hnsw_schedule.bin
 *.npy
+dataset/total_dataset/
