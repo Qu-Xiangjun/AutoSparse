@@ -50,7 +50,7 @@ def draw_thermodynamic_diagram(filepath: str, k: int = 30):
         
         if grid[i, j] == 0 or time < grid[i, j]:
             grid[i, j] = time
-
+    
     for i in range(k):
         for j in range(k):
             if grid[i, j] >= 0.000001:
@@ -61,9 +61,12 @@ def draw_thermodynamic_diagram(filepath: str, k: int = 30):
 
     # plt.subplot(1, 2, 1)
     plt.imshow(grid, cmap='viridis', vmin=0.7, vmax=1, interpolation='nearest')
-    plt.colorbar(shrink=0.7)
-    plt.xlabel('Configure the hash X')
-    plt.ylabel('Configure the hash Y')
+    plt.colorbar(shrink=0.95)
+    plt.tick_params(axis='both', labelsize=12)
+    plt.xlim(0, k-1)
+    plt.ylim(0, k-1)
+    # plt.xlabel('Configure the hash X')
+    # plt.ylabel('Configure the hash Y')
     # plt.show()
     folder_path = os.path.join(os.path.dirname(filepath), "")
     plt.savefig(os.path.join(folder_path, "Thermodynamic.pdf"), format='pdf')
@@ -135,9 +138,12 @@ def draw_thermodynamic_diagram_waco(filepath: str, k: int = 30):
 
     # plt.subplot(1, 2, 2)
     plt.imshow(grid , vmin=0.7, vmax=1, cmap='viridis', interpolation='nearest')
-    plt.colorbar(shrink=0.7)
-    plt.xlabel('Configure the hash X')
-    plt.ylabel('Configure the hash Y')
+    plt.colorbar(shrink=0.95)
+    plt.tick_params(axis='both', labelsize=12)
+    plt.ylim(0, k-1)
+    plt.xlim(0, k-1)
+    # plt.xlabel('Configure the hash X')
+    # plt.ylabel('Configure the hash Y')
     # plt.show()
     folder_path = os.path.join(os.path.dirname(filepath), "")
     plt.savefig(os.path.join(folder_path, "Thermodynamic.pdf"), format='pdf')
