@@ -134,3 +134,20 @@ output_filename_test = os.path.join(
 with open(output_filename_test, 'w', newline='') as fp:
     for item in test_mtx_names:
         fp.writelines(item+'\n')
+
+sour_dir = os.path.join(prefix, 'waco_dataset')
+dest_dir = os.path.join(prefix, 'dataset', 'total_dataset')
+
+import shutil
+
+for item in tqdm(test_mtx_names, total = len(test_mtx_names)):
+    shutil.copy(
+        os.path.join(sour_dir, item+'.csr'), 
+        os.path.join(dest_dir, item+'.csr')
+    )
+
+for item in tqdm(total_mtx_names, total = len(total_mtx_names)):
+    shutil.copy(
+        os.path.join(sour_dir, item+'.csr'), 
+        os.path.join(dest_dir, item+'.csr')
+    )

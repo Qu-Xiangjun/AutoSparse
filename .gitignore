@@ -9,3 +9,4 @@ build/
 CollectedData*
 hnsw_schedule.bin
 *.npy
+dataset/total_dataset/
