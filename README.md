@@ -5,14 +5,16 @@ AutoSparse has been accepted as a regular paper by ICCD2024 for ["AutoSparse: Au
 
 # Introductions
 Sparse tensor computation plays a crucial role in modern deep learning workloads, and its expensive computational cost leads to a strong demand for high-performance operators. However, developing high-performance sparse operators is exceptionally challenging and tedious. Existing vendor operator libraries fail to keep pace with the evolving trends in new algorithms. Sparse tensor compilers simplify the development and optimization of operator, but existing work either requires significant engineering effort for tuning or suffers from limitations in search space and search strategies, which creates unavoidable cost and efficiency issues. 
+
 In this paper, we propose AutoSparse, a source-to-source tuning framework that targets sparse format and schedule for sparse tensor program.  Firstly, AutoSparse designs a sparse tensor DSL based on dynamic computational graph at the front-end, and proposes a sparse tensor program computational pattern extraction and automatic design space generation scheme based on it. Second, AutoSparse's back-end designs an adaptive exploration strategy based on reinforcement learning and heuristic algorithm to find the optimal format and schedule configuration in a large-scale design space. Compared to prior work, developers using AutoSparse do not need to specify tuning design space relied on any compilation or hardware knowledge. we use the SuiteSparse dataset to compare with four state-of-the-art baselines, namely, the high-performance operator library MKL, the manually-based optimisation scheme ASpT, the auto-tuning-based framework TVM-S and WACO. The results demonstrate that AutoSparse achieves average speedups of 1.92-2.48$\times$, 1.19-6.34$\times$, and 1.47-2.23$\times$ for the SpMV, SpMM, and SDDMM operators, respectively.
 
-# Requirement
+# Tutorial
+### Requirement
 You can use gcc or intel c++ compiler (icc, icpc) to compile `AutoSparse` framework.
 
 Python third-party libraries list in './requirements.txt', which need to pip install.
 
-## Installation
+### Installation
 0. Clone repo and set env var
    
 ```bash
@@ -64,5 +66,5 @@ make
 ```
 > Note: if you use `gcc`, you will changed `-DUSE_ICC=ON` in `$AUTOSPARSE_HOOME/poython/Makefile` to be `OFF`
 
-4. How to use
+### How to use
 Please see `$AUTOSPARSE_HOOME/poython/tutorial.py` and `$AUTOSPARSE_HOOME/poython/test`
