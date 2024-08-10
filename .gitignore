@@ -1,0 +1,10 @@
+pretrained
+taco/build
+__pycache__/
+taco_kernel.c
+taco_kernel.so
+bin/
+build/
+CollectedData*
+hnsw_schedule.bin
+*.npy
