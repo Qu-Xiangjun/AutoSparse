@@ -27,6 +27,8 @@ sudo sh l_HPCKit_p_2021.4.0.3347.sh -a --silent --eula accept
 vim ~/.bashrc
 export INTEL_ONEAPI_ROOT=/opt/intel/oneapi
 export PATH=$PATH:$INTEL_ONEAPI_ROOT/compiler/2021.4.0/env:$INTEL_ONEAPI_ROOT/compiler/2021.4.0/linux/bin/intel64
+export LD_LIBRARY_PATH=$INTEL_ONEAPI_ROOT/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$INTEL_ONEAPI_ROOT/compiler/2021.4.0/lib:$LD_LIBRARY_PATH
 # Create iccvar.sh
 sudo cp /opt/intel/oneapi/compiler/2021.4.0/env/vars.sh /opt/intel/oneapi/compiler/2021.4.0/env/iccvars.sh
 # Verify installation
@@ -50,6 +52,11 @@ export NUMCORE=$(nproc --all)
 cd $AUTOSPARSE_HOME/python
 make
 ```
+configuring python lib.
+```bash
+export PYTHONPATH=$AUTOSPARSE_HOME/python:$PYTHONPATH
+```
+
 > Note: if you use `gcc`, you will changed `-DUSE_ICC=ON` in `$AUTOSPARSE_HOOME/poython/Makefile` to be `OFF`
 
 1. How to use

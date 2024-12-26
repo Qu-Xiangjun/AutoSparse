@@ -5,7 +5,7 @@ all: lib
 lib:
 	@mkdir -p build
 	@cd build; cmake -DUSE_ICC=ON ..
-	@cd build; $(MAKE)
+	@cd build; $(MAKE) -j$(nproc --all)
 
 format:
 	python3 -m black .
