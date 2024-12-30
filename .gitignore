@@ -10,3 +10,5 @@ CollectedData*
 hnsw_schedule.bin
 *.npy
 dataset/total_dataset/
+epyc_7543/
+xeon_platinum8272cl/
