@@ -10,12 +10,13 @@ import random
 from .space import *
 from .utils import Flatten
 
+cuda_device_id = 0
+
 if torch.cuda.is_available():
     num_gpus = torch.cuda.device_count()
     print("Number of available GPUs:", num_gpus)
 
-    device_id = 0
-    device = torch.device("cuda:" + str(device_id))
+    device = torch.device("cuda:" + str(cuda_device_id))
     print("Using GPU device:", device)
 else:
     print("No GPU available, using CPU instead.")

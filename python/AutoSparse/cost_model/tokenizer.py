@@ -178,10 +178,10 @@ class Tokenizer:
                 token.append(int(primitive_vec[2]))
             elif (
                 primitive_name == self.PRIMITIVES[9]
-            ):  # ["sparse_info" 0.123 0.35 0.13 0.1284]
-                for i in range(1, len(primitive_vec)):
-                    assert isinstance(primitive_vec[i], float)
-                    token.append(primitive_vec[i])
+            ):  # ["sparse_info" tensor([-0.8154,  0.4300,  0.6851,  0.0416]]
+                for item in primitive_vec[1].tolist():
+                    assert isinstance(item, float)
+                    token.append(item)
             else:
                 assert False, f"{primitive_vec[0]} have not in PRIMITIVES"
             assert (
@@ -192,14 +192,14 @@ class Tokenizer:
         return embedded_tokens
 
     def __call__(
-        self, schedules: Union[str, List[str]], sparse_tensor_info: Tuple[float]
+        self, schedules: Union[str, List[str]], sparse_tensor_info: torch.Tensor
     ) -> torch.Tensor:
         """
         Parameters
         ----------
         schedules : Union[str, List[str]]
             _description_
-        sparse_tensor_info : Tuple[float]
+        sparse_tensor_info : torch.Tensor
             Constructed in [row, col, nonezeros, sparsity]. Notice they usually be normalized.
 
         Returns
@@ -221,7 +221,7 @@ class Tokenizer:
             embedded_tokens = self.EmbedHelper(sch_vecs)
             sequences.append(embedded_tokens)
 
-        return torch.from_numpy(self.BatchPadSequences(sequences))
+        return torch.from_numpy(self.BatchPadSequences(sequences)).to(torch.float32)
 
 
 if __name__ == "__main__":

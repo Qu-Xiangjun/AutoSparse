@@ -2,6 +2,7 @@ import os, sys
 import numpy as np
 import hnswlib
 from AutoSparse import *
+from AutoSparse.model import cuda_device_id
 from tqdm import tqdm
 import multiprocessing
 import heapq
@@ -258,7 +259,7 @@ def ANNS(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numbe
     print(f"[WACO ANNS] Searching task {task_name} for matrix {matrix_filename}"
         f" with warm_number = {warm_number}, trials = {trials} and k = {k}")
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
@@ -386,7 +387,7 @@ def ANNS2(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr", warm_numb
     print(f"[WACO ANNS] Searching task {task_name} for matrix {matrix_filename}"
         f" with warm_number = {warm_number}, trials = {trials} and k = {k}")
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
@@ -522,7 +523,7 @@ def ANNS3(task_name = "SpMM", matrix_filename = "nemspmm1_16x4_0.csr",
     print(f"[WACO ANNS] Searching task {task_name} for matrix {matrix_filename}"
         f" with warm_number = {warm_number}, trials = {trials} and k = {k}")
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")

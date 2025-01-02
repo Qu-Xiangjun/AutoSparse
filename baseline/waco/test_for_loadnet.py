@@ -2,6 +2,7 @@ import os, sys
 import numpy as np
 import hnswlib
 from AutoSparse import *
+from AutoSparse import cuda_device_id
 from tqdm import tqdm
 import multiprocessing
 import heapq
@@ -13,7 +14,7 @@ from model import *
 
 autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
 waco_prefix = os.path.join(autosparse_prefix, "baseline", "waco")
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu")
 
 net = ResNet14SpMM(in_channels=1, out_channels=1, D=2) # D : 2D Tensor
 net = net.to(device)

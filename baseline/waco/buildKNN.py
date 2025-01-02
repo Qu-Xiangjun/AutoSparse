@@ -4,7 +4,7 @@ import hnswlib
 import torch
 from tqdm import tqdm
 import time
-
+from AutoSparse.model import cuda_device_id
 from model import *
 
 
@@ -122,7 +122,7 @@ def buildKNN(task_name):
     # task_name = "SpMM" # "SpMV" "SDDMM"
     waco_prefix = os.getenv("AUTOSPARSE_HOME")
     waco_prefix = os.path.join(waco_prefix, "baseline", "waco")
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     schedules = TrainingScheduleDataset(os.path.join(waco_prefix, task_name, "TrainingData", "total.txt"), task_name)
     schedule_loader = torch.utils.data.DataLoader(schedules, batch_size=128, shuffle=False, num_workers=0)

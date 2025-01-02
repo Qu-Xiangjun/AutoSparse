@@ -5,6 +5,8 @@ import math
 import os, sys
 from scipy.sparse import coo_matrix
 from scipy.io import mmwrite
+import logging
+from datetime import datetime
 
 def GetAlphabet26BaseNumber(n: int, is_upper: bool, string: str = None) -> str:
     """Translate integer n to English alphabet 26 base number
@@ -148,6 +150,29 @@ def get_all_files_in_directory(directory):
         if os.path.isfile(os.path.join(directory, filename)):
             file_names.append(filename)
     return file_names
+
+def logger_init(log_file_name='monitor',
+                log_level=logging.INFO,
+                log_dir='./logs/',
+                only_file=False):
+    # 指定路径
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    log_path = os.path.join(log_dir, log_file_name + '_' + str(datetime.now())[:10] + '.txt')
+    formatter = '[%(asctime)s] - %(levelname)s: %(message)s'
+    if only_file:
+        logging.basicConfig(filename=log_path,
+                            level=log_level,
+                            format=formatter,
+                            datefmt='%Y-%m-%d %H:%M:%S')
+    else:
+        logging.basicConfig(level=log_level,
+                            format=formatter,
+                            datefmt='%Y-%m-%d %H:%M:%S',
+                            handlers=[logging.FileHandler(log_path),
+                                      logging.StreamHandler(sys.stdout)]
+                            )
 
 
 
