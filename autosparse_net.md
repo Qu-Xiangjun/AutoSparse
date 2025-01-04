@@ -47,3 +47,14 @@ WACO 使用的是nn.MarginRankingLoss——排序损失 https://blog.csdn.net/qq
 WACO是一个算子一个模型，训练时候一个输入稀疏矩阵的不同数据（大约200个）按照batch=32开始累计做互相的rank loss
 
 TLP的是 randomRankingLoss，然后训练的数据是先对label做处理，将 latency/min_latency 获得同一shape和算子下的相对值，则label=1时候最好，则所有算子的所有shape、所有输入稀疏张量数据都可以放在一起混合训练
+
+### 训练时问题
+- 总是出现OOM，
+    - 尝试batch_size 小一点，小到32还是有OOM，检查发现可能是sparse matrix太大，导致conv net 会很大，
+    - 因此筛选哪些matrix不能用，一般来说 nnz越大，占显存就会越大
+    - 那么对total_dataset.txt 中数据都跑一遍，注意schedule_batch 提前跳出即可，看什么数据有OOM
+
+
+### 模型评估指标
+1. loss值
+loss值越趋近0越好

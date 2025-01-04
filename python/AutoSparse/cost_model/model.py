@@ -6,6 +6,7 @@ import MinkowskiEngine as ME
 from typing import *
 from tokenizer import Tokenizer
 from AutoSparse.model import cuda_device_id
+from AutoSparse.cost_model.config import Config
 
 
 class SparseMatrixEmbed_WACO_NET(nn.Module):
@@ -261,42 +262,42 @@ class SparseMatrixEmbedNet(nn.Module):
             ),
             ME.MinkowskiReLU(inplace=True),
         )
-        # self.layer4 = nn.Sequential(
-        #     ME.MinkowskiConvolution(
-        #         middle_channels,
-        #         middle_channels,
-        #         kernel_size=3,
-        #         stride=1,
-        #         dilation=1,
-        #         dimension=D,
-        #     ),
-        #     ME.MinkowskiReLU(inplace=True),
-        #     ME.MinkowskiConvolution(
-        #         middle_channels,
-        #         middle_channels,
-        #         kernel_size=3,
-        #         stride=1,
-        #         dilation=2,
-        #         dimension=D,
-        #     ),
-        #     ME.MinkowskiReLU(inplace=True),
-        #     ME.MinkowskiConvolution(
-        #         middle_channels,
-        #         middle_channels,
-        #         kernel_size=3,
-        #         stride=1,
-        #         dilation=3,
-        #         dimension=D,
-        #     ),
-        #     ME.MinkowskiReLU(inplace=True),
-        # )
+        self.layer4 = nn.Sequential(
+            ME.MinkowskiConvolution(
+                middle_channels,
+                middle_channels,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                dimension=D,
+            ),
+            ME.MinkowskiReLU(inplace=True),
+            ME.MinkowskiConvolution(
+                middle_channels,
+                middle_channels,
+                kernel_size=3,
+                stride=1,
+                dilation=2,
+                dimension=D,
+            ),
+            ME.MinkowskiReLU(inplace=True),
+            ME.MinkowskiConvolution(
+                middle_channels,
+                middle_channels,
+                kernel_size=3,
+                stride=1,
+                dilation=3,
+                dimension=D,
+            ),
+            ME.MinkowskiReLU(inplace=True),
+        )
         self.glob_pool = nn.Sequential(
             ME.MinkowskiGlobalAvgPooling(), ME.MinkowskiToFeature()
         )
 
         # 类似 WACO NET 合并多个中间卷积结果
         self.feature1 = nn.Sequential(
-            nn.Linear(middle_channels * 3, 512), nn.ReLU(), nn.Linear(512, out_feature)
+            nn.Linear(middle_channels * 4, 512), nn.ReLU(), nn.Linear(512, out_feature)
         )
 
         # 只使用简单的卷积结果，寄希望于充足的channel
@@ -316,14 +317,14 @@ class SparseMatrixEmbedNet(nn.Module):
         y1 = self.layer1(x)
         y2 = self.layer2(y1)
         y3 = self.layer3(y2)
-        # y4 = self.layer4(y3)
+        y4 = self.layer4(y3)
 
         y1 = self.glob_pool(y1)
         y2 = self.glob_pool(y2)
         y3 = self.glob_pool(y3)
-        # y4 = self.glob_pool(y4)
+        y4 = self.glob_pool(y4)
 
-        y = self.feature1(torch.cat((y1, y2, y3), dim=-1))
+        y = self.feature1(torch.cat((y1, y2, y3, y4), dim=-1))
 
         return y
 
@@ -343,55 +344,45 @@ class AutoSparseNet(nn.Module):
     and using transformer decoder to preidict program ranking.
     """
 
-    def __init__(
-        self,
-        in_channels=1,
-        middle_channels=128,
-        embedding_size: int = 128,
-        D=2,
-        tensor_name_set: List[str] = None,
-        device = torch.device("cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu")
-    ):
-        """_summary_
-
-        Parameters
-        ----------
-        in_channels : int, optional
-            _description_, by default 1
-        middle_channels : int, optional
-            Use some middle hid channel to contain more feature info, by default 32
-        D : int, optional
-            Sparse matirx dimension count, by default 2
-        embedding_size : int, optional
-            _description_, by default 128
-        tensor_name_set : List[str], optional
-            All existed tensor name, by default None
-        """
+    def __init__(self, config: Config):
         nn.Module.__init__(self)
-        self.embedding_size = embedding_size
-        self.device = device
-        self.conv_sparse_feature_waco = SparseMatrixEmbed_WACO_NET(
-            in_channels, middle_channels, embedding_size, D
-        )
-        self.conv_sparse_feature = SparseMatrixEmbedNet(
-            in_channels, middle_channels, embedding_size, D
-        )
+        self.in_channels = config.in_channels
+        self.device = config.device
+        self.embedding_size = config.token_embedding_size
+        self.middle_channels = config.middle_channel_num
+        self.tensor_name_set = config.tensor_name_set
+        self.D = config.D
+        self.is_waco_net = config.is_waco_net
+        self.is_net_forward1 = config.is_net_forward1
 
-        self.tokenizer = Tokenizer(embedding_size, tensor_name_set)
+        # TODO: 这里改造为判断CUDA才创建一下的变量
+        if torch.cuda.is_available():
+            self.conv_sparse_feature_waco = SparseMatrixEmbed_WACO_NET(
+                self.in_channels, self.middle_channels, self.embedding_size, self.D
+            )
+            self.conv_sparse_feature = SparseMatrixEmbedNet(
+                self.in_channels, self.middle_channels, self.embedding_size, self.D
+            )
+
+        self.tokenizer = Tokenizer(self.embedding_size, self.tensor_name_set)
         
         self.encoder = nn.Sequential(
-            nn.Linear(embedding_size, 128),
+            nn.Linear(self.embedding_size, 1024),
             nn.ReLU(),
-            nn.Linear(128, 256),
+            nn.Linear(1024, 256),
             nn.ReLU(),
         )
         self.attention = nn.MultiheadAttention(embed_dim = 256, num_heads = 8)
         self.res1 = nn.Sequential(
-            nn.Linear(256, 256),
+            nn.Linear(256, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 256),
             nn.ReLU(),
         )
         self.res2 = nn.Sequential(
-            nn.Linear(256, 256),
+            nn.Linear(256, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 256),
             nn.ReLU(),
         )
         self.decoder = nn.Sequential(
@@ -415,14 +406,19 @@ class AutoSparseNet(nn.Module):
         return self.conv_sparse_feature_waco(x)
 
     def embed_sparse_matirx(self, x: ME.SparseTensor):
-        return self.conv_sparse_feature.forward1(x) # TODO:  这里可以更换卷积提取特征的网络方式
+        if self.is_net_forward1:
+            return self.conv_sparse_feature.forward1(x) # TODO:  这里可以更换卷积提取特征的网络方式
+        return self.conv_sparse_feature.forward2(x)
 
     def forward(self, schedules: Union[str, List[str]], sparse_tensor_info: Tuple[float], sparse_matrix: ME.SparseTensor):
-        input_seq = self.tokenizer(schedules, sparse_tensor_info).to(self.device)
-        embeded_sparse_feature = self.embed_sparse_matirx(sparse_matrix).reshape(1, 1, self.embedding_size)
+        input_seq = self.tokenizer(schedules, sparse_tensor_info).to(self.device) # [32, 11, 128]
+        if self.is_waco_net:
+            embeded_sparse_feature = self.embed_sparse_matirx_WACO(sparse_matrix).reshape(1, 1, self.embedding_size) # 1,1,128
+        else:
+            embeded_sparse_feature = self.embed_sparse_matirx(sparse_matrix).reshape(1, 1, self.embedding_size) # 1,1,128
         embeded_sparse_feature = embeded_sparse_feature.expand(input_seq.size(0), -1, -1)
 
-        input_seq_full = torch.cat((input_seq, embeded_sparse_feature), dim = 1)
+        input_seq_full = torch.cat((input_seq, embeded_sparse_feature), dim = 1) # [32, 12, 128]
         
         encoder_seq = self.encoder(input_seq_full).transpose(0, 1) # batch first is False
         output, attention_mask = self.attention(encoder_seq, encoder_seq, encoder_seq)
