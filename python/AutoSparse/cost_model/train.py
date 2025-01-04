@@ -64,7 +64,7 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
             "middle_channel_num": config.middle_channel_num,
             "token_embedding_size": config.token_embedding_size,
         },
-        "losses" : losses,
+        "losses": losses,
     }
     torch.save(checkpoint, filepath)
 
@@ -99,8 +99,10 @@ def TrainWithWACO(config: Config):
     )
 
     logging.info("############## Start Train ##############")
-    train_losses = []
-    val_losses = []
+    train_losses_batch = []
+    train_losses_epoch = []
+    val_losses_batch = []
+    val_losses_epoch = []
     for epoch in range(config.epoch):
         # Train
         net.train()
@@ -129,11 +131,15 @@ def TrainWithWACO(config: Config):
             for prefix_idx, dataset_dirname_prefix in enumerate(
                 dataset_dirname_prefixs_lst
             ):
-                if 'sddmm' in dataset_dirname_prefix:
+                if "sddmm" in dataset_dirname_prefix:
                     mtx_name = mtx_names[0] * 2
                 else:
                     mtx_name = mtx_names[0]
-                if not os.path.isfile(os.path.join(root, "dataset", dataset_dirname_prefix, mtx_name + ".txt")):
+                if not os.path.isfile(
+                    os.path.join(
+                        root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
+                    )
+                ):
                     continue
                 sche_train_data = LoadScheduleDataset(
                     dataset_dirname_prefix,
@@ -157,7 +163,7 @@ def TrainWithWACO(config: Config):
                     loss = loss_func(pred1, pred2, sign)
                     train_loss += loss.item()
                     train_loss_cnt += 1
-                    train_losses.append(loss.item())
+                    train_losses_batch.append(loss.item())
 
                     loss.backward()
                     optimizer.step()
@@ -192,11 +198,15 @@ def TrainWithWACO(config: Config):
                 for prefix_idx, dataset_dirname_prefix in enumerate(
                     dataset_dirname_prefixs_lst
                 ):
-                    if 'sddmm' in dataset_dirname_prefix:
+                    if "sddmm" in dataset_dirname_prefix:
                         mtx_name = mtx_names[0] * 2
                     else:
                         mtx_name = mtx_names[0]
-                    if not os.path.isfile(os.path.join(root, "dataset", dataset_dirname_prefix, mtx_name + ".txt")):
+                    if not os.path.isfile(
+                        os.path.join(
+                            root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
+                        )
+                    ):
                         continue
                     sche_val_data = LoadScheduleDataset(
                         dataset_dirname_prefix,
@@ -221,7 +231,7 @@ def TrainWithWACO(config: Config):
                         loss = loss_func(pred1, pred2, sign)
                         valid_loss += loss.item()
                         valid_loss_cnt += 1
-                        val_losses.append(loss.item())
+                        val_losses_batch.append(loss.item())
                         (
                             min_true_labels_top1_local,
                             min_pre_labels_top1_local,
@@ -251,6 +261,8 @@ def TrainWithWACO(config: Config):
         end_time = time.time()
         train_loss /= train_loss_cnt
         valid_loss /= valid_loss_cnt
+        train_losses_batch.append(train_loss)
+        val_losses_batch.append(valid_loss)
         acc_top1 = min_true_labels_top1 / min_pre_labels_top1
         acc_top5 = min_true_labels_top5 / min_pre_labels_top5
         msg = (
@@ -278,7 +290,12 @@ def TrainWithWACO(config: Config):
             SaveModelAndConfig(
                 net,
                 config,
-                {"train_losses": train_losses, "val_losses": val_losses},
+                {
+                    "train_losses_batch": train_losses_batch,
+                    "val_losses_batch": val_losses_batch,
+                    "train_losses_epoch": train_losses_epoch,
+                    "val_losses_epoch": val_losses_epoch,
+                },
                 os.path.join(model_save_dir, model_name),
             )
             logging.info(f"Save model to {os.path.join(model_save_dir, model_name)}")
