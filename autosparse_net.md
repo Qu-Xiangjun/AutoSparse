@@ -58,3 +58,64 @@ TLP的是 randomRankingLoss，然后训练的数据是先对label做处理，将
 ### 模型评估指标
 1. loss值
 loss值越趋近0越好
+
+2. topk acc
+见Tenset和TLP中的定义，即预测出的topk，拿到他们在原来 true runtimes列表中的runtime值，找其中最小的 pre_true_min ，将全true runtimes最小的 true_min 除以 pre_true_min，即  true_min / pre_true_min, 可知这个结果在[0,1]区间，找的越好，则值越接近1，就是acc准确率
+![alt text](image-3.png)
+
+
+### 结果呈现
+
+1. loss 的训练下降图
+    ![alt text](image-5.png)
+    baseline选择：WACONet_spmm, AutoSparseNet_WACONet_spmm, AutosparseNet_spmm, AutoSparseNet_Full
+    结果：AutosparseNet_spmm, AutoSparseNet_Full的下降效果最好，loss能达到最低，或者是更快收敛
+2. TopK Acc
+    baseline选择：WACONet_spmm, AutoSparseNet_WACONet_spmm, AutosparseNet_spmm, AutoSparseNet_Full
+    结果1：AutosparseNet_spmm 比 前两个效果都好
+    结果2：AutoSparseNet_Full能在数据和但算子持平情况达到和单算子一样的效果
+    ![alt text](image-2.png)
+
+3. 带costmodel的搜索找到的算子性能和普通搜索齐平
+
+4. 加速搜索效率效果
+    造3个图：
+    - 图1 3中每一个的搜索时间对比，是否有costmodel，柱状图
+    - 图2 是搜索的收敛图，在3中每一个，更快达到最佳性能结果
+    - 图3 从3中调一组，搜索程序中各个部分时间分布图，测试性能部分降低多少倍，或者是说减少的硬件测试次数
+    ![alt text](image-4.png)
+    ![alt text](image-7.png)
+    ![alt text](image.png)
+    ![alt text](image-6.png)
+    
+
+    
+### 模型训练日志
+##### 2025-01-04
+| 模型名称 | 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
+| 行2数据1 | 行2数据2 | 行2数据3 |
+
+
+### TODO
+- 配置AutoSparse 测试各个部分的时间在 XEON_Plat 服务器
+- TrainNaive 中增加训练并行度，第一步解决跨算子级合并一次计算与backward，第二步解决跨矩阵合并
+- WACONet的baseline训练
+    - 按照WACO的方案设计一个新的AutoSparse spmm 算子模版
+    - 训练spmm单算子基于已有的AutoSparse数据
+    - 按照WACO的方案设计一个新的AutoSparse spmv 算子模版
+    - 训练spmv单算子基于已有的AutoSparse数据
+    - 按照WACO的方案设计一个新的AutoSparse sddmm 算子模版
+    - 训练sddmm单算子基于已有的AutoSparse数据 
+- 集成进入AutoSparse的搜索中
+- 画出loss图，修改模型结构
+- 尝试TrainNaive 上使用 randomloss func，看看结果效果
+- 实现TrainMix版本，同时考虑如何增加并行性，比如分矩阵类型减少矩阵conv的批大小，然后合并所有的小批进行batch atention计算， 最后分矩阵的批次进行backward
+- 

@@ -69,7 +69,7 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
     torch.save(checkpoint, filepath)
 
 
-def TrainWithWACO(config: Config):
+def TrainNaive(config: Config):
     """Using waco train method, which train a batch schedule data in same sparse matrix."""
 
     data_flag = "_".join(("_".join(dataset_dirname_prefixs_lst)).split(os.sep))
@@ -150,6 +150,12 @@ def TrainWithWACO(config: Config):
                 for sche_batchidx, (schedules, relative_runtimes) in enumerate(
                     sche_train_data
                 ):
+                    schedules = schedules[
+                        : int(len(schedules) / len(dataset_dirname_prefixs_lst))
+                    ]
+                    relative_runtimes = relative_runtimes[
+                        : int(len(relative_runtimes) / len(dataset_dirname_prefixs_lst))
+                    ]
                     if len(schedules) < 2:
                         break
                     relative_runtimes = relative_runtimes.to(device)
@@ -217,6 +223,12 @@ def TrainWithWACO(config: Config):
                     for sche_batchidx, (schedules, relative_runtimes) in enumerate(
                         sche_val_data
                     ):
+                        schedules = schedules[
+                            : int(len(schedules) / len(dataset_dirname_prefixs_lst))
+                        ]
+                        relative_runtimes = relative_runtimes[
+                            : int(len(relative_runtimes) / len(dataset_dirname_prefixs_lst))
+                        ]
                         if len(schedules) < 5:
                             break
                         relative_runtimes = relative_runtimes.to(device)
@@ -301,7 +313,7 @@ def TrainWithWACO(config: Config):
             logging.info(f"Save model to {os.path.join(model_save_dir, model_name)}")
 
 
-def TrainFull(config: Config):
+def TrainMix(config: Config):
     """
     Mix all the schedule and schedule, and random select a batch data from them to train.
     So a batch data contain different sparse matrix and differt schedule config, which are
@@ -457,8 +469,8 @@ export CUDA_VISIBLE_DEVICES=5
 python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0
 
 export CUDA_VISIBLE_DEVICES=6
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 256 --is_waco_net 1
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1
 
 export CUDA_VISIBLE_DEVICES=7
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 256 --is_waco_net 1
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1
 """

@@ -208,6 +208,8 @@ class LoadScheduleDataset(torch.utils.data.Dataset):
 			if (runtime < 1000) :
 				runtime = torch.tensor(runtime / max_runtime)
 				self.data.append((line, runtime))
+		if len(self.data) == 0: # Dataloader will raise error when get num_samples==0.
+			self.data = [(" 0.000", 0.000)]
 
 	def load_data(self):
 		return DataLoader(

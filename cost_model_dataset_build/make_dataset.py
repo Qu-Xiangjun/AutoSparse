@@ -35,7 +35,7 @@ def make_dataset():
     have_collected_mtx = set(have_collected_mtx)
 
     for idx, mtx in enumerate(tqdm(mtx_names, total=len(mtx_names))):
-        if (mtx+'.txt') in have_collected_mtx:
+        if (mtx+'.txt') in have_collected_mtx or (mtx+mtx+'.txt')in have_collected_mtx:
             continue
         mtx_filepath = os.path.join(
             autosparse_prefix, "dataset", "total_dataset", mtx+'.csr'

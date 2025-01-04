@@ -159,7 +159,7 @@ def logger_init(log_file_name='monitor',
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    log_path = os.path.join(log_dir, log_file_name + '_' + str(datetime.now())[:10] + '.txt')
+    log_path = os.path.join(log_dir, log_file_name + '_' + str(datetime.now())[:10] + '.log')
     formatter = '[%(asctime)s] - %(levelname)s: %(message)s'
     if only_file:
         logging.basicConfig(filename=log_path,
