@@ -436,6 +436,7 @@ def Warm(
     eval_round: int = 100,
     eval_timeout: float = None,
     eval_policy: str = "avg",
+    **kwargs
 ):
     """Warm find have there good program schedules.
     
@@ -447,6 +448,10 @@ def Warm(
     use_performance_model: bool
 
     """
+
+    GET_TIMES = [0., 0., 0., 0.]
+    if kwargs.get('GET_TIMES', None) != None:
+        GET_TIMES = kwargs.get('GET_TIMES')
 
     warm_ok = False
     best_value = float("inf")
@@ -470,6 +475,7 @@ def Warm(
                 except ValueError:
                     configs_performances.append(float('inf'))
                     continue
+                test_time0 = time.time()
                 if use_performance_model:
                     configs_performances.append(float('inf')) # Future todo.
                 else:
@@ -477,6 +483,8 @@ def Warm(
                         Evaluate(schedule, func, eval_warm_times,
                         eval_round, eval_timeout, eval_policy)
                     )
+                test_time1 = time.time()
+                GET_TIMES[-1] += test_time1 - test_time0
                 if configs_performances[-1] < float("inf"):
                     record_valid = agent_group.Record(configs_indicse[i], 
                                        configs_performances[-1], use_sa=False)
@@ -1187,6 +1195,12 @@ def QSASearching(
     print(f"eval_policy             ={eval_policy}")
     print()
 
+    GET_TIMES = [0., 0., 0., 0.]
+    if kwargs.get('GET_TIMES', None) != None:
+        GET_TIMES = kwargs.get('GET_TIMES')
+
+    search_time1 = time.time()
+
     warm_trial = 3
     warm_population_size = int(population_size/2)
     print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
@@ -1205,6 +1219,7 @@ def QSASearching(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
+            GET_TIMES = GET_TIMES
         )
         warm_try += 1
     
@@ -1257,6 +1272,7 @@ def QSASearching(
             
             # Evaluation
             if sch is not None:
+                test_time0 = time.time()
                 if use_performance_model:
                     configs_performances.append(float('inf')) # Future todo.
                 else:
@@ -1264,6 +1280,8 @@ def QSASearching(
                         Evaluate(sch, func, eval_warm_times,
                         eval_round, eval_timeout, eval_policy)
                     )
+                test_time1 = time.time()
+                GET_TIMES[-1] += test_time1 - test_time0
                 if configs_performances[-1] < float("inf"):
                     record_valid = agent_group.Record(next_indices, configs_performances[-1], 
                                        use_sa=use_sa, gamma=sa_gamma)
@@ -1312,12 +1330,15 @@ def QSASearching(
         # Train model
         if list(agent_group.agent_group.values())[0].memory_size * len(agent_group.agent_group.keys()) > \
                 list(agent_group.agent_group.values())[0].train_batch_size:
+            test_time2 = time.time()
             agent_group.Train(save_model=False)
             # Update target model
             if (train_cnt + 1) % update_target_gap == 0:
                 # Stable train
                 agent_group.UpdateAgentTargetModel()
                 print(f"[AutoTune] Update DQN target net in {tri} trial.")
+            test_time3 = time.time()
+            GET_TIMES[2] += test_time3 - test_time2
         else:
             early_stop_count = 0
         train_cnt += 1
@@ -1339,6 +1360,7 @@ def QSASearching(
                 eval_round = eval_round,
                 eval_timeout = eval_timeout,
                 eval_policy = eval_policy,
+                GET_TIMES = GET_TIMES
             )
             global_best = min(local_best, global_best)
             current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -1355,6 +1377,8 @@ def QSASearching(
         #         if (idx / (len(retired_indices)+0.001)) < random.random():
         #             agent_group.Record(item[0], item[1], use_sa=False)
 
+    search_time2 = time.time()
+    GET_TIMES[1] = search_time2 - search_time1
 
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
@@ -1457,6 +1481,12 @@ def AutoTune(
     ------
     best_sch: Schedule
     """
+    GET_TIMES = [0., 0., 0., 0.]
+    if kwargs.get('GET_TIMES', None) != None:
+        GET_TIMES = kwargs.get('GET_TIMES')
+
+    total_start_time = time.time()
+
     sch = None
     if isinstance(input, ComputeTensor):
         sch = CreateSchedule(input)
@@ -1662,7 +1692,8 @@ def AutoTune(
             eval_policy = eval_policy,
             prefix=sparse_prefix,
             save_best_trace=save_best_trace,
-            save_dirpath=save_dirpath
+            save_dirpath=save_dirpath,
+            GET_TIMES = GET_TIMES
         )
     else:
         indices, value = {}, None
@@ -1690,4 +1721,7 @@ def AutoTune(
         print("[AutoSparse][AutoTune] Save explored shcedule history and value.")
 
     config = agent_group.GetConfigFfromIndices(indices)
+
+    total_end_time = time.time()
+    GET_TIMES[0] = total_end_time - total_start_time
     return AddSimpleSchedule(sch.compute_tensor, config)

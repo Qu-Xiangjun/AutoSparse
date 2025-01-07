@@ -6,7 +6,7 @@ import os, sys
 from scipy.sparse import coo_matrix
 from scipy.io import mmwrite
 import logging
-from datetime import datetime
+import datetime
 
 def GetAlphabet26BaseNumber(n: int, is_upper: bool, string: str = None) -> str:
     """Translate integer n to English alphabet 26 base number
@@ -159,7 +159,7 @@ def logger_init(log_file_name='monitor',
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    log_path = os.path.join(log_dir, log_file_name + '_' + str(datetime.now())[:10] + '.log')
+    log_path = os.path.join(log_dir, log_file_name + '_' + str(datetime.datetime.now())[:10] + '.log')
     formatter = '[%(asctime)s] - %(levelname)s: %(message)s'
     if only_file:
         logging.basicConfig(filename=log_path,
