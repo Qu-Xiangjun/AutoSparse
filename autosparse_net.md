@@ -105,8 +105,7 @@ loss值越趋近0越好
 
 
 ### TODO
-- 配置AutoSparse 测试各个部分的时间在 XEON_Plat 服务器
-- TrainNaive 中增加训练并行度，第一步解决跨算子级合并一次计算与backward，第二步解决跨矩阵合并
+- ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~
 - WACONet的baseline训练
     - 按照WACO的方案设计一个新的AutoSparse spmm 算子模版
     - 训练spmm单算子基于已有的AutoSparse数据
@@ -114,6 +113,7 @@ loss值越趋近0越好
     - 训练spmv单算子基于已有的AutoSparse数据
     - 按照WACO的方案设计一个新的AutoSparse sddmm 算子模版
     - 训练sddmm单算子基于已有的AutoSparse数据 
+- TrainNaive 中增加训练并行度，第一步解决跨算子级合并一次计算与backward，第二步解决跨矩阵合并
 - 集成进入AutoSparse的搜索中
 - 画出loss图，修改模型结构
 - 尝试TrainNaive 上使用 randomloss func，看看结果效果
