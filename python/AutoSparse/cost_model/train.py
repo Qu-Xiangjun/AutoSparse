@@ -13,36 +13,10 @@ from AutoSparse.model import cuda_device_id
 from AutoSparse.cost_model.config import Config
 from AutoSparse.cost_model.model import *
 from AutoSparse.cost_model.dataset_loader import *
+from AutoSparse.cost_model.evaluate import *
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 root = os.getenv("AUTOSPARSE_HOME")
-
-
-def AccTopK(true_labels: List[torch.Tensor], predicted_labels: List[torch.Tensor], k=5):
-    """Get TopK accuracy ratio for ranking.
-
-    Parameters
-    ----------
-    true_labels : List[torch.Tensor]
-        _description_
-    predicted_labels : List[torch.Tensor]
-        _description_
-    k : int, optional
-        _description_, by default 5
-
-    Returns
-    -------
-    (min_true_labels, min_pre_labels, acc_topk)
-        _description_
-    """
-    assert len(true_labels) == len(predicted_labels) and len(true_labels) > 0
-    min_true_labels = 0.0
-    min_pre_labels = 0.0
-    for i in range(len(true_labels)):
-        min_true_labels += min(true_labels[i])
-        _, indices = torch.topk(predicted_labels[i], k, largest=False, sorted=True)
-        min_pre_labels += min(true_labels[i][indices])
-    return min_true_labels, min_pre_labels, min_true_labels / min_pre_labels
 
 
 def SaveModelAndConfig(net, config: Config, losses, filepath: str):
@@ -63,6 +37,7 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
             "D": config.D,
             "middle_channel_num": config.middle_channel_num,
             "token_embedding_size": config.token_embedding_size,
+            "loss_fn": config.loss_fn,
         },
         "losses": losses,
     }
@@ -72,6 +47,7 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
 def TrainNaive(config: Config):
     """Using waco train method, which train a batch schedule data in same sparse matrix."""
 
+    dataset_dirname_prefixs_lst = config.dataset_dirname_prefixs_lst
     data_flag = "_".join(("_".join(dataset_dirname_prefixs_lst)).split(os.sep))
     model_save_dir = os.path.join(
         root, "python", "AutoSparse", "cost_model", "model_log"
@@ -85,7 +61,10 @@ def TrainNaive(config: Config):
     net = AutoSparseNet(config)
     net = net.to(device)
 
-    loss_func = nn.MarginRankingLoss(margin=1)
+    if config.loss_fn == 'MarginRankingLoss':
+        loss_func = nn.MarginRankingLoss(margin=1)
+    elif config.loss_fn == 'LambdaRankingLoss':
+        loss_func = LambdaRankingLoss(config.device)
     optimizer = Adam(net.parameters(), lr=config.leaning_rate)
 
     # Get dataset
@@ -112,6 +91,7 @@ def TrainNaive(config: Config):
         for sparse_batchidx, (mtx_names, coords, features, shapes) in enumerate(
             spmtx_train_data
         ):
+            # TODO: 这里跨matrix 和 prefix_dir 的数据集做并行
             torch.cuda.empty_cache()
             shapes = shapes.to(device)
             sparse_matrix = ME.SparseTensor(
@@ -162,11 +142,15 @@ def TrainNaive(config: Config):
                     optimizer.zero_grad()
                     predict = net.forward(schedules, shapes, sparse_matrix)
 
-                    iu = torch.triu_indices(predict.shape[0], predict.shape[0], 1)
-                    pred1, pred2 = predict[iu[0]], predict[iu[1]]
-                    true1, true2 = relative_runtimes[iu[0]], relative_runtimes[iu[1]]
-                    sign = (true1 - true2).sign()
-                    loss = loss_func(pred1, pred2, sign)
+                    if config.loss_fn == 'MarginRankingLoss':
+                        iu = torch.triu_indices(predict.shape[0], predict.shape[0], 1)
+                        pred1, pred2 = predict[iu[0]], predict[iu[1]]
+                        true1, true2 = relative_runtimes[iu[0]], relative_runtimes[iu[1]]
+                        sign = (true1 - true2).sign()
+                        loss = loss_func(pred1, pred2, sign)
+                    elif config.loss_fn == 'LambdaRankingLoss':
+                        loss = loss_func(predict, relative_runtimes)
+                        
                     train_loss += loss.item()
                     train_loss_cnt += 1
                     train_losses_batch.append(loss.item())
@@ -186,101 +170,31 @@ def TrainNaive(config: Config):
                         logging.info(msg)
 
         # Validation
-        net.eval()
-        min_true_labels_top1, min_pre_labels_top1 = 0.0, 0.0
-        min_true_labels_top5, min_pre_labels_top5 = 0.0, 0.0
-        with torch.no_grad():
-            valid_loss = 0
-            valid_loss_cnt = 0
-            for sparse_batchidx, (mtx_names, coords, features, shapes) in enumerate(
-                spmtx_val_data
-            ):
-                torch.cuda.empty_cache()
-                shapes = shapes.to(device)
-                sparse_matrix = ME.SparseTensor(
-                    coordinates=coords, features=features, device=device
-                )
-
-                for prefix_idx, dataset_dirname_prefix in enumerate(
-                    dataset_dirname_prefixs_lst
-                ):
-                    if "sddmm" in dataset_dirname_prefix:
-                        mtx_name = mtx_names[0] * 2
-                    else:
-                        mtx_name = mtx_names[0]
-                    if not os.path.isfile(
-                        os.path.join(
-                            root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
-                        )
-                    ):
-                        continue
-                    sche_val_data = LoadScheduleDataset(
-                        dataset_dirname_prefix,
-                        mtx_name,
-                        batch_size=config.batch_size * 2,
-                        shuffle=True,
-                    ).load_data()
-                    for sche_batchidx, (schedules, relative_runtimes) in enumerate(
-                        sche_val_data
-                    ):
-                        schedules = schedules[
-                            : int(len(schedules) / len(dataset_dirname_prefixs_lst))
-                        ]
-                        relative_runtimes = relative_runtimes[
-                            : int(len(relative_runtimes) / len(dataset_dirname_prefixs_lst))
-                        ]
-                        if len(schedules) < 5:
-                            break
-                        relative_runtimes = relative_runtimes.to(device)
-                        predict = net.forward(schedules, shapes, sparse_matrix)
-                        iu = torch.triu_indices(predict.shape[0], predict.shape[0], 1)
-                        pred1, pred2 = predict[iu[0]], predict[iu[1]]
-                        true1, true2 = (
-                            relative_runtimes[iu[0]],
-                            relative_runtimes[iu[1]],
-                        )
-                        sign = (true1 - true2).sign()
-                        loss = loss_func(pred1, pred2, sign)
-                        valid_loss += loss.item()
-                        valid_loss_cnt += 1
-                        val_losses_batch.append(loss.item())
-                        (
-                            min_true_labels_top1_local,
-                            min_pre_labels_top1_local,
-                            acc_top1,
-                        ) = AccTopK([relative_runtimes], [predict], 1)
-                        (
-                            min_true_labels_top5_local,
-                            min_pre_labels_top5_local,
-                            acc_top5,
-                        ) = AccTopK([relative_runtimes], [predict], 5)
-                        min_true_labels_top1 += min_true_labels_top1_local
-                        min_pre_labels_top1 += min_pre_labels_top1_local
-                        min_true_labels_top5 += min_true_labels_top5_local
-                        min_pre_labels_top5 += min_pre_labels_top5_local
-
-                        if (
-                            sparse_batchidx % 1 == 0
-                            and sche_batchidx == 0
-                            and prefix_idx == 0
-                        ):
-                            msg = (
-                                f"Epoch: {epoch}, Matrix Batch[{sparse_batchidx}/{len(spmtx_val_data)}], "
-                                f"AccTop1: {acc_top1:.3f}, AccTop5: {acc_top5:.3f}, Valid loss: {loss.item():.3f}"
-                            )
-                            logging.info(msg)
+        eval_mix_res = EvaluateHelp(
+            config.device,
+            net,
+            config.batch_size,
+            spmtx_val_data,
+            config.dataset_dirname_prefixs_lst,
+            loss_func,
+            epoch,
+        )
+        val_losses_batch += eval_mix_res[0]
+        valid_loss, valid_loss_cnt = eval_mix_res[1], eval_mix_res[2]
+        min_true_labels_top1, min_pre_labels_top1 = eval_mix_res[3], eval_mix_res[4]
+        min_true_labels_top5, min_pre_labels_top5 = eval_mix_res[5], eval_mix_res[6]
 
         end_time = time.time()
         train_loss /= train_loss_cnt
         valid_loss /= valid_loss_cnt
-        train_losses_batch.append(train_loss)
-        val_losses_batch.append(valid_loss)
+        train_losses_epoch.append(train_loss)
+        val_losses_epoch.append(valid_loss)
         acc_top1 = min_true_labels_top1 / min_pre_labels_top1
         acc_top5 = min_true_labels_top5 / min_pre_labels_top5
         msg = (
             f"*********************Epoch Result************************\n"
             f"--- Epoch: {epoch}, Train loss: {train_loss:.3f}, "
-            f"AccTop1: {acc_top1:.3f}, AccTop5: {acc_top5:.3f}, "
+            f"Valid AccTop1: {acc_top1:.3f}, Valid AccTop5: {acc_top5:.3f}, "
             f"Valid loss: {valid_loss:.3f}, Epoch time = {(end_time - start_time):.3f}s\n"
             f"*********************************************"
         )
@@ -421,6 +335,14 @@ if __name__ == "__main__":
         default=128,
         help="Embedding size for tokens of attention.",
     )
+    parser.add_argument(
+        "--loss_fn",
+        type=str,
+        choices=[
+            "MarginRankingLoss",
+            "LambdaRankingLoss",
+        ],
+    )
 
     # Parse args
     args = parser.parse_args()
@@ -457,20 +379,20 @@ if __name__ == "__main__":
 """
 
 export CUDA_VISIBLE_DEVICES=2
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv 
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv  --loss_fn LambdaRankingLoss
 
 export CUDA_VISIBLE_DEVICES=3
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm 
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --loss_fn LambdaRankingLoss
 
 export CUDA_VISIBLE_DEVICES=4
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm 
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm  --loss_fn LambdaRankingLoss
 
 export CUDA_VISIBLE_DEVICES=5
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0 --loss_fn LambdaRankingLoss
 
 export CUDA_VISIBLE_DEVICES=6
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss
 
 export CUDA_VISIBLE_DEVICES=7
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss
 """

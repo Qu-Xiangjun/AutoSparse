@@ -7,6 +7,7 @@ from datetime import datetime
 file_dir = os.path.dirname(os.path.abspath(__file__))
 root = os.getenv("AUTOSPARSE_HOME")
 
+
 def LossPlot(
     train_losses: List[List[float]],
     val_losses: List[List[float]],
@@ -52,18 +53,22 @@ def LossPlot(
     ax.set_xticks(epochs)
 
     if filename is None:
-        current_date = datetime.now().strftime("%Y%m%d_%H%M%S")  # 获取当前日期并格式化为 YYYYMMDD 格式
-        filename = f'loss_plot_{current_date}.png'
+        current_date = datetime.now().strftime(
+            "%Y%m%d_%H%M%S"
+        )  # 获取当前日期并格式化为 YYYYMMDD 格式
+        filename = f"loss_plot_{current_date}.png"
     if save_dir == None:
-        save_dir = os.path.join(root, 'img')
+        save_dir = os.path.join(root, "img")
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
-    
+
     # 保存图形到本地
-    plt.savefig(os.path.join(save_dir, filename), format='png', dpi=300, bbox_inches='tight')
-    
+    plt.savefig(
+        os.path.join(save_dir, filename), format="png", dpi=300, bbox_inches="tight"
+    )
+
     print(f"Image saved to {os.path.join(save_dir, filename)}")
-    
+
     # 关闭图形以释放内存
     plt.close()
 

@@ -9,6 +9,61 @@ from AutoSparse.model import cuda_device_id
 from AutoSparse.cost_model.config import Config
 
 
+class LambdaRankingLoss(nn.Module):
+    def __init__(self, device):
+        super().__init__()
+        self.device = device
+
+    def lamdbaRank_scheme(self, G, D, *args):
+        return torch.abs(
+            torch.pow(D[:, :, None], -1.0) - torch.pow(D[:, None, :], -1.0)
+        ) * torch.abs(G[:, :, None] - G[:, None, :])
+
+    def forward(self, preds, labels, k=None, eps=1e-10, mu=10.0, sigma=1.0):
+        device = self.device
+        preds = preds[None, :]
+        labels = labels[None, :]
+        y_pred = preds.clone()
+        y_true = labels.clone()
+
+        y_pred_sorted, indices_pred = y_pred.sort(descending=True, dim=-1)
+        y_true_sorted, _ = y_true.sort(descending=True, dim=-1)
+
+        true_sorted_by_preds = torch.gather(y_true, dim=1, index=indices_pred)
+        true_diffs = true_sorted_by_preds[:, :, None] - true_sorted_by_preds[:, None, :]
+        padded_pairs_mask = torch.isfinite(true_diffs)
+
+        padded_pairs_mask = padded_pairs_mask & (true_diffs > 0)
+        ndcg_at_k_mask = torch.zeros(
+            (y_pred.shape[1], y_pred.shape[1]), dtype=torch.bool, device=device
+        )
+        ndcg_at_k_mask[:k, :k] = 1
+
+        true_sorted_by_preds.clamp_(min=0.0)
+        y_true_sorted.clamp_(min=0.0)
+
+        pos_idxs = torch.arange(1, y_pred.shape[1] + 1).to(device)
+        D = torch.log2(1.0 + pos_idxs.float())[None, :]
+        maxDCGs = torch.sum(
+            ((torch.pow(2, y_true_sorted) - 1) / D)[:, :k], dim=-1
+        ).clamp(min=eps)
+        G = (torch.pow(2, true_sorted_by_preds) - 1) / maxDCGs[:, None]
+
+        weights = self.lamdbaRank_scheme(G, D, mu, true_sorted_by_preds)
+
+        scores_diffs = (y_pred_sorted[:, :, None] - y_pred_sorted[:, None, :]).clamp(
+            min=-1e8, max=1e8
+        )
+        scores_diffs[torch.isnan(scores_diffs)] = 0.0
+        weighted_probas = (
+            torch.sigmoid(sigma * scores_diffs).clamp(min=eps) ** weights
+        ).clamp(min=eps)
+        losses = torch.log2(weighted_probas)
+        masked_losses = losses[padded_pairs_mask & ndcg_at_k_mask]
+        loss = -torch.sum(masked_losses)
+        return loss
+
+
 class SparseMatrixEmbed_WACO_NET(nn.Module):
 
     def __init__(self, in_channels=1, middle_channels=32, out_feature=128, D=2):
@@ -365,14 +420,14 @@ class AutoSparseNet(nn.Module):
             )
 
         self.tokenizer = Tokenizer(self.embedding_size, self.tensor_name_set)
-        
+
         self.encoder = nn.Sequential(
             nn.Linear(self.embedding_size, 1024),
             nn.ReLU(),
             nn.Linear(1024, 256),
             nn.ReLU(),
         )
-        self.attention = nn.MultiheadAttention(embed_dim = 256, num_heads = 8)
+        self.attention = nn.MultiheadAttention(embed_dim=256, num_heads=8)
         self.res1 = nn.Sequential(
             nn.Linear(256, 1024),
             nn.ReLU(),
@@ -407,42 +462,73 @@ class AutoSparseNet(nn.Module):
 
     def embed_sparse_matirx(self, x: ME.SparseTensor):
         if self.is_net_forward1:
-            return self.conv_sparse_feature.forward1(x) # TODO:  这里可以更换卷积提取特征的网络方式
+            return self.conv_sparse_feature.forward1(
+                x
+            )  # TODO:  这里可以更换卷积提取特征的网络方式
         return self.conv_sparse_feature.forward2(x)
 
-    def forward(self, schedules: Union[str, List[str]], sparse_tensor_info: Tuple[float], sparse_matrix: ME.SparseTensor):
-        input_seq = self.tokenizer(schedules, sparse_tensor_info).to(self.device) # [32, 11, 128]
+    def forward(
+        self,
+        schedules: Union[str, List[str]],
+        sparse_tensor_info: Tuple[float],
+        sparse_matrix: ME.SparseTensor,
+    ):
+        input_seq = self.tokenizer(schedules, sparse_tensor_info).to(
+            self.device
+        )  # [32, 11, 128]
         if self.is_waco_net:
-            embeded_sparse_feature = self.embed_sparse_matirx_WACO(sparse_matrix).reshape(1, 1, self.embedding_size) # 1,1,128
+            embeded_sparse_feature = self.embed_sparse_matirx_WACO(
+                sparse_matrix
+            ).reshape(
+                1, 1, self.embedding_size
+            )  # 1,1,128
         else:
-            embeded_sparse_feature = self.embed_sparse_matirx(sparse_matrix).reshape(1, 1, self.embedding_size) # 1,1,128
-        embeded_sparse_feature = embeded_sparse_feature.expand(input_seq.size(0), -1, -1)
+            embeded_sparse_feature = self.embed_sparse_matirx(sparse_matrix).reshape(
+                1, 1, self.embedding_size
+            )  # 1,1,128
+        embeded_sparse_feature = embeded_sparse_feature.expand(
+            input_seq.size(0), -1, -1
+        )
 
-        input_seq_full = torch.cat((input_seq, embeded_sparse_feature), dim = 1) # [32, 12, 128]
-        
-        encoder_seq = self.encoder(input_seq_full).transpose(0, 1) # batch first is False
+        input_seq_full = torch.cat(
+            (input_seq, embeded_sparse_feature), dim=1
+        )  # [32, 12, 128]
+
+        encoder_seq = self.encoder(input_seq_full).transpose(
+            0, 1
+        )  # batch first is False
         output, attention_mask = self.attention(encoder_seq, encoder_seq, encoder_seq)
         output = output + self.res1(output)
         output = output + self.res2(output)
-        output = self.decoder(output) # shape [seq_len, batch, 1]
+        output = self.decoder(output)  # shape [seq_len, batch, 1]
 
         output = output.sum(0).squeeze()
 
         return output
 
-
-    def forward_in_query(self, schedules: Union[str, List[str]], sparse_tensor_info: Tuple[float], sparse_matrix_embeded_feature: torch.Tensor):
+    def forward_in_query(
+        self,
+        schedules: Union[str, List[str]],
+        sparse_tensor_info: Tuple[float],
+        sparse_matrix_embeded_feature: torch.Tensor,
+    ):
         input_seq = self.tokenizer(schedules, sparse_tensor_info).to(self.device)
-        embeded_sparse_feature = sparse_matrix_embeded_feature.reshape(1, 1, self.embedding_size)
-        embeded_sparse_feature = embeded_sparse_feature.expand(input_seq.size(0), -1, -1)
+        embeded_sparse_feature = sparse_matrix_embeded_feature.reshape(
+            1, 1, self.embedding_size
+        )
+        embeded_sparse_feature = embeded_sparse_feature.expand(
+            input_seq.size(0), -1, -1
+        )
 
-        input_seq_full = torch.cat((input_seq, embeded_sparse_feature), dim = 1)
-        
-        encoder_seq = self.encoder(input_seq_full).transpose(0, 1) # batch first is False
+        input_seq_full = torch.cat((input_seq, embeded_sparse_feature), dim=1)
+
+        encoder_seq = self.encoder(input_seq_full).transpose(
+            0, 1
+        )  # batch first is False
         output, attention_mask = self.attention(encoder_seq, encoder_seq, encoder_seq)
         output = output + self.res1(output)
         output = output + self.res2(output)
-        output = self.decoder(output) # shape [seq_len, batch, 1]
+        output = self.decoder(output)  # shape [seq_len, batch, 1]
 
         output = output.sum(0).squeeze()
 
