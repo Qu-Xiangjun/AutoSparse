@@ -18,7 +18,12 @@ file_dir = os.path.dirname(os.path.abspath(__file__))
 root = os.getenv("AUTOSPARSE_HOME")
 
 
-def AccTopK(true_labels: List[torch.Tensor], predicted_labels: List[torch.Tensor], k=5):
+def AccTopK(
+    true_labels: List[torch.Tensor],
+    predicted_labels: List[torch.Tensor],
+    k=5,
+    largest=False,
+):
     """Get TopK accuracy ratio for ranking.
 
     Parameters
@@ -32,19 +37,27 @@ def AccTopK(true_labels: List[torch.Tensor], predicted_labels: List[torch.Tensor
 
     Returns
     -------
-    (min_true_labels, min_pre_labels, acc_topk)
+    (min_true_labels, min_pre_labels, score)
         min_true_labels: The min lable of all true labels set.
         min_pre_labels: The true lable of min pre labels in pre labels set.
-        acc_topk: min_true_labels / min_pre_labels, which is the topk score in the sets.
+        score: The topk score in the sets.
     """
     assert len(true_labels) == len(predicted_labels) and len(true_labels) > 0
+    if largest:
+        func = max
+    else:
+        func = min
     min_true_labels = 0.0
     min_pre_labels = 0.0
     for i in range(len(true_labels)):
-        min_true_labels += min(true_labels[i])
-        _, indices = torch.topk(predicted_labels[i], k, largest=False, sorted=True)
-        min_pre_labels += min(true_labels[i][indices])
-    return min_true_labels, min_pre_labels, min_true_labels / min_pre_labels
+        min_true_labels += func(true_labels[i])
+        _, indices = torch.topk(predicted_labels[i], k, largest=largest, sorted=True)
+        min_pre_labels += func(true_labels[i][indices])
+    if largest:
+        score = min_pre_labels / min_true_labels
+    else:
+        score = min_true_labels / min_pre_labels
+    return min_true_labels, min_pre_labels, score
 
 
 def EvaluateHelp(
@@ -55,6 +68,7 @@ def EvaluateHelp(
     dataset_dirname_prefixs_lst,
     loss_func,
     epoch,
+    data_handle_method,
 ):
     net.eval()
 
@@ -91,6 +105,7 @@ def EvaluateHelp(
                     mtx_name,
                     batch_size=batch_size * 2,
                     shuffle=True,
+                    handle_method="relative_max",
                 ).load_data()
                 for sche_batchidx, (schedules, relative_runtimes) in enumerate(
                     sche_val_data
@@ -109,12 +124,15 @@ def EvaluateHelp(
                     if isinstance(loss_func, nn.MarginRankingLoss):
                         iu = torch.triu_indices(predict.shape[0], predict.shape[0], 1)
                         pred1, pred2 = predict[iu[0]], predict[iu[1]]
-                        true1, true2 = relative_runtimes[iu[0]], relative_runtimes[iu[1]]
+                        true1, true2 = (
+                            relative_runtimes[iu[0]],
+                            relative_runtimes[iu[1]],
+                        )
                         sign = (true1 - true2).sign()
                         loss = loss_func(pred1, pred2, sign)
                     elif isinstance(loss_func, LambdaRankingLoss):
                         loss = loss_func(predict, relative_runtimes)
-                        
+
                     valid_loss += loss.item()
                     valid_loss_cnt += 1
                     val_losses_batch.append(loss.item())
@@ -122,12 +140,22 @@ def EvaluateHelp(
                         min_true_labels_top1_local,
                         min_pre_labels_top1_local,
                         acc_top1,
-                    ) = AccTopK([relative_runtimes], [predict], 1)
+                    ) = AccTopK(
+                        [relative_runtimes],
+                        [predict],
+                        1,
+                        data_handle_method == "relative_max",
+                    )
                     (
                         min_true_labels_top5_local,
                         min_pre_labels_top5_local,
                         acc_top5,
-                    ) = AccTopK([relative_runtimes], [predict], 5)
+                    ) = AccTopK(
+                        [relative_runtimes],
+                        [predict],
+                        5,
+                        data_handle_method == "relative_max",
+                    )
                     min_true_labels_top1 += min_true_labels_top1_local
                     min_pre_labels_top1 += min_pre_labels_top1_local
                     min_true_labels_top5 += min_true_labels_top5_local

@@ -89,33 +89,44 @@ loss值越趋近0越好
     ![alt text](image-6.png)
     
 
-    
+0.188, AccTop1: 0.614, AccTop5: 0.986, Valid loss: 0.219
 ### 模型训练日志
 ##### 2025-01-04
-| 模型名称 | 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 |
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 | 行1数据3 | 行1数据1 | 行1数据2 |
-| 行2数据1 | 行2数据2 | 行2数据3 |
+| autosparse_1 | platinum8272cl_spmm | 0.167 | 0.226 | 0.572 | 0.989 | 75epoch | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-04.txt |
+| autosparse_1 | platinum8272cl_spmv | 0.259 | 0.284 | 0.284 | 0.890 | 75epoch | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-04.txt |
+| autosparse_1 | platinum8272cl_spmv_spmm_sddmm | 0.273 | 0.283 | 0.695 | 0.987 | 只跑到了52epoch | cost_model_train__0_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-01-04.txt |
+| autosparse_2 | platinum8272cl_spmm | 0.188 | 0.219 | 0.614 | 0.986 | 75epoch | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-04.txt |
+| WACONet_128 | platinum8272cl_spmm | 0.154 | 0.198 | 0.734 | 0.995 | 75epoch | cost_model_train__1_1xeon_platinum8272cl_spmm_2025-01-04.txt |
+| WACONet_128 | platinum8272cl_spmv | 0.272 | 0.290 | 0.256 | 0.872 | 75epoch | cost_model_train__1_1xeon_platinum8272cl_spmv_2025-01-05.log |
+| WACONet_128 | platinum8272cl_spmv_spmm_sddmm | 0.218 | 0.249 | 0.668 | 0.982 | 75epoch | cost_model_train__1_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-01-04.txt |
+
 
 
 ### TODO
-- ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~
-- WACONet的baseline训练
+- ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~ p0
+- ~~尝试TrainNaive 上使用 randomloss func~~，看看结果效果 p0
+- 实现TrainMix版本，p0
+    - 同时考虑如何增加并行性，比如分矩阵类型减少矩阵conv的批大小，然后合并所有的小批进行batch atention计算， 最后分矩阵的批次进行backward
+- ~~画出loss图~~，修改模型结构 p0
+- Autosparse 加算子的支持 p0 ![alt text](image-8.png)
+    - ，并采集数据集 p1
+
+- TrainNaive 中增加训练并行度，第一步解决跨算子级合并一次计算与backward，第二步解决跨矩阵合并 p2
+    - 可以划分阶段：
+        - a.并行不同输入的矩阵稀疏模式编码CNN->得到batch的稀疏特征向量, （这里控制只bacth_size是矩阵数，而不是调度的batch数）
+        - b.并行做不同稀疏特征向量和不同算子下调度数据的NLP推理, 但是结果要划分开，因为rank结果要在相同的矩阵和算子下比较
+        - c.以稀疏张量数据为单位分别作backward （Note：为了解决不同稀疏张量数据的backward 梯度波动，可以处理数据集为相对的label）
+
+- WACONet的baseline训练 p1
     - 按照WACO的方案设计一个新的AutoSparse spmm 算子模版
     - 训练spmm单算子基于已有的AutoSparse数据
     - 按照WACO的方案设计一个新的AutoSparse spmv 算子模版
     - 训练spmv单算子基于已有的AutoSparse数据
     - 按照WACO的方案设计一个新的AutoSparse sddmm 算子模版
     - 训练sddmm单算子基于已有的AutoSparse数据 
-- TrainNaive 中增加训练并行度，第一步解决跨算子级合并一次计算与backward，第二步解决跨矩阵合并
-- 集成进入AutoSparse的搜索中
-- 画出loss图，修改模型结构
-- 尝试TrainNaive 上使用 randomloss func，看看结果效果
-- 实现TrainMix版本，同时考虑如何增加并行性，比如分矩阵类型减少矩阵conv的批大小，然后合并所有的小批进行batch atention计算， 最后分矩阵的批次进行backward
-- 
+- 集成进入AutoSparse的搜索中 p1 
+
+- 调整AutoSparse重新使用搜索的方法采集数据集 p1
+- 在ARM上采集数据集 p1

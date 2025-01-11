@@ -16,7 +16,8 @@ class Config:
         self.device = torch.device(
             "cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu"
         )
-        self.loss_fn = 'LambdaRankingLoss'
+        self.loss_fn = "LambdaRankingLoss"
+        self.data_handle_method = "relative_max"
 
         self.is_save_loss_data = True
 

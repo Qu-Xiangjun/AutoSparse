@@ -14,4 +14,4 @@ epyc_7543/
 xeon_platinum8272cl/
 *.pt
 *.pth
-python/AutoSparse/cost_model/log/
+python/AutoSparse/cost_model/log*/

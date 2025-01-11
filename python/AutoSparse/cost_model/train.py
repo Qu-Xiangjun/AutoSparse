@@ -38,6 +38,7 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
             "middle_channel_num": config.middle_channel_num,
             "token_embedding_size": config.token_embedding_size,
             "loss_fn": config.loss_fn,
+            "data_handle_method": config.data_handle_method,
         },
         "losses": losses,
     }
@@ -61,9 +62,9 @@ def TrainNaive(config: Config):
     net = AutoSparseNet(config)
     net = net.to(device)
 
-    if config.loss_fn == 'MarginRankingLoss':
+    if config.loss_fn == "MarginRankingLoss":
         loss_func = nn.MarginRankingLoss(margin=1)
-    elif config.loss_fn == 'LambdaRankingLoss':
+    elif config.loss_fn == "LambdaRankingLoss":
         loss_func = LambdaRankingLoss(config.device)
     optimizer = Adam(net.parameters(), lr=config.leaning_rate)
 
@@ -126,6 +127,7 @@ def TrainNaive(config: Config):
                     mtx_name,
                     batch_size=config.batch_size,
                     shuffle=True,
+                    handle_method=config.data_handle_method,
                 ).load_data()
                 for sche_batchidx, (schedules, relative_runtimes) in enumerate(
                     sche_train_data
@@ -142,15 +144,18 @@ def TrainNaive(config: Config):
                     optimizer.zero_grad()
                     predict = net.forward(schedules, shapes, sparse_matrix)
 
-                    if config.loss_fn == 'MarginRankingLoss':
+                    if config.loss_fn == "MarginRankingLoss":
                         iu = torch.triu_indices(predict.shape[0], predict.shape[0], 1)
                         pred1, pred2 = predict[iu[0]], predict[iu[1]]
-                        true1, true2 = relative_runtimes[iu[0]], relative_runtimes[iu[1]]
+                        true1, true2 = (
+                            relative_runtimes[iu[0]],
+                            relative_runtimes[iu[1]],
+                        )
                         sign = (true1 - true2).sign()
                         loss = loss_func(pred1, pred2, sign)
-                    elif config.loss_fn == 'LambdaRankingLoss':
+                    elif config.loss_fn == "LambdaRankingLoss":
                         loss = loss_func(predict, relative_runtimes)
-                        
+
                     train_loss += loss.item()
                     train_loss_cnt += 1
                     train_losses_batch.append(loss.item())
@@ -178,6 +183,7 @@ def TrainNaive(config: Config):
             config.dataset_dirname_prefixs_lst,
             loss_func,
             epoch,
+            config.data_handle_method,
         )
         val_losses_batch += eval_mix_res[0]
         valid_loss, valid_loss_cnt = eval_mix_res[1], eval_mix_res[2]
@@ -189,8 +195,15 @@ def TrainNaive(config: Config):
         valid_loss /= valid_loss_cnt
         train_losses_epoch.append(train_loss)
         val_losses_epoch.append(valid_loss)
-        acc_top1 = min_true_labels_top1 / min_pre_labels_top1
-        acc_top5 = min_true_labels_top5 / min_pre_labels_top5
+        if config.data_handle_method == "relative_min":
+            acc_top1 = min_true_labels_top1 / min_pre_labels_top1
+            acc_top5 = min_true_labels_top5 / min_pre_labels_top5
+        elif config.data_handle_method == "relative_max":
+            acc_top1 = min_pre_labels_top1 / min_true_labels_top1
+            acc_top5 = min_pre_labels_top5 / min_true_labels_top5
+        else:
+            assert False
+
         msg = (
             f"*********************Epoch Result************************\n"
             f"--- Epoch: {epoch}, Train loss: {train_loss:.3f}, "
@@ -343,6 +356,15 @@ if __name__ == "__main__":
             "LambdaRankingLoss",
         ],
     )
+    parser.add_argument(
+        "--data_handle_method",
+        type=str,
+        choices=[
+            "relative_min",
+            "relative_max",
+        ],
+        help="How to handle dataset. Such as 'relative_min' mean that the label smaller the better after handle",
+    )
 
     # Parse args
     args = parser.parse_args()
@@ -379,20 +401,20 @@ if __name__ == "__main__":
 """
 
 export CUDA_VISIBLE_DEVICES=2
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv  --loss_fn LambdaRankingLoss
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv  --loss_fn LambdaRankingLoss --data_handle_method relative_max
 
 export CUDA_VISIBLE_DEVICES=3
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --loss_fn LambdaRankingLoss
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --loss_fn LambdaRankingLoss --data_handle_method relative_max
 
 export CUDA_VISIBLE_DEVICES=4
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm  --loss_fn LambdaRankingLoss
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm  --loss_fn LambdaRankingLoss --data_handle_method relative_max
 
 export CUDA_VISIBLE_DEVICES=5
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0 --loss_fn LambdaRankingLoss
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0 --loss_fn LambdaRankingLoss --data_handle_method relative_max
 
 export CUDA_VISIBLE_DEVICES=6
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss --data_handle_method relative_max
 
 export CUDA_VISIBLE_DEVICES=7
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss
+python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss --data_handle_method relative_max
 """

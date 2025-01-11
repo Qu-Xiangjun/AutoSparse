@@ -177,7 +177,14 @@ class LoadScheduleDataset(torch.utils.data.Dataset):
     File name is specific by matrix name.
     """
 
-    def __init__(self, dataset_dirname_prefix, mtx_name, batch_size=64, shuffle=True):
+    def __init__(
+        self,
+        dataset_dirname_prefix,
+        mtx_name,
+        batch_size=64,
+        shuffle=True,
+        handle_method="relative_max",
+    ):
         """_summary_
 
         Parameters
@@ -190,6 +197,8 @@ class LoadScheduleDataset(torch.utils.data.Dataset):
                 _description_, by default 64
         shuffle : bool, optional
                 _description_, by default True
+        shuffle : str, optional("relative_max", "relative_min")
+                How to handle label, by default relative_max
         """
         self.batch_size = batch_size
         self.shuffle = shuffle
@@ -203,14 +212,21 @@ class LoadScheduleDataset(torch.utils.data.Dataset):
         with open(file_path) as f:
             lines = f.read().splitlines()
         max_runtime = 0.0
+        min_runtime = 10000
         for line in lines:
             runtime = float(line.split(" ")[-1])
             if runtime < 1000:
                 max_runtime = max(max_runtime, runtime)
+                min_runtime = min(min_runtime, runtime)
         for line in lines:
             runtime = float(line.split(" ")[-1])
             if runtime < 1000:
-                runtime = torch.tensor(runtime / max_runtime)
+                if handle_method == "relative_min":
+                    runtime = torch.tensor(runtime / max_runtime)
+                elif handle_method == "relative_max":
+                    runtime = torch.tensor(min_runtime / runtime)
+                else:
+                    assert False
                 self.data.append((line, runtime))
         if len(self.data) == 0:  # Dataloader will raise error when get num_samples==0.
             self.data = [(" 0.000", 0.000)]
