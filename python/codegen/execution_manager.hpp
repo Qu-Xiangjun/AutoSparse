@@ -421,6 +421,14 @@ public:
         format += ":" + format_order;
         kernel += "=";
 
+        vetcor<String> rhs_tensors_name_vec;
+        vetcor<Tensor *> rhs_tensors_vec;
+        for (auto &it : rhs_tensor)
+        {
+            rhs_tensors_name_vec.push_back(it.first);
+            rhs_tensors_vec.push_back(it.second);
+        }
+
         /* Right handle tensor */
         for (auto &it : rhs_tensor)
         {
@@ -461,6 +469,98 @@ public:
             format_order.pop_back();
             format += ":" + format_order;
 			kernel += "*"; // TODO: 这里计算负只能是乘法了？
+            if (
+                rhs_tensors_name_vec.size() == 2 && 
+                rhs_tensor.first == rhs_tensors_name_vec[0] && 
+                rhs_tensors_vec[1]->format.size() == lh_tensor->format.size()
+            ) 
+            {
+                bool is_mmadd = true;
+                for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
+                {
+                    if (rhs_tensors_vec[1]->format[i].var != lh_tensor->format[i].var) 
+                    {
+                        is_mmadd = false;
+                        break;
+                    }
+                }
+                if (is_mmadd)
+                {
+                    cout << "DDDDDDDDDDDDDDDDDDDD MMADD 1+" << endl;
+                    kernel.pop_back();
+                    kernel += "+";
+                }
+                else
+                {
+                    cerr << "DDDDDDDDDDDDDDDDD Don't konw what op in is_mmadd" << endl;
+                    std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in is_mmadd");
+                }
+
+            } 
+            else if (rhs_tensors_name_vec.size() == 3 && lh_tensor->is_dense == true) 
+            {
+                if (
+                    lh_tensor->format.size() == rhs_tensors_vec[0].size() && 
+                    lh_tensor->format.size() == rhs_tensors_vec[1].size() && 
+                    lh_tensor->format.size() == rhs_tensors_vec[2].size() 
+                )
+                {
+                    bool is_plus3 = true;
+                    for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
+                    {
+                        if (rhs_tensors_vec[1]->format[i].var != lh_tensor->format[i].var) 
+                        {
+                            is_plus3 = false;
+                            break;
+                        }
+                    }
+                    if (is_plus3)
+                    {
+                        cout << "DDDDDDDDDDDDDDDDDDDD PLUS 1+" << endl;
+                        kernel.pop_back();
+                        kernel += "+";
+                    }
+                    else
+                    {
+                        cerr << "DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3" << endl;
+                        std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3");
+                    }
+                } 
+                else if (
+                    lh_tensor->format.size() == rhs_tensors_vec[1].size() && 
+                    lh_tensor->format.size() == rhs_tensors_vec[2].size()
+                )
+                {
+                    bool is_ge = true;
+                    for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
+                    {
+                        if (rhs_tensors_vec[1]->format[i].var != lh_tensor->format[i].var) 
+                        {
+                            is_ge = false;
+                            break;
+                        }
+                    }
+                    if (is_ge)
+                    {   
+                        if (rhs_tensor.first == rhs_tensors_name_vec[1])
+                        {
+                            cout << "DDDDDDDDDDDDDDDDDDDD Ge 1+" << endl;
+                            kernel.pop_back();
+                            kernel += "+";
+                        }
+                    }
+                    else
+                    {
+                        cerr << "DDDDDDDDDDDDDDDDD Don't konw what op in is_ge" << endl;
+                        std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in is_ge");
+                    }
+                }
+                else
+                {
+                    cerr << "DDDDDDDDDDDDDDDDD Don't konw what op" << endl;
+                    std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op");
+                }
+            }
         }
 
         kernel.pop_back(); // Discard extra '*'.
@@ -715,7 +815,7 @@ public:
 #endif
 		compile_success = executeCommand(taco_header_command);
 
-        if (rhs_tensor.size() == 3) {
+        if (rhs_tensor.size() == 3 && lh_tensor->is_dense == false) {
             char* env_val = getenv("AUTOSPARSE_HOME");
             string waco_prefix = env_val;
             string patch_command = "python " + waco_prefix + "/python/codegen/sddmm_patch.py ./taco_kernel.c";

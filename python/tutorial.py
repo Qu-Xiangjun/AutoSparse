@@ -27,7 +27,7 @@ C = Compute(A@B)
 """Auto-Tune and excute"""
 A.LoadData(os.path.join(autosparse_prefix, 'dataset', 'demo_dataset', 'bcsstk38.csr'))
 sch = AutoTune(C, method = "q_sa_searching", use_cost_model = True)
-func = Build(C)
+func = Build(sch)
 time = func.Run()
 print(time)
 

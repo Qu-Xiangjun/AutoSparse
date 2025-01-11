@@ -232,7 +232,7 @@ double SpMV_S(string filepath)
 int main()
 {
     char *env_val = getenv("AUTOSPARSE_HOME");
-    string inputFileName = string(env_val) + "/dataset/total.txt";
+    string inputFileName = string(env_val) + "/dataset/validation_demo.txt";
     string outputFileName = string(env_val) + "/baseline/MKL/result.txt";
     
     ifstream inputFile(inputFileName);

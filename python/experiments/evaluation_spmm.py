@@ -35,7 +35,7 @@ def Evaluation(platform):
     search_methods = ["random_searching", "p_searching", 'q_sa_searching'] # "random_searching", "p_searching", "batch_p_searching", "sa_searching", "q_searching"
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
 
-    result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation", "result.csv")
+    result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_spmm", "result.csv")
     with open(result_filepath, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["name", "method", "config command", "csr_time", "best_time"])
@@ -65,20 +65,20 @@ def Evaluation(platform):
 
             sch = AutoTune(C, method = method, population_size=100, trial = 100,
                            early_stop=100, save_schedule_data=True, save_best_trace=True,
-                           save_dirpath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation"))
+                           save_dirpath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_spmm"))
             func = Build(sch)
             time_val = min([func.Run() for i in range(10)])
             print(time_val)
 
-            result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation", "result.csv")
+            result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_spmm", "result.csv")
             with open(result_filepath, 'a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
 
 if __name__ == "__main__":
-    Evaluation(platform = "xeon")
+    Evaluation(platform = "epyc")
 
 
 
 
-# nohup python evaluation.py > ./log/evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_spmm.py > ./log/evaluation_spmm_$(date +%Y%m%d%H%M).log 2>&1 & 

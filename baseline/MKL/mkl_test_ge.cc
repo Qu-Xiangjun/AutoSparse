@@ -1,0 +1,300 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <iomanip>
+#include <cassert>
+#include <time.h>
+#include <sys/time.h>
+
+#include "mkl.h"
+#include "mkl_types.h"
+#include "mkl_lapacke.h"
+#include "mkl_spblas.h"
+
+#include "time.hpp"
+
+using namespace std;
+
+using namespace std::chrono_literals;
+
+double GeSpMM_S(string filepath)
+{
+    srand(time(NULL));
+    // Load sparse matrix info
+    int num_row, num_col, num_nonzero;
+    fstream csr(filepath);
+	csr.read((char *)&num_row, sizeof(int));
+	csr.read((char *)&num_col, sizeof(int));
+	csr.read((char *)&num_nonzero, sizeof(int));
+    
+    float *A_val = (float*)mkl_malloc(num_nonzero * sizeof(float), 64);
+    MKL_INT *A_pos = (MKL_INT*)mkl_malloc((num_row + 1) * sizeof(MKL_INT), 64);
+    MKL_INT *A_crd = (MKL_INT*)mkl_malloc(num_nonzero * sizeof(MKL_INT), 64);
+    for (int i = 0; i < num_row + 1; i++)
+	{
+		int data;
+		csr.read((char *)&data, sizeof(data));
+		A_pos[i] = data;
+	}
+    for (int i = 0; i < num_nonzero; i++)
+	{
+		int data;
+		csr.read((char *)&data, sizeof(data));
+		A_crd[i] = data;
+		A_val[i] = (float)(rand()%1048576)/1048576; // TODO: Now only consider sparse matrix layout.
+	}
+    csr.close();
+
+    MKL_INT m, n, k;
+    m = num_row;
+    k = num_col;
+    n = 128;
+
+    // Consturct dense matrix B
+    float *matrixB = (float*)mkl_malloc(n*k * sizeof(float), 64);
+    for (int i = 0; i < n*k; i++) matrixB[i] = 1.0;
+
+    // Construct csr sparse matrix A
+    sparse_matrix_t csrA;
+    sparse_status_t status = mkl_sparse_s_create_csr(
+        &csrA,
+        SPARSE_INDEX_BASE_ZERO,
+        m,
+        k,
+        A_pos,
+        &(A_pos[1]),
+        A_crd,
+        A_val
+    );
+    cout << status << endl;
+    assert (status == SPARSE_STATUS_SUCCESS);
+
+    // spmm mkl api
+    double alpha = 1.0;
+	double beta = 0.0;
+    struct matrix_descr descr = { SPARSE_MATRIX_TYPE_GENERAL, SPARSE_FILL_MODE_FULL, SPARSE_DIAG_NON_UNIT };
+    
+    double elapsed_time = 0.;
+    struct timeval starttime, endtime;
+    int warm = 50;
+    int round = 100;
+    // Warm
+    for (int cnt = 0; cnt < warm; cnt++){
+        float *matrixC = (float*)mkl_malloc(m*n * sizeof(float), 64);
+        for (int i = 0; i < m*n; i++) matrixC[i] = (float)rand() / RAND_MAX;
+        status = mkl_sparse_s_mm(
+            SPARSE_OPERATION_NON_TRANSPOSE,
+            alpha,
+            csrA,
+            descr,
+            SPARSE_LAYOUT_COLUMN_MAJOR,
+            matrixB,
+            n,
+            n,
+            beta,
+            matrixC,
+            m
+        );
+        assert (status == SPARSE_STATUS_SUCCESS);
+    }
+
+    // Test
+    for (int cnt = 0; cnt < round; cnt++){
+        float *matrixC = (float*)mkl_malloc(m*n * sizeof(float), 64);
+        for (int i = 0; i < m*n; i++) matrixC[i] = (float)rand() / RAND_MAX;
+
+        // auto t1 = Clock::now();
+        gettimeofday(&starttime,NULL);
+        status = mkl_sparse_s_mm(
+            SPARSE_OPERATION_NON_TRANSPOSE,
+            alpha,
+            csrA,
+            descr,
+            SPARSE_LAYOUT_COLUMN_MAJOR,
+            matrixB,
+            n,
+            n,
+            beta,
+            matrixC,
+            m
+        );
+        gettimeofday(&endtime,NULL);
+        elapsed_time += ((endtime.tv_sec-starttime.tv_sec)*1000000 + endtime.tv_usec-starttime.tv_usec)/1000.0;
+        // elapsed_time += compute_clock(Clock::now(), t1);
+        assert (status == SPARSE_STATUS_SUCCESS);
+        if (cnt==0) cout << matrixC[0] << endl;
+    }
+
+    return elapsed_time / round;
+}
+
+double GeSpMV_S(string filepath)
+{
+    srand(time(NULL));
+    // Load sparse matrix info
+    int num_row, num_col, num_nonzero;
+    fstream csr(filepath);
+	csr.read((char *)&num_row, sizeof(int));
+	csr.read((char *)&num_col, sizeof(int));
+	csr.read((char *)&num_nonzero, sizeof(int));
+    
+    float *A_val = (float*)mkl_malloc(num_nonzero * sizeof(float), 64);
+    MKL_INT *A_pos = (MKL_INT*)mkl_malloc((num_row + 1) * sizeof(MKL_INT), 64);
+    MKL_INT *A_crd = (MKL_INT*)mkl_malloc(num_nonzero * sizeof(MKL_INT), 64);
+    for (int i = 0; i < num_row + 1; i++)
+	{
+		int data;
+		csr.read((char *)&data, sizeof(data));
+		A_pos[i] = data;
+	}
+    for (int i = 0; i < num_nonzero; i++)
+	{
+		int data;
+		csr.read((char *)&data, sizeof(data));
+		A_crd[i] = data;
+		A_val[i] = (float)(rand()%1048576)/1048576; // TODO: Now only consider sparse matrix layout.
+	}
+    csr.close();
+
+    MKL_INT m, k;
+    m = num_row;
+    k = num_col;
+
+    // Consturct dense matrix B
+    float *matrixB = (float*)mkl_malloc(k * sizeof(float), 64);
+    for (int i = 0; i < k; i++) matrixB[i] = 1.0;
+
+    // Construct csr sparse matrix A
+    sparse_matrix_t csrA;
+    sparse_status_t status = mkl_sparse_s_create_csr(
+        &csrA,
+        SPARSE_INDEX_BASE_ZERO,
+        m,
+        k,
+        A_pos,
+        &(A_pos[1]),
+        A_crd,
+        A_val
+    );
+    assert (status == SPARSE_STATUS_SUCCESS);
+
+    // spmm mkl api
+    double alpha = 1.0;
+	double beta = 0.0;
+    struct matrix_descr descr = { SPARSE_MATRIX_TYPE_GENERAL, SPARSE_FILL_MODE_FULL, SPARSE_DIAG_NON_UNIT };
+    
+    double elapsed_time = 0.;
+    struct timeval starttime, endtime;
+    int warm = 50;
+    int round = 100;
+    // Warm
+    for (int cnt = 0; cnt < warm; cnt++){
+        float *matrixC = (float*)mkl_malloc(m*n * sizeof(float), 64);
+        for (int i = 0; i < m*n; i++) matrixC[i] = (float)rand() / RAND_MAX;
+        status = mkl_sparse_s_mv(
+            SPARSE_OPERATION_NON_TRANSPOSE,
+            alpha,
+            csrA,
+            descr,
+            matrixB,
+            beta,
+            matrixC
+        );
+        assert (status == SPARSE_STATUS_SUCCESS);
+    }
+
+    // Test
+    for (int cnt = 0; cnt < round; cnt++){
+        float *matrixC = (float*)mkl_malloc(m*n * sizeof(float), 64);
+        for (int i = 0; i < m*n; i++) matrixC[i] = (float)rand() / RAND_MAX;
+
+        // auto t1 = Clock::now();
+        gettimeofday(&starttime,NULL);
+        status = mkl_sparse_s_mv(
+            SPARSE_OPERATION_NON_TRANSPOSE,
+            alpha,
+            csrA,
+            descr,
+            matrixB,
+            beta,
+            matrixC
+        );
+        gettimeofday(&endtime,NULL);
+        elapsed_time += ((endtime.tv_sec-starttime.tv_sec)*1000000 + endtime.tv_usec-starttime.tv_usec)/1000.0;
+        // elapsed_time += compute_clock(Clock::now(), t1);
+        assert (status == SPARSE_STATUS_SUCCESS);
+        if (cnt==0) cout << matrixC[0] << endl;
+    }
+
+    return elapsed_time / round;
+}
+
+int main()
+{
+    char *env_val = getenv("AUTOSPARSE_HOME");
+    string inputFileName = string(env_val) + "/dataset/validation_demo.txt";
+    string outputFileName = string(env_val) + "/baseline/MKL/result_ge.txt";
+    
+    ifstream inputFile(inputFileName);
+    if (!inputFile) {
+        cerr << "Error: Unable to open input file." << endl;
+        return 1;
+    }
+
+    cout << outputFileName << endl;
+    ofstream resultFile(outputFileName);
+    if (!resultFile) {
+        cerr << "Error: Unable to create result file." << endl;
+        return 1;
+    }
+
+    // Simple Test
+    // string filepath = string(env_val) + "/dataset/demo_dataset/nemspmm1_16x4_0.csr";
+    // cout << GeSpMM_S(filepath) << endl;
+    // cout << GeSpMV_S(filepath) << endl;
+
+    string filename;
+
+    cout << "---------GeSpMM---------" << endl;
+    resultFile << "---------GeSpMM---------" << endl;
+    while(getline(inputFile, filename))
+    {
+        filename.pop_back();
+        cout << filename << endl;
+        string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
+        cout << filepath << endl;
+        double res = GeSpMM_S(filepath);
+        resultFile << filename << " = " << res << endl;
+        cout << filename << " = " << res << endl;
+    }
+    inputFile.close();
+
+    cout << "---------GeSpMV---------" << endl;
+    inputFile = ifstream(inputFileName);
+    if (!inputFile) {
+        cerr << "Error: Unable to open input file." << endl;
+        return 1;
+    }
+    resultFile << "---------GeSpMV---------" << endl;
+    while(getline(inputFile, filename))
+    {
+        filename.pop_back();
+        cout << filename << endl;
+        string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
+        cout << filepath << endl;
+        double res = GeSpMV_S(filepath);
+        resultFile << filename << " = " << res << endl;
+        cout << filename << " = " << res << endl;
+    }
+
+    inputFile.close();
+    resultFile.close();
+
+    cout << "Processing complete. Results are saved in the 'result' folder." << endl;
+
+    return 0;
+}
+
