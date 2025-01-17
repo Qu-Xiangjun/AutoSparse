@@ -102,16 +102,70 @@ loss值越趋近0越好
 | WACONet_128 | platinum8272cl_spmv | 0.272 | 0.290 | 0.256 | 0.872 | 75epoch | cost_model_train__1_1xeon_platinum8272cl_spmv_2025-01-05.log |
 | WACONet_128 | platinum8272cl_spmv_spmm_sddmm | 0.218 | 0.249 | 0.668 | 0.982 | 75epoch | cost_model_train__1_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-01-04.txt |
 
+##### 2025-01-11
+使用lanbdarankingloss来训练
 
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_1 | platinum8272cl_spmm | 0.841 | 0.993 | 0.808 | 0.993 | 75epoch lanbdarankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-11.log |
+| autosparse_1 | platinum8272cl_spmv | 3.260 | 4.676 | 0.704 | 0.922 | 75epoch lanbdarankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-11.log |
+| autosparse_1 | platinum8272cl_spmv_spmm_sddmm | 1.384 | 1.444 | 0.812 | 0.979 | 只跑到了31epoch lanbdarankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-01-11.log |
+| autosparse_2 | platinum8272cl_spmm | 0.930 | 1.301 | 0.809 | 0.991 | 75epoch lanbdarankingloss | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-11.log |
+| WACONet_128 | platinum8272cl_spmm | 0.691 | 1.389 | 0.826 | 0.992 | 75epoch lanbdarankingloss | cost_model_train__1_1xeon_platinum8272cl_spmm_2025-01-11.log |
+| WACONet_128 | platinum8272cl_spmv_spmm_sddmm | 0.860 | 1.224 | 0.829 | 0.978 | 75epoch lanbdarankingloss | cost_model_train__1_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-01-04.txt |
+
+##### 2025-01-13 / 14
+使用data_handle_max处理数据，用marginrankingloss来训练
+
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_1 | platinum8272cl_spmm | 0.178 | 0.221 | 0.822 | 0.990 | 75epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-13.log |
+| autosparse_1 | platinum8272cl_spmv | 0.256 | 0.286 | 0.675 | 0.928 | 75epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-13.log |
+| WACONet_128 | platinum8272cl_spmm | 0.132 | 0.198 | 0.857 | 0.996 | 75epoch marginrankingloss | cost_model_train__1_1xeon_platinum8272cl_spmm_2025-01-14.log |
+
+
+##### 2025-01-15
+更换网络结构CNN部门，空洞卷积和跨步卷积结合,先两层空段卷积block，再加6层跨步卷积
+结果： 对于 
+cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-15.log
+cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-15.log
+cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-15.log
+都跑了35 epoch，横向对比之前的网络结构，效果稍稍降低，尤其是对比不过WACONet_128，Top1Acc差距非常大
+
+
+##### 2025-01-16
+更换网络结构CNN部门，空洞卷积和跨步卷积结合，空段卷积和跨步卷积交叉用，第一次空洞卷积只用两层，后面的一个空洞卷积用三层的block
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_1 | platinum8272cl_spmm | 0.149 | 0.210 | 0.853 | 0.993 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-16.log |
+| autosparse_1 | platinum8272cl_spmm | 0.251 | 0.285 | 0.650 | 0.920 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-16.log |
+| autosparse_2 | platinum8272cl_spmm | 0.158 | 0.212 | 0.822 | 0.992 | 71epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-16.log |
+
+##### 2025-01-17
+更换网络结构CNN部门，空洞卷积和跨步卷积结合，空段卷积和跨步卷积交叉用，第一次空洞卷积只用两层，后面的一个空洞卷积用三层的block
+再将空洞卷积每一层引导出来做pooling合并
+
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_1 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-17.log |
+| autosparse_1 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-17.log |
+
+尝试将 sparse matrix也加上one-hot 编码
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_0 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-17.log |
+| WACONet_128 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__1_1xeon_platinum8272cl_spmm_2025-01-17.log |
 
 ### TODO
 - ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~ p0
-- ~~尝试TrainNaive 上使用 randomloss func~~，看看结果效果 p0
+- ~~尝试TrainNaive 上使用 randomloss func，看看结果效果~~ p0
 - 实现TrainMix版本，p0
     - 同时考虑如何增加并行性，比如分矩阵类型减少矩阵conv的批大小，然后合并所有的小批进行batch atention计算， 最后分矩阵的批次进行backward
 - ~~画出loss图~~，修改模型结构 p0
-- Autosparse 加算子的支持 p0 ![alt text](image-8.png)
-    - ，并采集数据集 p1
+    - ~~尝试marginrankingloss使用max数据处理方案的效果： 效果稍稍更好了~~
+    - ~~修改模型结构，空洞和跨步一起，forward1 forwad2一起~~
+- **Autosparse 加算子的支持** p0 ![alt text](image-8.png)
+    - ，并搞实验数据 p2
 
 - TrainNaive 中增加训练并行度，第一步解决跨算子级合并一次计算与backward，第二步解决跨矩阵合并 p2
     - 可以划分阶段：
@@ -119,14 +173,14 @@ loss值越趋近0越好
         - b.并行做不同稀疏特征向量和不同算子下调度数据的NLP推理, 但是结果要划分开，因为rank结果要在相同的矩阵和算子下比较
         - c.以稀疏张量数据为单位分别作backward （Note：为了解决不同稀疏张量数据的backward 梯度波动，可以处理数据集为相对的label）
 
-- WACONet的baseline训练 p1
+- **WACONet的baseline训练** p0  
     - 按照WACO的方案设计一个新的AutoSparse spmm 算子模版
     - 训练spmm单算子基于已有的AutoSparse数据
     - 按照WACO的方案设计一个新的AutoSparse spmv 算子模版
     - 训练spmv单算子基于已有的AutoSparse数据
     - 按照WACO的方案设计一个新的AutoSparse sddmm 算子模版
     - 训练sddmm单算子基于已有的AutoSparse数据 
-- 集成进入AutoSparse的搜索中 p1 
+- **集成进入AutoSparse的搜索中** p0 
 
-- 调整AutoSparse重新使用搜索的方法采集数据集 p1
+- **调整AutoSparse重新使用搜索的方法采集数据集** p1
 - 在ARM上采集数据集 p1
