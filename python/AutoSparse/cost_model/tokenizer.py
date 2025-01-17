@@ -22,6 +22,7 @@ class Tokenizer:
         "lvector",
         "openmp_parameter",
         "sparse_info",
+        "sparse_feature",
     ]
 
     def __init__(self, embedding_size: int = 128, tensor_name_set: List[str] = None):

@@ -10,9 +10,9 @@ class Config:
         # Train data config
         self.dataset_dirname_prefixs_lst = ["epyc_7543/spmm"]
         self.batch_size = 512
-        self.model_save_per_epoch = 15
+        self.model_save_per_epoch = 5
         self.leaning_rate = 0.02
-        self.epoch = 75
+        self.epoch = 100
         self.device = torch.device(
             "cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu"
         )
