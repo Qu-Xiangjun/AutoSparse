@@ -192,8 +192,8 @@ double GeSpMV_S(string filepath)
     int round = 100;
     // Warm
     for (int cnt = 0; cnt < warm; cnt++){
-        float *matrixC = (float*)mkl_malloc(m*n * sizeof(float), 64);
-        for (int i = 0; i < m*n; i++) matrixC[i] = (float)rand() / RAND_MAX;
+        float *matrixC = (float*)mkl_malloc(m * sizeof(float), 64);
+        for (int i = 0; i < m; i++) matrixC[i] = (float)rand() / RAND_MAX;
         status = mkl_sparse_s_mv(
             SPARSE_OPERATION_NON_TRANSPOSE,
             alpha,
@@ -208,8 +208,8 @@ double GeSpMV_S(string filepath)
 
     // Test
     for (int cnt = 0; cnt < round; cnt++){
-        float *matrixC = (float*)mkl_malloc(m*n * sizeof(float), 64);
-        for (int i = 0; i < m*n; i++) matrixC[i] = (float)rand() / RAND_MAX;
+        float *matrixC = (float*)mkl_malloc(m * sizeof(float), 64);
+        for (int i = 0; i < m; i++) matrixC[i] = (float)rand() / RAND_MAX;
 
         // auto t1 = Clock::now();
         gettimeofday(&starttime,NULL);
@@ -262,7 +262,7 @@ int main()
     resultFile << "---------GeSpMM---------" << endl;
     while(getline(inputFile, filename))
     {
-        filename.pop_back();
+        // filename.pop_back();
         cout << filename << endl;
         string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
         cout << filepath << endl;
@@ -281,7 +281,7 @@ int main()
     resultFile << "---------GeSpMV---------" << endl;
     while(getline(inputFile, filename))
     {
-        filename.pop_back();
+        // filename.pop_back();
         cout << filename << endl;
         string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
         cout << filepath << endl;

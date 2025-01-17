@@ -13,24 +13,24 @@ from AutoSparse import *
 def Evaluation(platform):
     mtx_names = [
         "bcsstk38",
-        "mhd4800a",
-        "conf5_0-4x4-18",
-        "cca",
-        "Trefethen_20000",
-        "pf2177",
-        "msc10848",
-        "cfd1",
-        "net100",
-        "vanbody",
-        "net150",
-        "Chevron3_4x16_1",
-        "vibrobox_1x1_0",
-        "NACA0015_16x8_9",
-        "nemspmm1_16x4_0",
-        "Trec6_16x16_9",
-        "crystk01_2x16_1",
-        "t2dal_a_8x4_3",
-        "EX1_8x8_4"
+        # "mhd4800a",
+        # "conf5_0-4x4-18",
+        # "cca",
+        # "Trefethen_20000",
+        # "pf2177",
+        # "msc10848",
+        # "cfd1",
+        # "net100",
+        # "vanbody",
+        # "net150",
+        # "Chevron3_4x16_1",
+        # "vibrobox_1x1_0",
+        # "NACA0015_16x8_9",
+        # "nemspmm1_16x4_0",
+        # "Trec6_16x16_9",
+        # "crystk01_2x16_1",
+        # "t2dal_a_8x4_3",
+        # "EX1_8x8_4"
     ]
     search_methods = ['q_sa_searching'] # "random_searching", "p_searching", "batch_p_searching", "sa_searching", "q_searching"
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")

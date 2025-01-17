@@ -421,8 +421,8 @@ public:
         format += ":" + format_order;
         kernel += "=";
 
-        vetcor<String> rhs_tensors_name_vec;
-        vetcor<Tensor *> rhs_tensors_vec;
+        vector<string> rhs_tensors_name_vec;
+        vector<Tensor *> rhs_tensors_vec;
         for (auto &it : rhs_tensor)
         {
             rhs_tensors_name_vec.push_back(it.first);
@@ -471,14 +471,14 @@ public:
 			kernel += "*"; // TODO: 这里计算负只能是乘法了？
             if (
                 rhs_tensors_name_vec.size() == 2 && 
-                rhs_tensor.first == rhs_tensors_name_vec[0] && 
+                it.first == rhs_tensors_name_vec[0] && 
                 rhs_tensors_vec[1]->format.size() == lh_tensor->format.size()
             ) 
             {
                 bool is_mmadd = true;
                 for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
                 {
-                    if (rhs_tensors_vec[1]->format[i].var != lh_tensor->format[i].var) 
+                    if (rhs_tensors_vec[1]->format[axi_idx].var != lh_tensor->format[axi_idx].var) 
                     {
                         is_mmadd = false;
                         break;
@@ -486,7 +486,7 @@ public:
                 }
                 if (is_mmadd)
                 {
-                    cout << "DDDDDDDDDDDDDDDDDDDD MMADD 1+" << endl;
+                    // cout << "DDDDDDDDDDDDDDDDDDDD MMADD 1+" << endl;
                     kernel.pop_back();
                     kernel += "+";
                 }
@@ -500,41 +500,47 @@ public:
             else if (rhs_tensors_name_vec.size() == 3 && lh_tensor->is_dense == true) 
             {
                 if (
-                    lh_tensor->format.size() == rhs_tensors_vec[0].size() && 
-                    lh_tensor->format.size() == rhs_tensors_vec[1].size() && 
-                    lh_tensor->format.size() == rhs_tensors_vec[2].size() 
+                    lh_tensor->format.size() == rhs_tensors_vec[0]->format.size() && 
+                    lh_tensor->format.size() == rhs_tensors_vec[1]->format.size() && 
+                    lh_tensor->format.size() == rhs_tensors_vec[2]->format.size() 
                 )
                 {
-                    bool is_plus3 = true;
+                    bool is_plus3_gespmm = true;
                     for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
                     {
-                        if (rhs_tensors_vec[1]->format[i].var != lh_tensor->format[i].var) 
+                        if (rhs_tensors_vec[1]->format[axi_idx].var != lh_tensor->format[axi_idx].var) 
                         {
-                            is_plus3 = false;
+                            is_plus3_gespmm = false;
                             break;
                         }
                     }
-                    if (is_plus3)
+                    if (is_plus3_gespmm)
                     {
-                        cout << "DDDDDDDDDDDDDDDDDDDD PLUS 1+" << endl;
+                        // cout << "DDDDDDDDDDDDDDDDDDDD PLUS 1+" << endl;
+                        kernel.pop_back();
+                        kernel += "+";
+                    }
+                    else if (it.first == rhs_tensors_name_vec[1])
+                    {
+                        // cout << "DDDDDDDDDDDDDDDDDDDD GeSpMM +1" << endl;
                         kernel.pop_back();
                         kernel += "+";
                     }
                     else
                     {
-                        cerr << "DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3" << endl;
-                        std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3");
+                        cerr << "DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3_gespmm" << it.first << endl;
+                        std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3_gespmm");
                     }
                 } 
                 else if (
-                    lh_tensor->format.size() == rhs_tensors_vec[1].size() && 
-                    lh_tensor->format.size() == rhs_tensors_vec[2].size()
+                    lh_tensor->format.size() == rhs_tensors_vec[1]->format.size() && 
+                    lh_tensor->format.size() == rhs_tensors_vec[2]->format.size()
                 )
                 {
                     bool is_ge = true;
                     for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
                     {
-                        if (rhs_tensors_vec[1]->format[i].var != lh_tensor->format[i].var) 
+                        if (rhs_tensors_vec[2]->format[axi_idx].var != lh_tensor->format[axi_idx].var) 
                         {
                             is_ge = false;
                             break;
@@ -542,9 +548,9 @@ public:
                     }
                     if (is_ge)
                     {   
-                        if (rhs_tensor.first == rhs_tensors_name_vec[1])
+                        if (it.first == rhs_tensors_name_vec[1])
                         {
-                            cout << "DDDDDDDDDDDDDDDDDDDD Ge 1+" << endl;
+                            // cout << "DDDDDDDDDDDDDDDDDDDD GeSpM* 1+" << endl;
                             kernel.pop_back();
                             kernel += "+";
                         }
@@ -558,7 +564,7 @@ public:
                 else
                 {
                     cerr << "DDDDDDDDDDDDDDDDD Don't konw what op" << endl;
-                    std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op");
+                    std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in 3 rhs");
                 }
             }
         }
@@ -752,6 +758,7 @@ public:
                         "#include <math.h>\\n"
                         "#include <complex.h>\\n"
                         "#include <string.h>\\n"
+                        "#define TACO_MIN(_a,_b) ((_a) < (_b) ? (_a) : (_b))\\n"
 						"typedef enum { taco_mode_dense, taco_mode_sparse } taco_mode_t;\\n"
 						"typedef struct {\\n"
 						"  int32_t      order;\\n"
