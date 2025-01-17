@@ -259,7 +259,7 @@ int main()
     resultFile << "---------SpMM---------" << endl;
     while(getline(inputFile, filename))
     {
-        filename.pop_back();
+        // filename.pop_back();
         cout << filename << endl;
         string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
         cout << filepath << endl;
@@ -278,7 +278,7 @@ int main()
     resultFile << "---------SpMV---------" << endl;
     while(getline(inputFile, filename))
     {
-        filename.pop_back();
+        // filename.pop_back();
         cout << filename << endl;
         string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
         cout << filepath << endl;

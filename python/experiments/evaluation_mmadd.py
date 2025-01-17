@@ -1,4 +1,3 @@
-
 import os, sys
 import csv
 import time
@@ -9,6 +8,7 @@ current = os.path.join(os.getcwd(), "python")
 sys.path.append(current)
 
 from AutoSparse import *
+
 
 def EvaluationMMADD(platform):
     mtx_names = [
@@ -30,60 +30,91 @@ def EvaluationMMADD(platform):
         "Trec6_16x16_9",
         "crystk01_2x16_1",
         "t2dal_a_8x4_3",
-        "EX1_8x8_4"
+        "EX1_8x8_4",
     ]
-    search_methods = ['q_sa_searching'] # "random_searching", "p_searching", "batch_p_searching", "sa_searching", "q_searching"
+    search_methods = [
+        "q_sa_searching"
+    ]  # "random_searching", "p_searching", "batch_p_searching", "sa_searching", "q_searching"
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
 
-    result_dir = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_mmadd")
+    result_dir = os.path.join(
+        autosparse_prefix, "python", "experiments", platform + "_evaluation_mmadd"
+    )
     result_filepath = os.path.join(result_dir, "result.csv")
-    
+
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     if not os.path.exists(result_filepath):
-        with open(result_filepath, 'w', newline='') as file:
+        with open(result_filepath, "w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["name", "method", "config command", "csr_time", "best_time"])
+            writer.writerow(
+                ["name", "method", "config command", "csr_time", "best_time"]
+            )
 
     for mtx in mtx_names:
         for method in search_methods:
             mtx_filepath = os.path.join(
-                autosparse_prefix, "dataset", "demo_dataset", mtx+'.csr'
+                autosparse_prefix, "dataset", "demo_dataset", mtx + ".csr"
             )
             num_row, num_col, num_nonezero = np.fromfile(
-                mtx_filepath, count=3, dtype = '<i4'
+                mtx_filepath, count=3, dtype="<i4"
             )
-            print(f"{mtx} {method} num_row={num_row}, num_col={num_col}, num_nonezero={num_nonezero}")
+            print(
+                f"{mtx} {method} num_row={num_row}, num_col={num_col}, num_nonezero={num_nonezero}"
+            )
             """Axis declarations"""
             i = Axis(int(num_row), ModeType.DENSE, "i")
             j = Axis(int(num_col), ModeType.COMPRESSED, "j")
             i_ = Axis(int(num_row), ModeType.DENSE, "i")
-            j_ = Axis(int(num_col), ModeType.DENSE, "j")
+            j_ = Axis(int(num_col), ModeType.COMPRESSED, "j")
+            i_2 = Axis(int(num_row), ModeType.DENSE, "i")
+            j_2 = Axis(int(num_col), ModeType.COMPRESSED, "j")
             """Tensor declaration"""
             A = Tensor((i, j), is_sparse=True)
-            B = Tensor((i_,j_), is_sparse=False)
+            B = Tensor((i_, j_), is_sparse=True)
             """Calculation declaration"""
-            C = Compute(A+B)
+            C = Compute(A + B, format = (i_2, j_2), is_sparse = True)
             """Auto-Tune and excute"""
             A.LoadData(mtx_filepath)
+            B.LoadData(mtx_filepath)
+            C.LoadData(mtx_filepath)
             print(CreateSchedule(C).GenConfigCommand()[0])
 
-            sch = AutoTune(C, method = method, population_size=100, trial = 100,
-                           early_stop=100, save_schedule_data=True, save_best_trace=True,
-                           save_dirpath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_mmadd"))
+            sch = AutoTune(
+                C,
+                method=method,
+                population_size=100,
+                trial=100,
+                early_stop=100,
+                save_schedule_data=True,
+                save_best_trace=True,
+                save_dirpath=os.path.join(
+                    autosparse_prefix,
+                    "python",
+                    "experiments",
+                    platform + "_evaluation_mmadd",
+                ),
+            )
             func = Build(sch)
             time_val = min([func.Run() for i in range(10)])
             print(time_val)
 
-            result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_mmadd", "result.csv")
-            with open(result_filepath, 'a', newline='') as file:
+            result_filepath = os.path.join(
+                autosparse_prefix,
+                "python",
+                "experiments",
+                platform + "_evaluation_mmadd",
+                "result.csv",
+            )
+            with open(result_filepath, "a", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
+                writer.writerow(
+                    [mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val]
+                )
+
 
 if __name__ == "__main__":
-    EvaluationMMADD(platform = "epyc")
+    EvaluationMMADD(platform="epyc")
 
 
-
-
-# nohup python evaluation_mmadd.py > ./log/epyc_evaluation_mmadd_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_mmadd.py > ./log/epyc_evaluation_mmadd_$(date +%Y%m%d%H%M).log 2>&1 &

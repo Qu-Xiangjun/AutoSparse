@@ -1,0 +1,6 @@
+name,method,config command,csr_time,best_time
+bcsstk38,q_sa_searching,2 j 2 j0 128 j1 32 i 2 i0 32 i1 128 1 A 4 i0 i1 j0 j1 A 4 i0 0 i1 2 j0 2 j1 3 0 4 i0 i1 j0 j1 i0 None None 0 128 4,27.13648223876953,21.605272139999997
+mhd4800a,q_sa_searching,2 j 2 j0 128 j1 32 i 2 i0 32 i1 128 1 A 4 i0 i1 j0 j1 A 4 i0 0 i1 0 j0 2 j1 3 0 4 i0 i1 j0 j1 i0 None i1 128 128 1,12.309588432312012,7.15235318
+conf5_0-4x4-18,q_sa_searching,2 j 2 j0 32 j1 64 i 2 i0 128 i1 16 1 A 4 i0 i1 j0 j1 A 4 i0 0 i1 1 j0 2 j1 1 0 4 i0 i1 j0 j1 i0 None None 0 128 8,4.278310775756836,1.43662902
+pf2177,q_sa_searching,2 i 2 i0 256 i1 32 j 2 j0 32 j1 256 1 A 4 i0 i1 j0 j1 A 4 i0 0 i1 2 j0 1 j1 1 0 4 i0 i1 j0 j1 i0 None None 0 128 8,27.594316482543945,29.633618240000004
+msc10848,q_sa_searching,2 i 2 i0 512 i1 16 j 2 j0 4096 j1 2 1 A 4 i0 j0 i1 j1 A 4 i0 0 i1 2 j0 2 j1 3 0 4 i0 j0 i1 j1 i0 None None 0 128 4,31.836641311645508,32.09861016

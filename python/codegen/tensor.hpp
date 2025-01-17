@@ -459,7 +459,7 @@ public:
                         if (pos_idx > limit)
                         {
                             throw std::invalid_argument( 
-                                "[ERROR][Tensor] Format storage size overleaf when pack." 
+                                "[ERROR][Tensor] Format storage size overleaf when pack1." 
                             );
                             exit(-1);
                         }
@@ -481,7 +481,7 @@ public:
                             if (pos_idx > limit)
                             {
                                 throw std::invalid_argument(
-                                    "[ERROR][Tensor] Format storage size overleaf when pack." 
+                                    "[ERROR][Tensor] Format storage size overleaf when pack2." 
                                 );
                                 exit(-1);
                             }
@@ -525,7 +525,7 @@ public:
                             if (pos_idx > limit)
                             {
                                 throw std::invalid_argument(
-                                    "[ERROR][Tensor] Format storage size overleaf when pack." 
+                                    "[ERROR][Tensor] Format storage size overleaf when pack3." 
                                 );
                                 exit(-1);
                             }
@@ -552,7 +552,7 @@ public:
                 if (pos_idx > limit)
                 {
                     throw std::invalid_argument( 
-                        "[ERROR][Tensor] Format storage size overleaf when pack."
+                        "[ERROR][Tensor] Format storage size overleaf when pack4."
                     );
                     exit(-1);
                 }
@@ -600,7 +600,7 @@ public:
                     if (pos_size > limit)
 					{
 						throw std::invalid_argument( 
-                        "[ERROR][Tensor] Format storage size overleaf when pack."
+                        "[ERROR][Tensor] Format storage size overleaf when pack5."
                         );
 					}
 					T_pos[rank].resize(pos_size + 1, 0);
@@ -629,7 +629,7 @@ public:
                     if (pos_size > limit)
 					{
 						throw std::invalid_argument( 
-                        "[ERROR][Tensor] Format storage size overleaf when pack."
+                        "[ERROR][Tensor] Format storage size overleaf when pack6."
                         );
 					}
 					T_un_pos[rank].resize(pos_size + 1, 0);
@@ -678,7 +678,7 @@ public:
 			if (pos_size > limit)
 			{
 				throw std::invalid_argument( 
-                    "[ERROR][Tensor] Format storage size overleaf when pack."
+                    "[ERROR][Tensor] Format storage size overleaf when pack7."
                 );
 			}
             // If last rank is dense, val vector size less than vsited index range.

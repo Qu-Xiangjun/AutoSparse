@@ -40,6 +40,7 @@ export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2024.1/lib:$LD_LIBRARY_PATH
 ```bash
 cd $AUTOSPARSE_HOME/baseline/MKL
 make
+export MKL_NUM_THREADS=$(nproc --all)
 ```
 2. run test file
 

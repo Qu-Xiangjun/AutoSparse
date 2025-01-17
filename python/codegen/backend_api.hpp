@@ -167,7 +167,7 @@ public:
             if (is_sparse)
             {
                 Compressed_Coo tmp_coo;
-                assert (sparse_count < filepaths.size());
+                assert (sparse_count <= filepaths.size());
                 ReadCSR2D(filepaths[sparse_count], tmp_coo, is_lhs);
                 M.add_tensor(tensor_name, tensor_format, tmp_coo, is_lhs);
                 sparse_count++;
@@ -176,7 +176,7 @@ public:
             {
                 long len = 1;
                 for (int j = 0; j < axes_count; ++j) len *= ceil_power_of_two(tensor_format[j].dimension);
-                // TODO: Note overleaf if matrix so big
+                // TODO: Note overflow if matrix so big
                 assert (len < 1000000010);
                 vector<float> tensor_data(len, is_lhs ? 0 : 1);
                 M.add_tensor(tensor_name, tensor_format, tensor_data, is_lhs);

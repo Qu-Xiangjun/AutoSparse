@@ -67,9 +67,9 @@ def EvaluationPlus3(platform):
             D = Compute(A@B+C)
             """Auto-Tune and excute"""
             A.LoadData(mtx_filepath)
-            print(CreateSchedule(C).GenConfigCommand()[0])
+            print(CreateSchedule(D).GenConfigCommand()[0])
 
-            sch = AutoTune(C, method = method, population_size=100, trial = 100,
+            sch = AutoTune(D, method = method, population_size=100, trial = 100,
                            early_stop=100, save_schedule_data=True, save_best_trace=True,
                            save_dirpath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_spmv"))
             func = Build(sch)
