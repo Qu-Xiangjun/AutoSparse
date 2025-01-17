@@ -568,8 +568,6 @@ public:
 
         global_kernel = kernel;
 
-        cout << kernel + format + pricision << endl;
-        
         return kernel + format + pricision;
     }
 
