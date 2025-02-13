@@ -472,13 +472,13 @@ public:
             if (
                 rhs_tensors_name_vec.size() == 2 && 
                 it.first == rhs_tensors_name_vec[0] && 
-                rhs_tensors_vec[1]->format.size() == lh_tensor->format.size()
+                rhs_tensors_vec[0]->format.size() == rhs_tensors_vec[1]->format.size()
             ) 
             {
                 bool is_mmadd = true;
-                for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
+                for (int axi_idx = 0; axi_idx < rhs_tensors_vec[1]->format.size(); ++axi_idx)
                 {
-                    if (rhs_tensors_vec[1]->format[axi_idx].var != lh_tensor->format[axi_idx].var) 
+                    if (rhs_tensors_vec[0]->format[axi_idx].var != rhs_tensors_vec[1]->format[axi_idx].var) 
                     {
                         is_mmadd = false;
                         break;
@@ -490,12 +490,6 @@ public:
                     kernel.pop_back();
                     kernel += "+";
                 }
-                else
-                {
-                    cerr << "DDDDDDDDDDDDDDDDD Don't konw what op in is_mmadd" << endl;
-                    std::runtime_error("[ERROR] DDDDDDDDDDDDDDDDD Don't konw what op in is_mmadd");
-                }
-
             } 
             else if (rhs_tensors_name_vec.size() == 3 && lh_tensor->is_dense == true) 
             {
@@ -508,7 +502,7 @@ public:
                     bool is_plus3_gespmm = true;
                     for (int axi_idx = 0; axi_idx < lh_tensor->format.size(); ++axi_idx)
                     {
-                        if (rhs_tensors_vec[1]->format[axi_idx].var != lh_tensor->format[axi_idx].var) 
+                        if (rhs_tensors_vec[0]->format[axi_idx].var != lh_tensor->format[axi_idx].var) 
                         {
                             is_plus3_gespmm = false;
                             break;
@@ -573,7 +567,7 @@ public:
         kernel += "\"";
 
         global_kernel = kernel;
-        
+
         return kernel + format + pricision;
     }
 
