@@ -45,8 +45,32 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
     torch.save(checkpoint, filepath)
 
 
+def PrintConfig(config):
+    msg = {
+        "dataset_dirname_prefixs_lst": config.dataset_dirname_prefixs_lst,
+        "batch_size": config.batch_size,
+        "model_save_per_epoch": config.model_save_per_epoch,
+        "leaning_rate": config.leaning_rate,
+        "epoch": config.epoch,
+        "is_save_loss_data": config.is_save_loss_data,
+        "tensor_name_set": config.batch_size,
+        "is_waco_net": config.is_waco_net,
+        "is_net_forward1": config.is_net_forward1,
+        "in_channels": config.in_channels,
+        "D": config.D,
+        "middle_channel_num": config.middle_channel_num,
+        "token_embedding_size": config.token_embedding_size,
+        "loss_fn": config.loss_fn,
+        "data_handle_method": config.data_handle_method,
+    }
+    for k, v in msg.items():
+        print(k, " : ", str(v))
+
+
 def TrainNaive(config: Config):
     """Using waco train method, which train a batch schedule data in same sparse matrix."""
+
+    PrintConfig(config)
 
     dataset_dirname_prefixs_lst = config.dataset_dirname_prefixs_lst
     data_flag = "_".join(("_".join(dataset_dirname_prefixs_lst)).split(os.sep))
@@ -287,7 +311,7 @@ if __name__ == "__main__":
         "--learning_rate", type=float, default=1e-4, help="Learning rate for optimizer"
     )
     parser.add_argument(
-        "--epoch", type=int, default=75, help="Number of epochs to train"
+        "--epoch", type=int, default=100, help="Number of epochs to train"
     )
     parser.add_argument(
         "--dataset_platform",
@@ -314,7 +338,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_save_epoch",
         type=int,
-        default=15,
+        default=5,
         help="Save model in every some epochs.",
     )
     parser.add_argument(
@@ -392,6 +416,8 @@ if __name__ == "__main__":
     config.is_net_forward1 = args.is_net_forward1
     config.middle_channel_num = args.middle_channel_num
     config.token_embedding_size = args.token_embedding_size
+    config.loss_fn = args.loss_fn
+    config.data_handle_method = args.data_handle_method
 
     config.LoggerInit()
 
@@ -401,20 +427,20 @@ if __name__ == "__main__":
 """
 
 export CUDA_VISIBLE_DEVICES=2
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv  --loss_fn LambdaRankingLoss --data_handle_method relative_max
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv  --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=3
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --loss_fn LambdaRankingLoss --data_handle_method relative_max
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=4
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm  --loss_fn LambdaRankingLoss --data_handle_method relative_max
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm  --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=5
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0 --loss_fn LambdaRankingLoss --data_handle_method relative_max
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=6
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss --data_handle_method relative_max
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=7
-python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1 --loss_fn LambdaRankingLoss --data_handle_method relative_max
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm --middle_channel_num 128 --is_waco_net 1 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 """

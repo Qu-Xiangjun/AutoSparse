@@ -6,9 +6,9 @@ from AutoSparse import *
 import requests
 
 autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
-platform = "xeon_platinum8272cl" # xeon_e52620v4 epyc_7543
+platform = "epyc_7543" # xeon_e52620v4 epyc_7543
 
-task_name = "spmm" # spmv sddmm
+task_name = "sddmm" # spmv sddmm
 
 # webhook
 robutl = "https://open.feishu.cn/open-apis/bot/v2/hook/8d1dc46d-b71a-4363-9d01-99a3e9ba9706"
@@ -24,7 +24,7 @@ def send_message(text):
 
 def make_dataset():
     total_filepath = os.path.join(autosparse_prefix, "dataset", "total.txt")
-    dataset_dirpath = os.path.join(autosparse_prefix, "cost_model", platform, task_name)
+    dataset_dirpath = os.path.join(autosparse_prefix, "cost_model_dataset_build", "search_base", platform, task_name)
     os.makedirs(dataset_dirpath, exist_ok=True)
 
     with open(total_filepath) as f :
@@ -96,9 +96,9 @@ def make_dataset():
             raise ValueError()
         
         AutoTune(
-            Res_Tensor, method = "random_searching", population_size=100, trial = 40,
+            Res_Tensor, method = "q_sa_searching", population_size=100, trial = 40,
             early_stop=100, save_schedule_data=True,
-            save_dirpath = os.path.join(autosparse_prefix, "cost_model", platform, task_name)
+            save_dirpath = os.path.join(autosparse_prefix, "cost_model_dataset_build", "search_base", platform, task_name)
         )
 
         send_message(f"[{platform}, {task_name}] {idx}/{len(mtx_names)} program sampling for {mtx} "
@@ -115,4 +115,4 @@ if __name__ == "__main__":
         error_message = f"Error Type: {type(e).__name__}, Message: {e}, Args: {e.args}"
         send_message("<at user_id=\"all\">Master</at> :" + error_message)
 
-# nohup python make_dataset.py > ./log/evaluation_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python make_dataset.py > ./log/evaluation_epyc_$(date +%Y%m%d%H%M).log 2>&1 & 
