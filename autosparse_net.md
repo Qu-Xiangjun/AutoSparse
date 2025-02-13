@@ -138,23 +138,35 @@ cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-15.log
 | 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | autosparse_1 | platinum8272cl_spmm | 0.149 | 0.210 | 0.853 | 0.993 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-16.log |
-| autosparse_1 | platinum8272cl_spmm | 0.251 | 0.285 | 0.650 | 0.920 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-16.log |
+| autosparse_1 | platinum8272cl_spmv | 0.251 | 0.285 | 0.650 | 0.920 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-16.log |
 | autosparse_2 | platinum8272cl_spmm | 0.158 | 0.212 | 0.822 | 0.992 | 71epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-16.log |
 
 ##### 2025-01-17
 更换网络结构CNN部门，空洞卷积和跨步卷积结合，空段卷积和跨步卷积交叉用，第一次空洞卷积只用两层，后面的一个空洞卷积用三层的block
 再将空洞卷积每一层引导出来做pooling合并
 
+
 | 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| autosparse_1 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-17.log |
-| autosparse_1 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-17.log |
+| autosparse_1 | platinum8272cl_spmm | 0.170 | 0.209 | 0.854 | 0.996 | 最大的62epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-17.log |
+| autosparse_1 | platinum8272cl_spmv | 0.277 | 0.283 | 0.700 | 0.916 | 48epoch收敛 marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-17.log |
+
 
 尝试将 sparse matrix也加上one-hot 编码
 | 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| autosparse_0 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-17.log |
-| WACONet_128 | platinum8272cl_spmm | 0 | 0 | 0 | 0 | 95epoch marginrankingloss | cost_model_train__1_1xeon_platinum8272cl_spmm_2025-01-17.log |
+| ~~autosparse_2~~ | ~~platinum8272cl_spmm~~ | ~~0.190~~ | ~~0.238~~ | ~~0.821~~ | ~~0.990~~ | 最大的71epoch marginrankingloss 注意这个网络结构有问题，错误的结果应该是 | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-17.log |
+| WACONet_128 | platinum8272cl_spmm | 0.133 | 0.196 | 0.862 | 0.993 | 最大的91epoch marginrankingloss | cost_model_train__1_1xeon_platinum8272cl_spmm_2025-01-17.log |
+
+##### 2025-01-22
+在原有基础上，可能是WACO——net是128的channel，而我们使用的是32的channel,现在更改为普通跨步卷积的使用128，dilation的32channel
+
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_1 | platinum8272cl_spmm | 0.127 | 0.207 | 0.863 | 0.992 | 128channel 最大的97epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmm_2025-01-22.log |
+| autosparse_1 | platinum8272cl_spmv | 0.259 | 0.283 | 0.674 | 0.923 | 128channel 最大的89epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-22.log |
+| autosparse_2 | platinum8272cl_spmm | 0.142 | 0.224 | 0.821 | 0.989 | 128channel 最大的95epoch marginrankingloss | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-22.log |
+
 
 ### TODO
 - ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~ p0

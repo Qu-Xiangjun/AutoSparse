@@ -427,16 +427,16 @@ if __name__ == "__main__":
 """
 
 export CUDA_VISIBLE_DEVICES=2
-nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv  --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv --middle_channel_num 128  --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=3
-nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=4
 nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmv_spmm_sddmm  --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=5
-nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --is_net_forward1 0 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
+nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_net_forward1 0 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &
 
 export CUDA_VISIBLE_DEVICES=6
 nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/train.py --dataset_op spmm --middle_channel_num 128 --is_waco_net 1 --loss_fn MarginRankingLoss --data_handle_method relative_max  >/dev/null 2>&1 &

@@ -262,7 +262,7 @@ class SparseMatrixEmbedNet(nn.Module):
         self.layer2 = nn.Sequential(
             ME.MinkowskiConvolution(
                 middle_channels,
-                middle_channels,
+                int(middle_channels/4),
                 kernel_size=3,
                 stride=1,
                 dilation=1,
@@ -272,8 +272,8 @@ class SparseMatrixEmbedNet(nn.Module):
         )
         self.layer3 = nn.Sequential(
             ME.MinkowskiConvolution(
-                middle_channels,
-                middle_channels,
+                int(middle_channels/4),
+                int(middle_channels/4),
                 kernel_size=3,
                 stride=1,
                 dilation=2,
@@ -283,8 +283,8 @@ class SparseMatrixEmbedNet(nn.Module):
         )
         self.layer4 = nn.Sequential(
             ME.MinkowskiConvolution(
-                middle_channels,
-                middle_channels,
+                int(middle_channels/4),
+                int(middle_channels/4),
                 kernel_size=3,
                 stride=1,
                 dilation=3,
@@ -294,7 +294,7 @@ class SparseMatrixEmbedNet(nn.Module):
         )
         self.layer5 = nn.Sequential(
             ME.MinkowskiConvolution(
-                middle_channels, middle_channels, kernel_size=3, stride=2, dimension=D
+                int(middle_channels/4), middle_channels, kernel_size=3, stride=2, dimension=D
             ),
             ME.MinkowskiReLU(inplace=True),
         )
@@ -313,7 +313,7 @@ class SparseMatrixEmbedNet(nn.Module):
         self.layer8 = nn.Sequential(
             ME.MinkowskiConvolution(
                 middle_channels,
-                middle_channels,
+                int(middle_channels/4),
                 kernel_size=3,
                 stride=1,
                 dilation=1,
@@ -323,8 +323,8 @@ class SparseMatrixEmbedNet(nn.Module):
         )
         self.layer9 = nn.Sequential(
             ME.MinkowskiConvolution(
-                middle_channels,
-                middle_channels,
+                int(middle_channels/4),
+                int(middle_channels/4),
                 kernel_size=3,
                 stride=1,
                 dilation=2,
@@ -334,8 +334,8 @@ class SparseMatrixEmbedNet(nn.Module):
         )
         self.layer10 = nn.Sequential(
             ME.MinkowskiConvolution(
-                middle_channels,
-                middle_channels,
+                int(middle_channels/4),
+                int(middle_channels/4),
                 kernel_size=3,
                 stride=1,
                 dilation=3,
@@ -345,7 +345,7 @@ class SparseMatrixEmbedNet(nn.Module):
         )
         self.layer11 = nn.Sequential(
             ME.MinkowskiConvolution(
-                middle_channels, middle_channels, kernel_size=3, stride=2, dimension=D
+                int(middle_channels/4), middle_channels, kernel_size=3, stride=2, dimension=D
             ),
             ME.MinkowskiReLU(inplace=True),
         )
@@ -367,7 +367,7 @@ class SparseMatrixEmbedNet(nn.Module):
 
         # 类似 WACO NET 合并多个中间卷积结果
         self.feature1 = nn.Sequential(
-            nn.Linear(middle_channels * 13, 512), nn.ReLU(), nn.Linear(512, out_feature)
+            nn.Linear(middle_channels * 7 + int(middle_channels/4)*6, 512), nn.ReLU(), nn.Linear(512, out_feature)
         )
 
         # 只使用简单的卷积结果，寄希望于充足的channel
@@ -429,10 +429,10 @@ class SparseMatrixEmbedNet(nn.Module):
         y7 = self.layer7(y6)
         y8 = self.layer8(y7)
         y9 = self.layer9(y8)
-        y10 = self.layer9(y9)
-        y11 = self.layer9(y10)
-        y12 = self.layer9(y11)
-        y13 = self.layer9(y12)
+        y10 = self.layer10(y9)
+        y11 = self.layer11(y10)
+        y12 = self.layer12(y11)
+        y13 = self.layer13(y12)
         y13 = self.glob_pool(y13)
         y = self.feature2(y13)
         return y
