@@ -313,7 +313,7 @@ class LoadHybridSparseMatrixScheduleDataSet(torch.utils.data.Dataset):
             nnz = (nnz - self.standardize["mean_nnzs"]) / self.standardize["std_nnzs"]
 
             # To ME Sparse Tensor
-            coordinates = torch.from_numpy(coo[:, 2]).to(torch.int32)
+            coordinates = torch.from_numpy(coo[:, :2]).to(torch.int32)
             features = torch.ones((len(coo), 1)).to(torch.float32)
             shape = torch.tensor([num_row, num_col, nnz]).to(torch.float32)
 

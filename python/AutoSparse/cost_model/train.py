@@ -53,7 +53,7 @@ def PrintConfig(config):
         "leaning_rate": config.leaning_rate,
         "epoch": config.epoch,
         "is_save_loss_data": config.is_save_loss_data,
-        "tensor_name_set": config.batch_size,
+        "tensor_name_set": config.tensor_name_set,
         "is_waco_net": config.is_waco_net,
         "is_net_forward1": config.is_net_forward1,
         "in_channels": config.in_channels,
@@ -264,34 +264,34 @@ def TrainNaive(config: Config):
             logging.info(f"Save model to {os.path.join(model_save_dir, model_name)}")
 
 
-def TrainMix(config: Config):
-    """
-    Mix all the schedule and schedule, and random select a batch data from them to train.
-    So a batch data contain different sparse matrix and differt schedule config, which are
-    mixed in same batch to train.
-    """
-    data_flag = "_".join(("_".join(dataset_dirname_prefixs_lst)).split(os.sep))
-    model_save_dir = os.path.join(
-        root, "python", "AutoSparse", "cost_model", "model_log"
-    )
-    if not os.path.exists(model_save_dir):
-        os.makedirs(model_save_dir)
+# def TrainMix(config: Config):
+#     """
+#     Mix all the schedule and schedule, and random select a batch data from them to train.
+#     So a batch data contain different sparse matrix and differt schedule config, which are
+#     mixed in same batch to train.
+#     """
+#     data_flag = "_".join(("_".join(dataset_dirname_prefixs_lst)).split(os.sep))
+#     model_save_dir = os.path.join(
+#         root, "python", "AutoSparse", "cost_model", "model_log"
+#     )
+#     if not os.path.exists(model_save_dir):
+#         os.makedirs(model_save_dir)
 
-    log_dir = os.path.join(root, "python", "AutoSparse", "cost_model", "log")
-    logger_init("cost_model_train_" + data_flag, log_dir=log_dir)
+#     log_dir = os.path.join(root, "python", "AutoSparse", "cost_model", "log")
+#     logger_init("cost_model_train_" + data_flag, log_dir=log_dir)
 
-    device = torch.device(
-        "cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu"
-    )
+#     device = torch.device(
+#         "cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu"
+#     )
 
-    net = AutoSparseNet(
-        in_channels=1,
-        middle_channels=64,
-        embedding_size=128,
-        D=2,
-        tensor_name_set=None,
-    )
-    net = net.to(device)
+#     net = AutoSparseNet(
+#         in_channels=1,
+#         middle_channels=64,
+#         embedding_size=128,
+#         D=2,
+#         tensor_name_set=None,
+#     )
+#     net = net.to(device)
 
 
 if __name__ == "__main__":

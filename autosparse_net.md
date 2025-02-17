@@ -167,6 +167,15 @@ cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-15.log
 | autosparse_1 | platinum8272cl_spmv | 0.259 | 0.283 | 0.674 | 0.923 | 128channel 最大的89epoch marginrankingloss | cost_model_train__0_1xeon_platinum8272cl_spmv_2025-01-22.log |
 | autosparse_2 | platinum8272cl_spmm | 0.142 | 0.224 | 0.821 | 0.989 | 128channel 最大的95epoch marginrankingloss | cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-22.log |
 
+##### 2025-02-16
+开始训练WACO_NET, 为了跨数据集的训练，改变其硬编码适合我们的数据集，还有适配三种算子
+
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| waco_net | platinum8272cl_spmm | 0.149 | 0.194 | 0.833 | 0.991 | 32channel 最大的97epoch marginrankingloss | cost_model_train__False_Truexeon_platinum8272cl_spmm_2025-02-16.log |
+| waco_net | platinum8272cl_spmv | 0.261 | 0.282 | 0.676 | 0.912 | 32channel 最大的89epoch marginrankingloss | cost_model_train__False_Truexeon_platinum8272cl_spmv_2025-02-16.log |
+| waco_net | platinum8272cl_spmv_spmm_sddmm | 0. | 0. | 0. | 0. | 32channel 最大的95epoch marginrankingloss | cost_model_train__False_Truexeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-02-17.log |
+
 
 ### TODO
 - ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~ p0

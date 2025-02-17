@@ -105,7 +105,7 @@ def EvaluateHelp(
                     mtx_name,
                     batch_size=batch_size * 2,
                     shuffle=True,
-                    handle_method="relative_max",
+                    handle_method=data_handle_method,
                 ).load_data()
                 for sche_batchidx, (schedules, relative_runtimes) in enumerate(
                     sche_val_data
