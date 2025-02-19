@@ -3,7 +3,7 @@ import torch
 import numpy as np
 from typing import *
 
-from AutoSparse.cost_model.plot import LossPlot
+from AutoSparse.cost_model.utils import LossPlot
 
 
 

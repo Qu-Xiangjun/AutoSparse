@@ -3,7 +3,7 @@ import torch
 from copy import deepcopy
 from AutoSparse.utils import logger_init
 from AutoSparse.model import cuda_device_id
-
+import logging
 
 class Config:
     def __init__(self):
@@ -22,6 +22,7 @@ class Config:
         self.is_save_loss_data = True
 
         # Model config
+        self.net_name_prefix = "AutoSparseNet"
         self.tensor_name_set = None
         self.is_waco_net = False
         self.is_net_forward1 = True
@@ -35,7 +36,8 @@ class Config:
         root = os.getenv("AUTOSPARSE_HOME")
         log_dir = os.path.join(root, "python", "AutoSparse", "cost_model", "log")
         logger_init(
-            "cost_model_train_"
+            self.net_name_prefix
+            + "_cost_model_train_" 
             + "_"
             + str(self.is_waco_net)
             + "_"
@@ -43,3 +45,25 @@ class Config:
             + data_flag,
             log_dir=log_dir,
         )
+
+
+def PrintConfig(config):
+    msg = {
+        "dataset_dirname_prefixs_lst": config.dataset_dirname_prefixs_lst,
+        "batch_size": config.batch_size,
+        "model_save_per_epoch": config.model_save_per_epoch,
+        "leaning_rate": config.leaning_rate,
+        "epoch": config.epoch,
+        "is_save_loss_data": config.is_save_loss_data,
+        "tensor_name_set": config.tensor_name_set,
+        "is_waco_net": config.is_waco_net,
+        "is_net_forward1": config.is_net_forward1,
+        "in_channels": config.in_channels,
+        "D": config.D,
+        "middle_channel_num": config.middle_channel_num,
+        "token_embedding_size": config.token_embedding_size,
+        "loss_fn": config.loss_fn,
+        "data_handle_method": config.data_handle_method,
+    }
+    for k, v in msg.items():
+        print(k, " : ", str(v))

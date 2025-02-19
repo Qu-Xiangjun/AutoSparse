@@ -10,61 +10,14 @@ from datetime import datetime
 from copy import deepcopy
 from AutoSparse.utils import logger_init
 from AutoSparse.model import cuda_device_id
-from AutoSparse.cost_model.config import Config
+from AutoSparse.cost_model.config import *
 from AutoSparse.cost_model.model import *
 from AutoSparse.cost_model.dataset_loader import *
 from AutoSparse.cost_model.evaluate import *
+from AutoSparse.cost_model.utils import SaveModelAndConfig
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 root = os.getenv("AUTOSPARSE_HOME")
-
-
-def SaveModelAndConfig(net, config: Config, losses, filepath: str):
-    state_dict = deepcopy(net.state_dict())
-    checkpoint = {
-        "model_state_dict": state_dict,
-        "config": {
-            "dataset_dirname_prefixs_lst": config.dataset_dirname_prefixs_lst,
-            "batch_size": config.batch_size,
-            "model_save_per_epoch": config.model_save_per_epoch,
-            "leaning_rate": config.leaning_rate,
-            "epoch": config.epoch,
-            "is_save_loss_data": config.is_save_loss_data,
-            "tensor_name_set": config.batch_size,
-            "is_waco_net": config.is_waco_net,
-            "is_net_forward1": config.is_net_forward1,
-            "in_channels": config.in_channels,
-            "D": config.D,
-            "middle_channel_num": config.middle_channel_num,
-            "token_embedding_size": config.token_embedding_size,
-            "loss_fn": config.loss_fn,
-            "data_handle_method": config.data_handle_method,
-        },
-        "losses": losses,
-    }
-    torch.save(checkpoint, filepath)
-
-
-def PrintConfig(config):
-    msg = {
-        "dataset_dirname_prefixs_lst": config.dataset_dirname_prefixs_lst,
-        "batch_size": config.batch_size,
-        "model_save_per_epoch": config.model_save_per_epoch,
-        "leaning_rate": config.leaning_rate,
-        "epoch": config.epoch,
-        "is_save_loss_data": config.is_save_loss_data,
-        "tensor_name_set": config.tensor_name_set,
-        "is_waco_net": config.is_waco_net,
-        "is_net_forward1": config.is_net_forward1,
-        "in_channels": config.in_channels,
-        "D": config.D,
-        "middle_channel_num": config.middle_channel_num,
-        "token_embedding_size": config.token_embedding_size,
-        "loss_fn": config.loss_fn,
-        "data_handle_method": config.data_handle_method,
-    }
-    for k, v in msg.items():
-        print(k, " : ", str(v))
 
 
 def TrainNaive(config: Config):

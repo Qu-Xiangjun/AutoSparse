@@ -10,8 +10,8 @@ from AutoSparse.utils import get_coo_from_csr_file
 from AutoSparse.cost_model.tokenizer import Tokenizer
 from torch.optim import SGD, Adam
 from AutoSparse.cost_model.config import Config, logger_init
+from AutoSparse.cost_model.utils import SaveModelAndConfig
 from AutoSparse.cost_model.evaluate import AccTopK
-from AutoSparse.cost_model.train import SaveModelAndConfig
 import logging
 import time
 from datetime import datetime
@@ -446,13 +446,8 @@ class WACONet(nn.Module):
         xy = self.final(xy)
         return xy.squeeze()
 
-    # def forward(self, x: ME.SparseTensor, x2, y):
-    #     # Concat - Final
-    #     x = self.embed_sparse_matrix(x1, x2)
-    #     y = self.embed_super_schedule(y)
-    #     xy = torch.cat((x, y), dim=1)
-    #     xy = self.final(xy)
-    #     return xy
+    def forward(self, x, y, op_type):
+        return self.forward_after_query(x, y, op_type)
 
 
 class ResNet14(WACONet):
@@ -524,7 +519,7 @@ def Train(config: Config):
 
     logging.info("##############Load Matrix Dataset##############")
     SparseMatrix_Dataset = SparseMatrixDataset(
-        os.path.join(root, "dataset", "train_demo.txt")
+        os.path.join(root, "dataset", "train.txt")
     )
     train_SparseMatrix = torch.utils.data.DataLoader(
         SparseMatrix_Dataset,
@@ -863,6 +858,7 @@ if __name__ == "__main__":
     # Parse args
     args = parser.parse_args()
     config = Config()
+    config.net_name_prefix = "WACONet"
     config.batch_size = args.batch_size
     ops = (args.dataset_op).split("_")
     if (
