@@ -1202,7 +1202,7 @@ def QSASearching(
     search_time1 = time.time()
 
     warm_trial = 3
-    warm_population_size = int(population_size/2)
+    warm_population_size = max(int(population_size/2), 35)
     print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
     global_best = float('inf')
     warm_try= 0

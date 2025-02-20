@@ -6,12 +6,14 @@ from AutoSparse import *
 import requests
 
 autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
-platform = "epyc_7543" # xeon_e52620v4 epyc_7543
+platform = "xeon_platinum8272cl" # xeon_e52620v4 epyc_7543
 
 task_name = "spmm" # spmv sddmm
 
 # webhook
 robutl = "https://open.feishu.cn/open-apis/bot/v2/hook/8d1dc46d-b71a-4363-9d01-99a3e9ba9706"
+
+run_time_limit = 10 * 60 * 60
 
 def send_message(text):
     url=robutl
@@ -23,7 +25,7 @@ def send_message(text):
 
 
 def make_dataset():
-    total_filepath = os.path.join(autosparse_prefix, "dataset", "total.txt")
+    total_filepath = os.path.join(autosparse_prefix, "dataset", "validation.txt")
     dataset_dirpath = os.path.join(autosparse_prefix, "cost_model_dataset_build", "search_base", platform, task_name)
     os.makedirs(dataset_dirpath, exist_ok=True)
 
@@ -33,6 +35,8 @@ def make_dataset():
     # Already collect the performace data
     have_collected_mtx = get_all_files_in_directory(dataset_dirpath)
     have_collected_mtx = set(have_collected_mtx)
+
+    start_time = time.time()
 
     for idx, mtx in enumerate(tqdm(mtx_names, total=len(mtx_names))):
         if (mtx+'.txt') in have_collected_mtx or (mtx+mtx+'.txt')in have_collected_mtx:
@@ -96,13 +100,19 @@ def make_dataset():
             raise ValueError()
         
         AutoTune(
-            Res_Tensor, method = "q_sa_searching", population_size=28, trial = 20,
+            Res_Tensor, method = "q_sa_searching", population_size=30, trial = 12,
             early_stop=100, save_schedule_data=True,
             save_dirpath = os.path.join(autosparse_prefix, "cost_model_dataset_build", "search_base", platform, task_name)
         )
 
         send_message(f"[{platform}, {task_name}] {idx}/{len(mtx_names)} program sampling for {mtx} "
                     "(num_row={num_row}, num_col={num_col}, nnz={nnz}) successed!")
+        
+        now_time = time.time() - start_time
+        if now_time >= run_time_limit:
+            print(f"[Time Controol] Already run time {now_time/60/60:.4f}h")
+            send_message(f"[Time Controol] Already run time {now_time/60/60:.4f}h")
+            exit(1)
 
 
 if __name__ == "__main__":
@@ -115,4 +125,4 @@ if __name__ == "__main__":
         error_message = f"Error Type: {type(e).__name__}, Message: {e}, Args: {e.args}"
         send_message("<at user_id=\"all\">Master</at> :" + error_message)
 
-# nohup python make_dataset.py > ./log/evaluation_epyc_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python make_dataset.py > ./log/evaluation_xeon_platinum8272cl_$(date +%Y%m%d%H%M).log 2>&1 & 
