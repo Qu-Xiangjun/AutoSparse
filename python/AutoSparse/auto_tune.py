@@ -3,7 +3,7 @@ import signal
 import time
 import torch
 import csv
-import datetime
+from datetime import datetime
 import random
 import threading
 from torch.utils.tensorboard import SummaryWriter
@@ -13,6 +13,11 @@ from .schedule import Schedule, CreateSchedule
 from .space import *
 from .model import *
 from .build import Build
+from .cost_model.model import *
+from .cost_model.config import *
+from .cost_model.utils import *
+
+root = os.getenv("AUTOSPARSE_HOME")
 
 def timeout_handler(signum, frame):
     raise TimeoutError("Function call timed out")
@@ -452,6 +457,13 @@ def Warm(
     GET_TIMES = [0., 0., 0., 0.]
     if kwargs.get('GET_TIMES', None) != None:
         GET_TIMES = kwargs.get('GET_TIMES')
+    
+    performence_model_net: AutoSparseNet = kwargs.get('performence_model_net')
+    performence_model_config: Config = kwargs.get('performence_model_config')
+    sparse_matrix_feature_info = kwargs.get('sparse_matrix_feature_info')
+
+    if use_performance_model:
+        population_size *= 30
 
     warm_ok = False
     best_value = float("inf")
@@ -467,22 +479,41 @@ def Warm(
                 for i in range(population_size):
                     configs_entries[i][subspace_name] = entries[i]
                     configs_indicse[i][subspace_name] = indices[i]
-            # Get config performance
-            configs_performances = []
+            # Get true schedule
+            schedules_ls = []
             for i in range(population_size):
                 try:
                     schedule = AddSimpleSchedule(schedule.compute_tensor, configs_entries[i])
                 except ValueError:
-                    configs_performances.append(float('inf'))
                     continue
-                test_time0 = time.time()
-                if use_performance_model:
-                    configs_performances.append(float('inf')) # Future todo.
-                else:
-                    configs_performances.append(
-                        Evaluate(schedule, func, eval_warm_times,
-                        eval_round, eval_timeout, eval_policy)
+                schedules_ls.append([i, schedule])
+            # Get config performance
+            if use_performance_model:
+                schedule_config_command_ls = [schedule.GenConfigCommand()[1] for i, schedule in schedules_ls]
+                performance_value_ls = []
+                print(f"[AutoTuing] Predict {len(schedule_config_command_ls)} programs performance")
+                for sch_cmd_batch_idx in range(0, len(schedule_config_command_ls), 1024):
+                    predict = performence_model_net.forward_in_query(
+                        schedule_config_command_ls[sch_cmd_batch_idx: min(sch_cmd_batch_idx+1024, len(schedule_config_command_ls))], 
+                        sparse_matrix_feature_info['shape'], 
+                        sparse_matrix_feature_info['sparse_matrix_freature_vec']
                     )
+                    performance_value_ls.append(predict)
+                performance_values = torch.cat(performance_value_ls)
+                topk_performance_values, topk_pv_indices = torch.topk(
+                    performance_values, 
+                    int(len(schedule_config_command_ls)/10),
+                )
+                new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
+                schedules_ls = new_schedules_ls
+
+            configs_performances = [float("inf")]
+            for i, schedule in schedules_ls:
+                test_time0 = time.time()
+                configs_performances.append(
+                    Evaluate(schedule, func, eval_warm_times,
+                    eval_round, eval_timeout, eval_policy)
+                )
                 test_time1 = time.time()
                 GET_TIMES[-1] += test_time1 - test_time0
                 if configs_performances[-1] < float("inf"):
@@ -566,7 +597,7 @@ def RandomSearching(
         best_trace.append([tri, time.time() - start_time, agent_group.Top1()[1]])
         # writer.add_scalar('Local Best Score', local_best, tri)
         # writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"Random Search: Current time: {current_time} in trial {tri}", flush=True)
 
     # Save best trace
@@ -575,7 +606,7 @@ def RandomSearching(
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         filepath = os.path.join(filepath, "random_searching_{}".format(
-            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+            datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -615,9 +646,19 @@ def PSearching(
     print(f"eval_timeout            ={eval_timeout}")
     print(f"eval_policy             ={eval_policy}")
     print()
+    
+    GET_TIMES = [0., 0., 0., 0.]
+    if kwargs.get('GET_TIMES', None) != None:
+        GET_TIMES = kwargs.get('GET_TIMES')
+    
+    performence_model_net: AutoSparseNet = kwargs.get('performence_model_net')
+    performence_model_config: Config = kwargs.get('performence_model_config')
+    sparse_matrix_feature_info = kwargs.get('sparse_matrix_feature_info')
+    
+    search_time1 = time.time()
 
     warm_trial = 5
-    warm_population_size = int(population_size / 4)
+    warm_population_size = max(int(population_size / 2), 30)
     print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
     global_best = float('inf')
     warm_try= 0
@@ -634,14 +675,21 @@ def PSearching(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
+            performence_model_net = performence_model_net,
+            performence_model_config = performence_model_config,
+            sparse_matrix_feature_info = sparse_matrix_feature_info,
+            GET_TIMES = GET_TIMES
         )
         warm_try += 1
 
-    real_populations = agent_group.action_num
-    print(f"[INFO] SAsearching get all {real_populations} directions in one trial.")
+    if use_performance_model:
+        population_size *= 10
+    else:
+        action_num = agent_group.action_num # 54
+        print(f"[INFO] SAsearching get all {action_num} directions in one trial.")
 
-    trial = math.ceil(trial * population_size / real_populations)
-    print(f"[INFO] Update to {trial} trial, and each run {real_populations} data.")
+        trial = math.ceil(trial * population_size / action_num)
+        print(f"[INFO] Update to {trial} trial, and each run {action_num} data.")
 
     early_stop_count = 0
     retired_indices = []
@@ -651,15 +699,20 @@ def PSearching(
     start_time = time.time()
 
     for tri in range(trial):
-        # Ramdom get a good point.
-        top_indices, top_value = agent_group.TopRandom(gamma=0.5)
-        # Get all direction population
-        next_data_lst = agent_group.SelectionFull(
-            top_indices, top_value, no_repeat=True
-        )
+        # Ramdom get a good point. And get all direction population
+        candidate_ls = []
+        next_data_lst = []
+        while (len(next_data_lst) < population_size):
+            top_indices, top_value = agent_group.TopRandom(gamma=0.5)
+            if (top_indices, top_value) in candidate_ls:
+                continue
+            candidate_ls.append((top_indices, top_value))
+            next_data_lst += agent_group.SelectionFull(
+                top_indices, top_value, no_repeat=True
+            )
         
         # Evaluation performance
-        configs_performances = [] 
+        schedules_ls = []
         for idx, data in enumerate(next_data_lst):
             indices, _, name, direction, next_indices = data
             sch = None
@@ -680,22 +733,46 @@ def PSearching(
                     else:
                         indices_saw_lst.append(str(next_indices))
                         continue
-            
-            # Evaluation
             if sch is not None:
-                if use_performance_model:
-                    configs_performances.append(float('inf')) # Future todo.
-                else:
-                    configs_performances.append(
-                        Evaluate(sch, func, eval_warm_times,
-                        eval_round, eval_timeout, eval_policy)
-                    )
-                if configs_performances[-1] < float("inf"):
-                    record_valid = agent_group.Record(next_indices, configs_performances[-1], 
-                                       use_sa=True, gamma=0.05)
-                    if record_valid:
-                        agent_group.AddSchedule(
-                            sch.GenConfigCommand()[1], configs_performances[-1])
+                schedules_ls.append([idx, sch])
+
+            # Performence model predict.
+        if use_performance_model:
+            schedule_config_command_ls = [schedule.GenConfigCommand()[1] for idx, schedule in schedules_ls]
+            performance_value_ls = []
+            print(f"[AutoTuing] Predict {len(schedule_config_command_ls)} programs performance")
+            for sch_cmd_batch_idx in range(0, len(schedule_config_command_ls), 1024):
+                predict = performence_model_net.forward_in_query(
+                    schedule_config_command_ls[sch_cmd_batch_idx: min(sch_cmd_batch_idx+1024, len(schedule_config_command_ls))], 
+                    sparse_matrix_feature_info['shape'], 
+                    sparse_matrix_feature_info['sparse_matrix_freature_vec']
+                )
+                performance_value_ls.append(predict)
+            performance_values = torch.cat(performance_value_ls)
+            topk_performance_values, topk_pv_indices = torch.topk(
+                performance_values, 
+                int(population_size/10),
+            )
+            new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
+            schedules_ls = new_schedules_ls
+
+            # Evaluation
+        configs_performances = [float("inf")]
+        for idx, sch in schedules_ls:
+            indices, value, name, direction, next_indices = next_data_lst[idx]
+            test_time0 = time.time()
+            configs_performances.append(
+                Evaluate(sch, func, eval_warm_times,
+                eval_round, eval_timeout, eval_policy)
+            )
+            test_time1 = time.time()
+            GET_TIMES[-1] += test_time1 - test_time0
+            if configs_performances[-1] < float("inf"):
+                record_valid = agent_group.Record(next_indices, configs_performances[-1], 
+                                    use_sa=True, gamma=0.05)
+                if record_valid:
+                    agent_group.AddSchedule(
+                        sch.GenConfigCommand()[1], configs_performances[-1])
         
         best_trace.append([tri, time.time() - start_time, global_best])
         
@@ -708,7 +785,7 @@ def PSearching(
         # writer.add_scalar('Local Best Score', best_per, tri)
         # writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
 
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print (f"[AutoTune] P searching Current time: {current_time} in {tri}"
                 f" trial best: {best_per:.8f}, "
                 f"history best: {global_best}",
@@ -733,13 +810,16 @@ def PSearching(
     for item in retired_indices:
         agent_group.Record(item[0], item[1], use_sa=False)
     
+    search_time2 = time.time()
+    GET_TIMES[1] = search_time2 - search_time1
+    
     # Save best trace
     if save_best_trace:
         filepath = os.path.join(save_dirpath, prefix)
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         filepath = os.path.join(filepath, "p_searching_{}".format(
-            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+            datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -872,7 +952,7 @@ def BatchPSearching(
         # writer.add_scalar('Local Best Score', best_per, tri)
         # writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
 
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print (f"[AutoTune] Batch P searching Current time: {current_time} in {tri}"
                 f" trial best: {best_per:.8f}, "
                 f"history best: {global_best}",
@@ -932,7 +1012,7 @@ def BatchPSearching(
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         filepath = os.path.join(filepath, "batch_p_searching_{}".format(
-            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+            datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -1067,7 +1147,7 @@ def SASearching(
         # writer.add_scalar('Local Best Score', best_per, tri)
         # writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
 
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print (f"[AutoTune] SA searching Current time: {current_time} in {tri}"
                 f" trial best: {best_per:.8f}, "
                 f"history best: {global_best}",
@@ -1108,7 +1188,7 @@ def SASearching(
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         filepath = os.path.join(filepath, "sa_searching_{}".format(
-            datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+            datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -1198,6 +1278,10 @@ def QSASearching(
     GET_TIMES = [0., 0., 0., 0.]
     if kwargs.get('GET_TIMES', None) != None:
         GET_TIMES = kwargs.get('GET_TIMES')
+    
+    performence_model_net: AutoSparseNet = kwargs.get('performence_model_net')
+    performence_model_config: Config = kwargs.get('performence_model_config')
+    sparse_matrix_feature_info = kwargs.get('sparse_matrix_feature_info')
 
     search_time1 = time.time()
 
@@ -1219,6 +1303,9 @@ def QSASearching(
             eval_round = eval_round,
             eval_timeout = eval_timeout,
             eval_policy = eval_policy,
+            performence_model_net = performence_model_net,
+            performence_model_config = performence_model_config,
+            sparse_matrix_feature_info = sparse_matrix_feature_info,
             GET_TIMES = GET_TIMES
         )
         warm_try += 1
@@ -1235,6 +1322,9 @@ def QSASearching(
     
     population_size = int(population_size / len(agent_group.agent_group.keys()) * 2)
 
+    if use_performance_model:
+        population_size *= 10
+
     best_trace = []
     start_time = time.time()
 
@@ -1248,7 +1338,7 @@ def QSASearching(
         )
         
         # Evaluation performance
-        configs_performances = [] 
+        schedules_ls = []
         for idx, data in enumerate(next_data_lst):
             indices, value, name, direction, next_indices = data
             sch = None
@@ -1269,29 +1359,50 @@ def QSASearching(
                     else:
                         indices_saw_lst.append(str(next_indices))
                         continue
-            
-            # Evaluation
             if sch is not None:
-                test_time0 = time.time()
-                if use_performance_model:
-                    configs_performances.append(float('inf')) # Future todo.
-                else:
-                    configs_performances.append(
-                        Evaluate(sch, func, eval_warm_times,
-                        eval_round, eval_timeout, eval_policy)
-                    )
-                test_time1 = time.time()
-                GET_TIMES[-1] += test_time1 - test_time0
-                if configs_performances[-1] < float("inf"):
-                    record_valid = agent_group.Record(next_indices, configs_performances[-1], 
-                                       use_sa=use_sa, gamma=sa_gamma)
-                    # Add agent train data
-                    reward = np.tanh(max(value - configs_performances[-1], 0.0))
-                    agent_group.AddData(
-                        indices, name, direction, next_indices, reward
-                    )
-                    if record_valid:
-                        agent_group.AddSchedule(sch.GenConfigCommand()[1], configs_performances[-1])
+                schedules_ls.append([idx, sch])
+        
+        # Performence model predict.
+        if use_performance_model:
+            schedule_config_command_ls = [schedule.GenConfigCommand()[1] for idx, schedule in schedules_ls]
+            performance_value_ls = []
+            print(f"[AutoTuing] Predict {len(schedule_config_command_ls)} programs performance")
+            for sch_cmd_batch_idx in range(0, len(schedule_config_command_ls), 1024):
+                predict = performence_model_net.forward_in_query(
+                    schedule_config_command_ls[sch_cmd_batch_idx: min(sch_cmd_batch_idx+1024, len(schedule_config_command_ls))], 
+                    sparse_matrix_feature_info['shape'], 
+                    sparse_matrix_feature_info['sparse_matrix_freature_vec']
+                )
+                performance_value_ls.append(predict)
+            performance_values = torch.cat(performance_value_ls)
+            topk_performance_values, topk_pv_indices = torch.topk(
+                performance_values, 
+                int(population_size/10),
+            )
+            new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
+            schedules_ls = new_schedules_ls
+
+        # Evaluation
+        configs_performances = [float("inf")]
+        for idx, sch in schedules_ls:
+            indices, value, name, direction, next_indices = next_data_lst[idx]
+            test_time0 = time.time()
+            configs_performances.append(
+                Evaluate(sch, func, eval_warm_times,
+                eval_round, eval_timeout, eval_policy)
+            )
+            test_time1 = time.time()
+            GET_TIMES[-1] += test_time1 - test_time0
+            if configs_performances[-1] < float("inf"):
+                record_valid = agent_group.Record(next_indices, configs_performances[-1], 
+                                    use_sa=use_sa, gamma=sa_gamma)
+                # Add agent train data
+                reward = np.tanh(max(value - configs_performances[-1], 0.0))
+                agent_group.AddData(
+                    indices, name, direction, next_indices, reward
+                )
+                if record_valid:
+                    agent_group.AddSchedule(sch.GenConfigCommand()[1], configs_performances[-1])
 
         best_trace.append([tri, time.time() - start_time, global_best])
 
@@ -1304,7 +1415,7 @@ def QSASearching(
         # writer.add_scalar('Local Best Score', best_per, tri)
         # writer.add_scalar('Global Best Score', agent_group.Top1()[1], tri)
 
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print (f"[AutoTune] Q searching Current time: {current_time} in {tri}"
                 f" trial best: {best_per:.8f}, "
                 f"history best: {global_best}",
@@ -1360,10 +1471,13 @@ def QSASearching(
                 eval_round = eval_round,
                 eval_timeout = eval_timeout,
                 eval_policy = eval_policy,
+                performence_model_net = performence_model_net,
+                performence_model_config = performence_model_config,
+                sparse_matrix_feature_info = sparse_matrix_feature_info,
                 GET_TIMES = GET_TIMES
             )
             global_best = min(local_best, global_best)
-            current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             print(f"Try Random Search: Current time: {current_time} in trial {tri}", flush=True)
 
             early_stop_count = 0
@@ -1390,11 +1504,11 @@ def QSASearching(
             os.makedirs(filepath)
         if use_sa:
             filepath = os.path.join(filepath, "q_sa_searching_{}".format(
-                datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+                datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
             ))
         else:
             filepath = os.path.join(filepath, "q_searching_{}".format(
-                datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
+                datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
             ))
         with open(filepath, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -1407,6 +1521,77 @@ def QSASearching(
     return agent_group.Top1()
 
 
+def LoadPerformenceModel(performance_model_path, sch: Schedule):
+    if not os.path.exists(performance_model_path):
+        ValueError(f"[ERROR][AutoTuning] Performence model path don't exist: {performance_model_path}.")
+
+    model_config = Config()
+    model_config.net_name_prefix = "Search_Inference_AutoSparseNet"
+    model_config.LoggerInit()
+    model_config.device = torch.device(
+        "cuda:" + str(cuda_device_id) if torch.cuda.is_available() else "cpu"
+    )
+    autosparse_net, _ = LoadModelAndConfig(AutoSparseNet, model_config, performance_model_path)
+    autosparse_net.to(model_config.device)
+    autosparse_net.eval()
+    
+    # inference sparse matrix embedding net
+    mtx_filepath = ""
+    for tensor in sch.all_tensors_bk:
+        if tensor.is_sparse:
+            mtx_filepath = tensor.data
+            break
+    if not os.path.exists(mtx_filepath):
+        ValueError(f"[ERROR][AutoTuning] Can't find sparse matrix file: {mtx_filepath}")
+
+    num_row, num_col, nnz, coo = get_coo_from_csr_file(mtx_filepath)
+    standardize = {
+        'mean_rows': 32755.32511068944, 
+        'mean_cols': 36559.53447185326, 
+        'mean_nnzs': 1838075.9253636939, 
+        'std_rows': 38916.46785877047, 
+        'std_cols': 67387.88817788305, 
+        'std_nnzs': 1395297.8909791298
+    }
+    sparsity = nnz / num_row / num_col
+    num_row = (num_row - standardize["mean_rows"]) / standardize[
+        "std_rows"
+    ]
+    num_col = (num_col - standardize["mean_cols"]) / standardize[
+        "std_cols"
+    ]
+    nnz = (nnz - standardize["mean_nnzs"]) / standardize["std_nnzs"]
+    shape = torch.tensor([[num_row, num_col, nnz, sparsity]]).to(torch.float32).to(model_config.device)
+
+    if torch.cuda.is_available():
+        coordinates = torch.from_numpy(coo[:, :2]).to(torch.int32)
+        features = torch.ones((len(coo), 1)).to(torch.float32)
+        label = torch.tensor([[0]]).to(torch.float32)
+        coords_batch, features_batch, labels_batch = ME.utils.sparse_collate(
+            [coordinates], [features], [label]
+        )
+        sparse_matrix = ME.SparseTensor(
+            coordinates=coords_batch, features=features_batch, device=model_config.device
+        )
+        sparse_matrix_freature_vec = autosparse_net.embed_sparse_matirx(sparse_matrix)
+    else:
+        sparse_matrix_freature_vec = torch.load(
+            os.join(
+                root, 
+                'dataset', 
+                'sparse_matrix_features', 
+                os.path.basename(performance_model_path).split('.')[0],
+                os.path.basename(mtx_filepath).split('.')[0]
+            )
+        )
+
+    sparse_matrix_feature_info = {
+        'sparse_matrix_freature_vec': sparse_matrix_freature_vec,
+        'shape': shape
+    }
+
+    return autosparse_net, model_config, sparse_matrix_feature_info
+
 def AutoTune(
     input: ComputeTensor,
     method: str = "random_searching",
@@ -1418,7 +1603,6 @@ def AutoTune(
     performance_model_path: str = None,
     save_agent_model: bool = False,
     save_agent_data: bool = False,
-    save_performance_model: bool = False,
     save_memory_data: bool = False,
     save_schedule_data: bool = False,
     save_best_trace: bool = False,
@@ -1568,9 +1752,16 @@ def AutoTune(
         lr = 0.02, epochs=5, train_batch_size=int(population_size/2)
     )
 
-    # Load performance model
-    # if use_performance_model:
-        # Load performance model
+    # Step3: Load model
+    if use_performance_model:
+        autosparse_net, model_config, sparse_matrix_feature_info = LoadPerformenceModel(
+            performance_model_path, sch
+        )
+    else:
+        model_config = None
+        autosparse_net = None
+        sparse_matrix_feature_info = None
+
     
     if (use_his_agent):
         # Load agent group performance data
@@ -1582,7 +1773,7 @@ def AutoTune(
         agent_group.LoadAgentData(os.path.join(save_dirpath, sparse_prefix))
         print("[AutoSparse][AutoTune] Load history agent model and data.")
     
-    # Step3: Tuning with searching
+    # Step4: Tuning with searching
     func = Build(sch)
     print(f"[AutoTuing] Origin format run time = {func.origin_time:.8f}", flush = True)
     if eval_timeout == None:
@@ -1595,7 +1786,7 @@ def AutoTune(
             func=func,
             agent_group=agent_group,
             population_size=population_size,
-            use_performance_model = use_performance_model,
+            use_performance_model = False,
             trial = trial,
             eval_warm_times = eval_warm_times,
             eval_round = eval_round,
@@ -1620,7 +1811,10 @@ def AutoTune(
             eval_policy = eval_policy,
             prefix=sparse_prefix,
             save_best_trace=save_best_trace,
-            save_dirpath=save_dirpath
+            save_dirpath=save_dirpath,
+            performence_model_net = autosparse_net,
+            performence_model_config = model_config,
+            sparse_matrix_feature_info = sparse_matrix_feature_info
         )
     elif method == "batch_p_searching":
         indices, value = BatchPSearching(
@@ -1628,7 +1822,7 @@ def AutoTune(
             func=func,
             agent_group=agent_group,
             population_size=population_size,
-            use_performance_model = use_performance_model,
+            use_performance_model = False,
             trial = trial,
             early_stop = early_stop,
             eval_warm_times = eval_warm_times,
@@ -1645,7 +1839,7 @@ def AutoTune(
             func=func,
             agent_group=agent_group,
             population_size=population_size,
-            use_performance_model = use_performance_model,
+            use_performance_model = False,
             trial = trial,
             early_stop = early_stop,
             eval_warm_times = eval_warm_times,
@@ -1662,7 +1856,7 @@ def AutoTune(
             func=func,
             agent_group=agent_group,
             population_size=population_size,
-            use_performance_model = use_performance_model,
+            use_performance_model = False,
             trial = trial,
             update_target_gap= math.ceil(trial * 0.08),
             early_stop = early_stop,
@@ -1693,6 +1887,9 @@ def AutoTune(
             prefix=sparse_prefix,
             save_best_trace=save_best_trace,
             save_dirpath=save_dirpath,
+            performence_model_net = autosparse_net,
+            performence_model_config = model_config,
+            sparse_matrix_feature_info = sparse_matrix_feature_info,
             GET_TIMES = GET_TIMES
         )
     else:

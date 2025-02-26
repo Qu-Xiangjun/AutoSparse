@@ -142,6 +142,19 @@ def LoadModelAndConfig(Net, config, filepath: str):
     return net, losses
 
 
+def SaveSparseMatrixFeatureVec(feature_tensor, mtx_name, dir_path):
+    filepath = os.path.join(dir_path, mtx_name+'.pth')
+    torch.save(feature_tensor, filepath)
+    print(f"Fearture tensor has been saved to {filepath}")
+
+
+def LoadSparseMatrixFeatureVec(mtx_name, dir_path):
+    filepath = os.path.join(dir_path, mtx_name+'.pth')
+    feature_tensor = torch.load(filepath)
+    print(f"Fearture tensor has been loaded from {filepath}")
+    return feature_tensor
+
+
 if __name__ == "__main__":
     # 示例数据
     train_losses = [[0.35, 0.25, 0.2, 0.18, 0.16], [0.3, 0.22, 0.18, 0.16, 0.14]]

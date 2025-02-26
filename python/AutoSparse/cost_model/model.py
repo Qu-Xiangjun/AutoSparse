@@ -2,7 +2,11 @@ import torch
 import torch.nn as nn
 from torch.nn.init import normal_
 import torch.nn.functional as F
-import MinkowskiEngine as ME
+import logging
+try:
+    import MinkowskiEngine as ME
+except ImportError:
+    logging.warning("MinkowskiEngine is not installed.")
 from typing import *
 from AutoSparse.model import cuda_device_id
 from AutoSparse.cost_model.tokenizer import Tokenizer
@@ -567,12 +571,20 @@ class AutoSparseNet(nn.Module):
     def forward_in_query(
         self,
         schedules: Union[str, List[str]],
-        sparse_tensor_info: Tuple[float],
+        sparse_tensor_info: torch.Tensor,
         sparse_matrix_embeded_feature: torch.Tensor,
-    ):
+    ) -> torch.Tensor:
         input_seq = self.tokenizer(schedules, sparse_tensor_info).to(self.device)
+        one_hot_vec = (
+            torch.Tensor(self.tokenizer.primitives_one_hot["sparse_feature"].copy())
+            .reshape(1, 1, -1)
+            .to(self.device)
+        )
         embeded_sparse_feature = sparse_matrix_embeded_feature.reshape(
-            1, 1, self.embedding_size
+            1, 1, -1
+        )
+        embeded_sparse_feature = torch.cat(
+            (one_hot_vec, embeded_sparse_feature), dim=-1
         )
         embeded_sparse_feature = embeded_sparse_feature.expand(
             input_seq.size(0), -1, -1

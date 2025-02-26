@@ -2,12 +2,15 @@ import os, sys
 import torch
 import numpy as np
 import pandas
-import MinkowskiEngine as ME
+import logging
+try:
+    import MinkowskiEngine as ME
+except ImportError:
+    logging.warning("MinkowskiEngine is not installed.")
 from typing import *
 from torch.utils.data import DataLoader, Dataset
-import logging
 from tqdm import tqdm
-from data_helper import process_cache
+from AutoSparse.cost_model.data_helper import process_cache
 from AutoSparse.utils import get_coo_from_csr_file
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +18,7 @@ root = os.getenv("AUTOSPARSE_HOME")
 
 
 class SparseMatrixDataset(Dataset):
-    def __init__(self, filepath: str, standardize: Dict, normalize: Dict):
+    def __init__(self, filepath: str, standardize: Dict):
         """_summary_
 
         Parameters
@@ -30,7 +33,6 @@ class SparseMatrixDataset(Dataset):
         with open(filepath) as f:
             self.names = f.read().splitlines()
         self.standardize = standardize
-        self.normalize = normalize
 
     def __len__(self):
         return len(self.names)
@@ -100,7 +102,6 @@ class LoadSparseMatrixDataset:
             train_file_path = os.path.join(root, "dataset", "total.txt")
         # Make statistics of shape info for all train dataset matrix.
         self.standardize = {}
-        self.normalize = {}
         logging.info(f"### Make statistics of shape info for sparse matrix dataset.")
         with open(train_file_path) as f:
             total_rows, total_cols, total_nnzs = [], [], []
@@ -136,9 +137,9 @@ class LoadSparseMatrixDataset:
         if val_file_path == None:
             val_file_path = os.path.join(root, "dataset", "validation.txt")
         train_data = SparseMatrixDataset(
-            train_file_path, self.standardize, self.normalize
+            train_file_path, self.standardize
         )
-        val_data = SparseMatrixDataset(val_file_path, self.standardize, self.normalize)
+        val_data = SparseMatrixDataset(val_file_path, self.standardize)
         train_iter = DataLoader(
             train_data,
             batch_size=self.batch_size,
@@ -157,7 +158,7 @@ class LoadSparseMatrixDataset:
         if test_file_path == None:
             test_file_path = os.path.join(root, "dataset", "test.txt")
         test_data = SparseMatrixDataset(
-            test_file_path, self.standardize, self.normalize
+            test_file_path, self.standardize
         )
         test_iter = DataLoader(
             test_data,
@@ -207,7 +208,7 @@ class LoadScheduleDataset(torch.utils.data.Dataset):
             root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
         )
         if not os.path.isfile(file_path):
-            logging.INFO(f"Find file don't exist {file_path}")
+            logging.error("Find file don't exist for {}".format(file_path))
             return
         with open(file_path) as f:
             lines = f.read().splitlines()
@@ -261,7 +262,6 @@ class LoadHybridSparseMatrixScheduleDataSet(torch.utils.data.Dataset):
             train_file_path = os.path.join(root, "dataset", "total.txt")
         # Make statistics of shape info for all train dataset matrix.
         self.standardize = {}
-        self.normalize = {}
         logging.info(f"### Make statistics of shape info for sparse matrix dataset.")
         with open(train_file_path) as f:
             total_rows, total_cols, total_nnzs = [], [], []

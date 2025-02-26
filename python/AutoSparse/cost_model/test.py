@@ -15,7 +15,14 @@ root = os.getenv("AUTOSPARSE_HOME")
 
 
 def test_autosparse_net(net, config: Config):
-    dataset_dirname_prefixs_lst = ['xeon_platinum8272cl/spmv', 'xeon_platinum8272cl/spmm', 'xeon_platinum8272cl/sddmm']
+    dataset_dirname_prefixs_lst = [
+        # 'search_base/xeon_platinum8272cl/spmv', 
+        'search_base/xeon_platinum8272cl/spmm',
+        # 'search_base/xeon_platinum8272cl/sddmm',
+        # 'search_base/epyc_7543/spmv',
+        # 'search_base/epyc_7543/spmm',
+        # 'search_base/epyc_7543/sddmm',
+    ]
 
     if config.loss_fn == "MarginRankingLoss":
         loss_func = nn.MarginRankingLoss(margin=1)
@@ -28,7 +35,7 @@ def test_autosparse_net(net, config: Config):
     # Get dataset
     logging.info("##############Load Dataset##############")
     spmtx_dataset = LoadSparseMatrixDataset(
-        os.path.join(root, "dataset", "train.txt"), batch_size=1, shuffle=True
+        os.path.join(root, "dataset", "train.txt"), batch_size=1, shuffle=False
     )
     spmtx_train_data, spmtx_val_data = spmtx_dataset.load_train_val_data(
         os.path.join(root, "dataset", "train_demo.txt"),
@@ -150,8 +157,14 @@ def test_autosparse_net(net, config: Config):
 
 
 def test_waco_net(net, config):
-    dataset_dirname_prefixs_lst = ['xeon_platinum8272cl/spmv', 'xeon_platinum8272cl/spmm', 'xeon_platinum8272cl/sddmm']
-
+    dataset_dirname_prefixs_lst = [
+        # 'search_base/xeon_platinum8272cl/spmv', 
+        'search_base/xeon_platinum8272cl/spmm',
+        # 'search_base/xeon_platinum8272cl/sddmm',
+        # 'search_base/epyc_7543/spmv',
+        # 'search_base/epyc_7543/spmm',
+        # 'search_base/epyc_7543/sddmm',
+    ]
     loss_func = nn.MarginRankingLoss(margin=1)
 
     device = config.device

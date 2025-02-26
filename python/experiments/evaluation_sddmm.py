@@ -35,6 +35,16 @@ def EvaluationSpMM(platform):
     search_methods = ['q_sa_searching'] # "random_searching", "p_searching", "batch_p_searching", "sa_searching", "q_searching"
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
 
+    use_performance_model = True
+    performance_model_path=os.path.join(
+        autosparse_prefix, 'python', 'AutoSparse', 'cost_model', 'model_file',
+        "autosparse_net_0_1_xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_epoch_89_20250226_124838.pth"
+    )
+    if use_performance_model:
+        population_size = 35
+    else:
+        population_size = 100
+
     result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_sddmm", "result.csv")
     with open(result_filepath, 'a', newline='') as file:
         writer = csv.writer(file)
@@ -69,8 +79,10 @@ def EvaluationSpMM(platform):
             D.LoadData(mtx_filepath)
             print(CreateSchedule(D).GenConfigCommand())
 
-            sch = AutoTune(D, method = method, population_size=100, trial = 100,
-                           early_stop=100, save_schedule_data=True, save_best_trace=True,
+            sch = AutoTune(C, method = method, population_size=population_size, trial = 100,
+                            early_stop=100, save_schedule_data=True, save_best_trace=True,
+                            use_performance_model=use_performance_model, 
+                            performance_model_path=performance_model_path,
                            save_dirpath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_sddmm"))
             func = Build(sch)
             time_val = min([func.Run() for i in range(10)])

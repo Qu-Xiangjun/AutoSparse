@@ -580,7 +580,7 @@ def Train(config: Config):
                         root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
                     )
                 if not os.path.isfile(mtx_filepath):
-                    logging.WARNING("Mtx file don't exist: " + mtx_filepath)
+                    logging.warning("Mtx file don't exist: " + mtx_filepath)
                     continue
 
                 if 'spmm' in dataset_dirname_prefix:
@@ -882,16 +882,16 @@ if __name__ == "__main__":
 
 """
 
-export CUDA_VISIBLE_DEVICES=2
+export CUDA_VISIBLE_DEVICES=1
 nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/waco_net.py --dataset_op spmv >/dev/null 2>&1 &
 
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=2
 nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/waco_net.py --dataset_op spmm >/dev/null 2>&1 &
 
-export CUDA_VISIBLE_DEVICES=4
+export CUDA_VISIBLE_DEVICES=3
 nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/waco_net.py --dataset_op spmv_spmm_sddmm >/dev/null 2>&1 &
 
-export CUDA_VISIBLE_DEVICES=5
+export CUDA_VISIBLE_DEVICES=4
 nohup python $AUTOSPARSE_HOME/python/AutoSparse/cost_model/waco_net.py --dataset_op sddmm  >/dev/null 2>&1 &
 
 """

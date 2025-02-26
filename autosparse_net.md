@@ -176,6 +176,32 @@ cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-15.log
 | waco_net | platinum8272cl_spmv | 0.261 | 0.282 | 0.676 | 0.912 | 32channel 最大的89epoch marginrankingloss | cost_model_train__False_Truexeon_platinum8272cl_spmv_2025-02-16.log |
 | waco_net | platinum8272cl_spmv_spmm_sddmm | 0. | 0. | 0. | 0. | 32channel 最大的95epoch marginrankingloss | cost_model_train__False_Truexeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-02-17.log |
 
+将AutoSparseNet 和 WacoNet训练的模型尝试在 search——based数据集，查看结果
+```
+autosparse:
+xeon_platinum8272cl/spmm, Matrix: nemeth07_8x2_7, Matrix Batch[0/1], AccTop1: 0.864, AccTop5: 0.873, Valid loss: 15.061
+
+waco:
+xeon_platinum8272cl/spmm, Matrix: nemeth07_8x2_7, Matrix Batch[0/1], AccTop1: 0.668, AccTop5: 0.668, Valid loss: 0.636
+```
+可以看到autosparseNet的泛化性更好
+
+##### 2025-02-23
+训练 spmv_spmm_sddmm 的混合模型
+
+| 模型结构 | 数据集选择 | TrainLoss | ValLoss | Top1Acc | Top5Acc | 备注 | 模型日志 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| autosparse_1 | platinum8272cl_spmv_spmm | 0. | 0. | 0. | 0. | 128channel 最大的97epoch marginrankingloss | AutoSparseNet_cost_model_train__0_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_2025-02-23.log |
+| autosparse_1 | platinum8272cl_spmv_spmm_sddmm | 0. | 0. | 0. | 0. | 128channel 最大的97epoch marginrankingloss | AutoSparseNet_cost_model_train__0_1xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_2025-02-23.log |
+
+##### 2025-02-26
+开始准备实验数据，需要训练的模型列表有
+autosparsenet:
+    - xeon_pl: ~~spmm~~、~~spmv~~、sddmm、~~spmv_spmm_sddmm~~
+    - epyc: spmm、spmv、spmv_spmm
+waco_net:
+    - xeon_pl: ~~spmm~~、~~spmv~~、sddmm、spmv_spmm_sddmm
+    - epyc: spmm、spmv、spmv_spmm
 
 ### TODO
 - ~~配置AutoSparse 测试各个部分的时间在 EPYC_7543 服务器~~ p0
@@ -194,13 +220,13 @@ cost_model_train__0_0xeon_platinum8272cl_spmm_2025-01-15.log
         - b.并行做不同稀疏特征向量和不同算子下调度数据的NLP推理, 但是结果要划分开，因为rank结果要在相同的矩阵和算子下比较
         - c.以稀疏张量数据为单位分别作backward （Note：为了解决不同稀疏张量数据的backward 梯度波动，可以处理数据集为相对的label）
 
-- **WACONet的baseline训练** p0  
-    - 按照WACO的方案设计一个新的AutoSparse spmm 算子模版
-    - 训练spmm单算子基于已有的AutoSparse数据
-    - 按照WACO的方案设计一个新的AutoSparse spmv 算子模版
-    - 训练spmv单算子基于已有的AutoSparse数据
-    - 按照WACO的方案设计一个新的AutoSparse sddmm 算子模版
-    - 训练sddmm单算子基于已有的AutoSparse数据 
+- ~~WACONet的baseline训练~~ p0  
+    - ~~按照WACO的方案设计一个新的AutoSparse spmm 算子模版~~
+    - ~~训练spmm单算子基于已有的AutoSparse数据~~
+    - ~~按照WACO的方案设计一个新的AutoSparse spmv 算子模版~~
+    - ~~训练spmv单算子基于已有的AutoSparse数据~~
+    - ~~按照WACO的方案设计一个新的AutoSparse sddmm 算子模版~~
+    - ~~训练sddmm单算子基于已有的AutoSparse数据 ~~
 - **集成进入AutoSparse的搜索中** p0 
 
 - **调整AutoSparse重新使用搜索的方法采集数据集** p1
