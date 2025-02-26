@@ -112,7 +112,11 @@ class SuperScheduleDataset(torch.utils.data.Dataset):
             return
         with open(file_path) as f:
             lines = f.read().splitlines()
-
+        if len(lines) == 0:
+            self.schedules = []
+            self.runtimes = []
+            return
+        
         split_ = [0] + [1 << p for p in range(17)]
         index_ = ["i1", "i0", "k1", "k0", "j1", "j0", "None"]
         format_ = [0, 1, 2, 3, 4]  # (C,U)
@@ -182,7 +186,7 @@ class SuperScheduleDataset(torch.utils.data.Dataset):
                 assert False
             schedules.append(concat)
             runtimes.append(runtime)
-
+            
         schedules = np.stack(schedules, axis=0)
         runtimes = np.stack(runtimes, axis=0)
         self.schedules = schedules.astype(np.float32)
@@ -597,6 +601,9 @@ def Train(config: Config):
                     mtx_name,
                     handle_method=config.data_handle_method,
                 )
+                if len(SuperSchedule_Dataset) == 0:
+                    logging.warning("Mtx file is empty: " + mtx_filepath)
+                    continue
                 train_SuperSchedule = torch.utils.data.DataLoader(
                     SuperSchedule_Dataset,
                     batch_size=config.batch_size,
@@ -670,11 +677,11 @@ def Train(config: Config):
                         mtx_name = mtx_names[0] * 2
                     else:
                         mtx_name = mtx_names[0]
-                    if not os.path.isfile(
-                        os.path.join(
-                            root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
-                        )
-                    ):
+                    mtx_filepath = os.path.join(
+                        root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
+                    )
+                    if not os.path.isfile(mtx_filepath):
+                        logging.warning("Mtx file don't exist: " + mtx_filepath)
                         continue
 
                     
@@ -692,6 +699,9 @@ def Train(config: Config):
                         mtx_name,
                         handle_method=config.data_handle_method,
                     )
+                    if len(SuperSchedule_Dataset) == 0:
+                        logging.warning("Mtx file don't exist: " + mtx_filepath)
+                        continue
                     train_SuperSchedule = torch.utils.data.DataLoader(
                         SuperSchedule_Dataset,
                         batch_size=config.batch_size,

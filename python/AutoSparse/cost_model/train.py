@@ -93,11 +93,11 @@ def TrainNaive(config: Config):
                     mtx_name = mtx_names[0] * 2
                 else:
                     mtx_name = mtx_names[0]
-                if not os.path.isfile(
-                    os.path.join(
-                        root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
-                    )
-                ):
+                mtx_filepath = os.path.join(
+                    root, "dataset", dataset_dirname_prefix, mtx_name + ".txt"
+                )
+                if not os.path.isfile(mtx_filepath):
+                    logging.warning("Mtx file don't exist: " + mtx_filepath)
                     continue
                 sche_train_data = LoadScheduleDataset(
                     dataset_dirname_prefix,
