@@ -658,6 +658,9 @@ def PSearching(
     
     search_time1 = time.time()
 
+    best_trace = []
+    start_time = time.time()
+
     warm_trial = 5
     warm_population_size = max(int(population_size / 2), 30)
     print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
@@ -682,6 +685,7 @@ def PSearching(
             GET_TIMES = GET_TIMES
         )
         warm_try += 1
+        best_trace.append([warm_try-5, time.time() - start_time, global_best])
 
     if use_performance_model:
         population_size *= 10
@@ -696,8 +700,6 @@ def PSearching(
     retired_indices = []
 
     # writer = SummaryWriter('runs/p_search_' + prefix)
-    best_trace = []
-    start_time = time.time()
 
     for tri in range(trial):
         # Ramdom get a good point. And get all direction population
@@ -1287,6 +1289,9 @@ def QSASearching(
     sparse_matrix_feature_info = kwargs.get('sparse_matrix_feature_info')
 
     search_time1 = time.time()
+    
+    best_trace = []
+    start_time = time.time() # TODO: 将热身的时间和节点也算进来
 
     warm_trial = 3
     if use_performance_model:
@@ -1315,6 +1320,7 @@ def QSASearching(
             GET_TIMES = GET_TIMES
         )
         warm_try += 1
+        best_trace.append([warm_try-5, time.time() - start_time, global_best])
     
     early_stop_count = 0
     retired_indices = []
@@ -1331,8 +1337,6 @@ def QSASearching(
     if use_performance_model:
         population_size *= 10
 
-    best_trace = []
-    start_time = time.time() # TODO: 将热身的时间和节点也算进来
 
     for tri in range(trial):
         # Get topk 
