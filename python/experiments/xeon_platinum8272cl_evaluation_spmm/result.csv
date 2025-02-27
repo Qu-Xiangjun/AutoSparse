@@ -1,0 +1,11 @@
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+bcsstk38,q_sa_searching,2 k 2 k0 16 k1 256 i 2 i0 128 i1 32 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 1 k0 1 k1 1 1 j 2 j0 4 j1 32 6 i0 k0 i1 k1 j0 j1 i0 j1 None 0 104 1,0.12091603875160217,0.12216708064079285
+mhd4800a,q_sa_searching,2 k 2 k0 16 k1 256 i 2 i0 4096 i1 1 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 1 k0 2 k1 3 1 j 2 j0 2 j1 64 6 i0 i1 k0 j0 k1 j1 i0 None j1 64 104 32,0.06527987122535706,0.375216007232666
+name,method,config command,csr_time,best_time
+bcsstk38,q_sa_searching,2 k 2 k0 4096 k1 1 i 2 i0 128 i1 32 1 A 4 i0 i1 k0 k1 A 4 i0 1 i1 1 k0 1 k1 0 1 j 2 j0 4 j1 32 6 i0 i1 k0 j0 k1 j1 i0 j1 j0 4 104 1,0.1128968819975853,0.11557237803936005
+mhd4800a,q_sa_searching,2 k 2 k0 16 k1 256 i 2 i0 128 i1 32 1 A 4 i0 k0 i1 k1 A 4 i0 1 i1 2 k0 0 k1 2 1 j 2 j0 2 j1 64 6 i0 k0 i1 j0 k1 j1 i0 None None 0 104 1,0.06814662367105484,0.40662699937820435

@@ -4,3 +4,4 @@ pybind11
 torch
 scipy
 tensorboard
+matplotlib

@@ -41,11 +41,14 @@ def Evaluation(platform):
         "autosparse_net_0_1_xeon_platinum8272cl_spmm_epoch_99_20250124_043656.pth"
     )
     if use_performance_model:
-        population_size = 35
+        population_size = 200
     else:
         population_size = 100
 
-    result_filepath = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_spmm", "result.csv")
+    result_dir = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_spmm")
+    result_filepath = os.path.join(result_dir, "result.csv")
+    if not os.path.exists(result_dir):
+        os.mkdir(result_dir)
     with open(result_filepath, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["name", "method", "config command", "csr_time", "best_time"])
@@ -91,7 +94,7 @@ def Evaluation(platform):
                 writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
 
 if __name__ == "__main__":
-    Evaluation(platform = "epyc")
+    Evaluation(platform = "xeon_platinum8272cl") # xeon_platinum8272cl
 
 
 
