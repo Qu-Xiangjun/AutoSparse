@@ -106,16 +106,15 @@ def SaveModelAndConfig(net, config: Config, losses, filepath: str):
     torch.save(checkpoint, filepath)
 
 
-def LoadModelAndConfig(Net, config, filepath: str):
+def LoadModelAndConfig(Net: AutoSparseNet, config: Config, filepath: str):
     if not os.path.exists(filepath):
         logging.error(f"Model don't exist: {filepath}")
         exit(1)
-    state_dict = torch.load(filepath)
+    state_dict = torch.load(filepath, map_location=torch.device(config.device))
     model_state_dict = state_dict['model_state_dict']
     config_dict = state_dict['config']
     losses = state_dict['losses']
 
-    config = Config()
     config.dataset_dirname_prefixs_lst = config_dict['dataset_dirname_prefixs_lst']
     config.batch_size = config_dict['batch_size']
     config.model_save_per_epoch = config_dict['model_save_per_epoch']
@@ -134,10 +133,10 @@ def LoadModelAndConfig(Net, config, filepath: str):
     
     
     if Net == AutoSparseNet:
-        net = Net(config)
+        net = Net(config, eval = True)
     else:
         net = Net
-    net.load_state_dict(model_state_dict)
+    net.load_state_dict(model_state_dict, strict=False)
 
     return net, losses
 

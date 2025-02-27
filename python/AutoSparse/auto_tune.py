@@ -8,14 +8,14 @@ import random
 import threading
 from torch.utils.tensorboard import SummaryWriter
 
-from .tensor import ComputeTensor
-from .schedule import Schedule, CreateSchedule
-from .space import *
-from .model import *
-from .build import Build
-from .cost_model.model import *
-from .cost_model.config import *
-from .cost_model.utils import *
+from AutoSparse.tensor import ComputeTensor
+from AutoSparse.schedule import Schedule, CreateSchedule
+from AutoSparse.space import *
+from AutoSparse.model import *
+from AutoSparse.build import Build
+from AutoSparse.cost_model.model import *
+from AutoSparse.cost_model.config import *
+from AutoSparse.cost_model.utils import *
 
 root = os.getenv("AUTOSPARSE_HOME")
 
@@ -491,7 +491,7 @@ def Warm(
             if use_performance_model:
                 schedule_config_command_ls = [schedule.GenConfigCommand()[1] for i, schedule in schedules_ls]
                 performance_value_ls = []
-                print(f"[AutoTuing] Predict {len(schedule_config_command_ls)} programs performance")
+                print(f"[AutoTuning] Predict {len(schedule_config_command_ls)} programs performance")
                 for sch_cmd_batch_idx in range(0, len(schedule_config_command_ls), 1024):
                     predict = performence_model_net.forward_in_query(
                         schedule_config_command_ls[sch_cmd_batch_idx: min(sch_cmd_batch_idx+1024, len(schedule_config_command_ls))], 
@@ -508,6 +508,7 @@ def Warm(
                 schedules_ls = new_schedules_ls
 
             configs_performances = [float("inf")]
+            print(f'[AutoTuning] Evaluate {len(schedules_ls)} operators.')
             for i, schedule in schedules_ls:
                 test_time0 = time.time()
                 configs_performances.append(
@@ -756,7 +757,8 @@ def PSearching(
             new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
             schedules_ls = new_schedules_ls
 
-            # Evaluation
+        # Evaluation
+        print(f'[AutoTuning] Evaluate {len(schedules_ls)} operators.')
         configs_performances = [float("inf")]
         for idx, sch in schedules_ls:
             indices, value, name, direction, next_indices = next_data_lst[idx]
@@ -818,7 +820,8 @@ def PSearching(
         filepath = os.path.join(save_dirpath, prefix)
         if not os.path.exists(filepath):
             os.makedirs(filepath)
-        filepath = os.path.join(filepath, "p_searching_{}".format(
+        filepath = os.path.join(filepath, "sa_searching_{}_{}".format(
+            use_performance_model,
             datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
         ))
         with open(filepath, 'w', newline='') as file:
@@ -1286,7 +1289,10 @@ def QSASearching(
     search_time1 = time.time()
 
     warm_trial = 3
-    warm_population_size = max(int(population_size/2), 35)
+    if use_performance_model:
+        warm_population_size = max(int(population_size/4), 35)
+    else:
+        warm_population_size = max(int(population_size/1.5), 35)
     print(f"[AutoTune] Warm {warm_trial} trial, each run {warm_population_size} data.")
     global_best = float('inf')
     warm_try= 0
@@ -1326,7 +1332,7 @@ def QSASearching(
         population_size *= 10
 
     best_trace = []
-    start_time = time.time()
+    start_time = time.time() # TODO: 将热身的时间和节点也算进来
 
     for tri in range(trial):
         # Get topk 
@@ -1383,6 +1389,7 @@ def QSASearching(
             schedules_ls = new_schedules_ls
 
         # Evaluation
+        print(f'[AutoTuning] Evaluate {len(schedules_ls)} operators.')
         configs_performances = [float("inf")]
         for idx, sch in schedules_ls:
             indices, value, name, direction, next_indices = next_data_lst[idx]
@@ -1455,7 +1462,7 @@ def QSASearching(
         train_cnt += 1
 
         # Restart search from other random point.
-        if early_stop_count >= 10:
+        if early_stop_count >= 13:
             print("[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.")
             agent_group.ClearMemory()
 
@@ -1503,11 +1510,13 @@ def QSASearching(
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         if use_sa:
-            filepath = os.path.join(filepath, "q_sa_searching_{}".format(
+            filepath = os.path.join(filepath, "q_sa_searching_{}_{}".format(
+                use_performance_model,
                 datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
             ))
         else:
-            filepath = os.path.join(filepath, "q_searching_{}".format(
+            filepath = os.path.join(filepath, "q_searching_{}_{}".format(
+                use_performance_model,
                 datetime.now().strftime('%Y_%m_%d_%H_%M_%S.csv')
             ))
         with open(filepath, 'w', newline='') as file:
@@ -1576,13 +1585,14 @@ def LoadPerformenceModel(performance_model_path, sch: Schedule):
         sparse_matrix_freature_vec = autosparse_net.embed_sparse_matirx(sparse_matrix)
     else:
         sparse_matrix_freature_vec = torch.load(
-            os.join(
+            os.path.join(
                 root, 
                 'dataset', 
                 'sparse_matrix_features', 
                 os.path.basename(performance_model_path).split('.')[0],
-                os.path.basename(mtx_filepath).split('.')[0]
-            )
+                os.path.basename(mtx_filepath).split('.')[0]+'.pth'
+            ),
+            map_location=torch.device(model_config.device)
         )
 
     sparse_matrix_feature_info = {
@@ -1913,7 +1923,7 @@ def AutoTune(
     
     # Save explored space.
     if save_schedule_data:
-        agent_group.SaveScheduleData(os.path.join(save_dirpath, sparse_prefix, method+"schedule_data.pth"))
+        agent_group.SaveScheduleData(os.path.join(save_dirpath, sparse_prefix, method+str(use_performance_model)+"schedule_data.pth"))
         agent_group.SaveScheduleDataWithTxt(os.path.join(save_dirpath, sparse_prefix+'.txt'))
         print("[AutoSparse][AutoTune] Save explored shcedule history and value.")
 

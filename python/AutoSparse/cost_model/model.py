@@ -183,7 +183,7 @@ class SparseMatrixEmbed_WACO_NET(nn.Module):
             if isinstance(m, ME.MinkowskiConvolution):
                 ME.utils.kaiming_normal_(m.kernel, mode="fan_out", nonlinearity="relu")
 
-    def forward(self, x1: ME.SparseTensor):
+    def forward(self, x1):
         """
         Parameters
         ----------
@@ -386,7 +386,7 @@ class SparseMatrixEmbedNet(nn.Module):
             if isinstance(m, ME.MinkowskiConvolution):
                 ME.utils.kaiming_normal_(m.kernel, mode="fan_out", nonlinearity="relu")
 
-    def forward1(self, x: ME.SparseTensor):
+    def forward1(self, x):
         """Same with WACO_NET using results of multi conv layer."""
         y1 = self.layer1(x)  # [batch, H, W] -> [batch, H, W]
         y2 = self.layer2(y1)
@@ -422,7 +422,7 @@ class SparseMatrixEmbedNet(nn.Module):
 
         return y
 
-    def forward2(self, x: ME.SparseTensor):
+    def forward2(self, x):
         """Only rely on last conv layer result."""
         y1 = self.layer1(x)
         y2 = self.layer2(y1)
@@ -447,7 +447,7 @@ class AutoSparseNet(nn.Module):
     and using transformer decoder to preidict program ranking.
     """
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, eval = False):
         nn.Module.__init__(self)
         self.in_channels = config.in_channels
         self.device = config.device
@@ -502,7 +502,8 @@ class AutoSparseNet(nn.Module):
             nn.Linear(64, 1),
         )
 
-        self.weight_initialization()
+        if eval == False:
+            self.weight_initialization()
 
     def weight_initialization(self):
         for m in self.modules():
@@ -511,10 +512,10 @@ class AutoSparseNet(nn.Module):
                     if p.dim() > 1:
                         normal_(p, mean=0.0, std=0.02)
 
-    def embed_sparse_matirx_WACO(self, x: ME.SparseTensor):
+    def embed_sparse_matirx_WACO(self, x):
         return self.conv_sparse_feature_waco(x)
 
-    def embed_sparse_matirx(self, x: ME.SparseTensor):
+    def embed_sparse_matirx(self, x):
         if self.is_net_forward1:
             return self.conv_sparse_feature.forward1(
                 x
@@ -525,7 +526,7 @@ class AutoSparseNet(nn.Module):
         self,
         schedules: Union[str, List[str]],
         sparse_tensor_info: Tuple[float],
-        sparse_matrix: ME.SparseTensor,
+        sparse_matrix,
     ):
         input_seq = self.tokenizer(schedules, sparse_tensor_info).to(
             self.device

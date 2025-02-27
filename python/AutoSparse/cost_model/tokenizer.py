@@ -2,7 +2,6 @@ import os, sys
 import random
 import torch
 import numpy as np
-import pandas
 from typing import *
 
 
