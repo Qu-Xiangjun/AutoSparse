@@ -1,0 +1,1 @@
+2 i 2 i0 1024 i1 4 j 2 j0 32 j1 128 3 A 4 i0 j0 j1 i1 B 4 i0 j0 j1 i1 C 4 i0 j0 j1 i1 A 4 i0 2 i1 2 j0 4 j1 4 B 4 i0 0 i1 1 j0 0 j1 1 C 4 i0 2 i1 2 j0 4 j1 4 0 4 i0 j0 j1 i1 None None None 0 104 32 0.8516865968704224

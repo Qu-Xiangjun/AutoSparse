@@ -1,0 +1,1118 @@
+nohup: ignoring input
+WARNING:root:MinkowskiEngine is not installed.
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3_gespmmA
+DDDDDDDDDDDDDDDDD Don't konw what op in is_plus3_gespmmC
+No GPU available, using CPU instead.
+num_row=8032, num_col=8032, num_nonezero=355460
+4 A 1 2 i 8032 0 k 8032 1 B 0 2 k 8032 0 j 128 0 C 0 2 i 8032 0 j 128 0 D 0 2 i 8032 0 j 128 0 float
+[AutoTuing] Space size = 2916000000
+[AutoTuing] Origin format run time = 1.19731593
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, k0Bound, i0, k1, i1Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, j0Bound, i1, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: k0Bound, i0Bound, i1, j0Bound, j1Bound, k1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: k0Bound, i0, k1, i1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: i0, i1, k0, j0Bound, k1Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, j0Bound, i1, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, k0, i1, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, i1Bound, j0Bound, k0, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, j0Bound, i1, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, j0Bound, j1Bound, k1, i1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: k0Bound, j0Bound, k1Bound, j1Bound, i0, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, j1Bound, k0, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: i0, k0Bound, j0Bound, j1Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, i0, k0, k1, i1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, j0Bound, k0, i1, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, k0, k1, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, i0, j1Bound, k0Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, k1, j0Bound, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, k0, k1, i1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: j0Bound, j1Bound, i0, i1, k0, k1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, i1, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, j0Bound, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, j0Bound, k1, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: k0, k1Bound, j0Bound, j1Bound, i0Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, k0, i1Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, k0, j1Bound, i1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, k0, k1, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, i0, j0Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: i0, j0Bound, i1, k0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, j1Bound, i1, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, i0, i1, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: k0Bound, i0, k1Bound, j0Bound, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, j0Bound, k1, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0Bound, k0, i1, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, j1Bound, k0, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, j1Bound, k0Bound, i0, i1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, j0Bound, j1Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: i0Bound, i1Bound, k0Bound, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, i1, j1Bound, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, k0, j1Bound, i0, k1, i1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, k0, i0, i1, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, k0, i1, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, i1, k0, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, i0, i1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, j1Bound, i0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, j0Bound, j1Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, i0, j0Bound, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, j0Bound, j1Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, j0Bound, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, k0Bound, j1Bound, i0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, k0, j1Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: k0Bound, k1, i0, j0Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, j1Bound, i0, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: k0, i0, k1Bound, j0Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, j0Bound, k1, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, k0, k1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, k0Bound, j1Bound, i0Bound, i1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, j0Bound, i1, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, j0Bound, i0, i1Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, j0Bound, i0Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, j0Bound, i1, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, k0, k1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, i1Bound, k0, j0Bound, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, k0, j0Bound, j1Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: i0, j0Bound, j1Bound, k0Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, k0, j1Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, i1Bound, k0, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, k1, i0, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, j1Bound, k0, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, k0, k1, i1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, j0Bound, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, k0, k1, j0Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, j0Bound, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, i0, j0Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, j1Bound, i0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: k0Bound, i0Bound, j0Bound, j1Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, k0, k1, j1Bound, i1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0Bound, j1Bound, k0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, i1, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, k1, i1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0, j1Bound, k0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, i0Bound, i1, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0Bound, i1, k0, j1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, i1, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: k0Bound, j0Bound, i0, k1Bound, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, i1, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: j0Bound, k0Bound, i0, i1Bound, j1Bound, k1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: k0, i0, i1, k1Bound, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: i0, k0, j0Bound, j1Bound, i1Bound, k1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, i0, k1, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, i0, k0, i1Bound, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: k0Bound, j0Bound, j1Bound, i0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, i1, k0, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, k0Bound, j1Bound, k1, i0, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, k0, k1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, k0, j0Bound, i1, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, k0, k1, i0, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, i1, k1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, k1, i0, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, i0, j1Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: k0Bound, i0, i1, j0Bound, k1Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0Bound, k1Bound was not found while attempting to replace with: k0Bound, k1Bound, i0, j0Bound, i1Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, j0Bound, k1, j1Bound, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: i0, i1Bound, k0Bound, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, j0Bound, j1Bound, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: k0, j0Bound, i0, i1Bound, k1Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: k0Bound, j0Bound, i0, j1Bound, k1, i1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1Bound was not found while attempting to replace with: i0, k0, k1Bound, j0Bound, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, i0, j1Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, k0, i1Bound, k1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, j0Bound, k0, i1, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, k0, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, k0, i0Bound, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, k0, j0Bound, k1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, j0Bound, j1Bound, i0, i1, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, i0, k1, i1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, i0Bound, j1Bound, i1Bound, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: j0Bound, j1Bound, i0, i1, k0, k1
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, k0, j0Bound, j1Bound, k1, i1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1Bound, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0Bound, j0Bound, j1Bound, k0, k1, i1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: k0, k1, j0Bound, i0, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0Bound, i1, j0Bound, j1Bound, k0Bound, k1 was not found while attempting to replace with: j0Bound, i0Bound, k0Bound, k1, i1, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1537 in reorder:
+ The pattern of ForAlls: i0, i1, j0Bound, j1Bound, k0, k1 was not found while attempting to replace with: i0, i1, k0, k1, j0Bound, j1Bound
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+

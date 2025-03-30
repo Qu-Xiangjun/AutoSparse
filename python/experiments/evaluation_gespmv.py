@@ -10,7 +10,7 @@ sys.path.append(current)
 
 from AutoSparse import *
 
-def EvaluationPlus3(platform):
+def EvaluationGeSpMV(platform):
     mtx_names = [
         "bcsstk38",
         "mhd4800a",
@@ -35,7 +35,7 @@ def EvaluationPlus3(platform):
     search_methods = ['q_sa_searching'] # "random_searching", "p_searching", "batch_p_searching", "sa_searching", "q_searching"
     autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
 
-    result_dir = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_plus3")
+    result_dir = os.path.join(autosparse_prefix, "python", "experiments", platform + "_evaluation_gespmv")
     result_filepath = os.path.join(result_dir, "result.csv")
     
     if not os.path.exists(result_dir):
@@ -82,9 +82,9 @@ def EvaluationPlus3(platform):
                 writer.writerow([mtx, method, sch.GenConfigCommand()[1], func.origin_time, time_val])
 
 if __name__ == "__main__":
-    EvaluationPlus3(platform = "epyc")
+    EvaluationGeSpMV(platform = "epyc")
 
 
 
 
-# nohup python evaluation_plus3.py > ./log/epyc_evaluation_plus3_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_gespmv.py > ./log/epyc_evaluation_gespmv_$(date +%Y%m%d%H%M).log 2>&1 & 

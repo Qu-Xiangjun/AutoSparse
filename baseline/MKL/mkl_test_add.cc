@@ -351,19 +351,19 @@ int main()
 
     string filename;
 
-    // cout << "---------SpMMAdd---------" << endl;
-    // resultFile << "---------SpMMAdd---------" << endl;
-    // while (getline(inputFile, filename))
-    // {
-    //     // filename.pop_back();
-    //     cout << filename << endl;
-    //     string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
-    //     cout << filepath << endl;
-    //     double res = SpMMAdd(filepath);
-    //     resultFile << filename << " = " << res << endl;
-    //     cout << filename << " = " << res << endl;
-    // }
-    // inputFile.close();
+    cout << "---------SpMMAdd---------" << endl;
+    resultFile << "---------SpMMAdd---------" << endl;
+    while (getline(inputFile, filename))
+    {
+        // filename.pop_back();
+        cout << filename << endl;
+        string filepath = string(env_val) + "/dataset/demo_dataset/" + filename + ".csr";
+        cout << filepath << endl;
+        double res = SpMMAdd(filepath);
+        resultFile << filename << " = " << res << endl;
+        cout << filename << " = " << res << endl;
+    }
+    inputFile.close();
 
     cout << "---------SpPlus3---------" << endl;
     inputFile = ifstream(inputFileName);

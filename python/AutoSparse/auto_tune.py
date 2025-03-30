@@ -463,7 +463,7 @@ def Warm(
     sparse_matrix_feature_info = kwargs.get('sparse_matrix_feature_info')
 
     if use_performance_model:
-        population_size *= 30
+        population_size *= 50
 
     warm_ok = False
     best_value = float("inf")
@@ -488,7 +488,7 @@ def Warm(
                     continue
                 schedules_ls.append([i, schedule])
             # Get config performance
-            if use_performance_model:
+            if use_performance_model and len(schedules_ls):
                 schedule_config_command_ls = [schedule.GenConfigCommand()[1] for i, schedule in schedules_ls]
                 performance_value_ls = []
                 print(f"[AutoTuning] Predict {len(schedule_config_command_ls)} programs performance")
@@ -499,10 +499,13 @@ def Warm(
                         sparse_matrix_feature_info['sparse_matrix_freature_vec']
                     )
                     performance_value_ls.append(predict)
-                performance_values = torch.cat(performance_value_ls)
+                if len(schedules_ls) == 1:
+                    performance_values = performance_value_ls[0].unsqueeze(0)
+                else:
+                    performance_values = torch.cat(performance_value_ls)
                 topk_performance_values, topk_pv_indices = torch.topk(
                     performance_values, 
-                    int(len(schedule_config_command_ls)/10),
+                    int(len(schedule_config_command_ls)/40),
                 )
                 new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
                 schedules_ls = new_schedules_ls
@@ -688,7 +691,7 @@ def PSearching(
         best_trace.append([warm_try-5, time.time() - start_time, global_best])
 
     if use_performance_model:
-        population_size *= 10
+        population_size *= 15
     else:
         action_num = agent_group.action_num # 54
         print(f"[INFO] SAsearching get all {action_num} directions in one trial.")
@@ -740,7 +743,7 @@ def PSearching(
                 schedules_ls.append([idx, sch])
 
             # Performence model predict.
-        if use_performance_model:
+        if use_performance_model and len(schedules_ls):
             schedule_config_command_ls = [schedule.GenConfigCommand()[1] for idx, schedule in schedules_ls]
             performance_value_ls = []
             print(f"[AutoTuing] Predict {len(schedule_config_command_ls)} programs performance")
@@ -751,10 +754,13 @@ def PSearching(
                     sparse_matrix_feature_info['sparse_matrix_freature_vec']
                 )
                 performance_value_ls.append(predict)
-            performance_values = torch.cat(performance_value_ls)
+            if len(schedules_ls) == 1:
+                performance_values = performance_value_ls[0].unsqueeze(0)
+            else:
+                performance_values = torch.cat(performance_value_ls)
             topk_performance_values, topk_pv_indices = torch.topk(
                 performance_values, 
-                int(population_size/10),
+                min(int(population_size/40), int(len(performance_values)/1.5)),
             )
             new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
             schedules_ls = new_schedules_ls
@@ -1341,6 +1347,9 @@ def QSASearching(
     for tri in range(trial):
         # Get topk 
         topk_indices_lst, topk_value_lst = agent_group.TopK(population_size, modify=True)
+        if len(topk_indices_lst) == 0:
+            print("[AutoTuning][ERROR] agent_group.TopK have empty memory.")
+            break
         # Random get next batch data
         next_data_lst = agent_group.SelectAction(
             topk_indices_lst, topk_value_lst, trial=tri, 
@@ -1373,7 +1382,7 @@ def QSASearching(
                 schedules_ls.append([idx, sch])
         
         # Performence model predict.
-        if use_performance_model:
+        if use_performance_model and len(schedules_ls):
             schedule_config_command_ls = [schedule.GenConfigCommand()[1] for idx, schedule in schedules_ls]
             performance_value_ls = []
             print(f"[AutoTuing] Predict {len(schedule_config_command_ls)} programs performance")
@@ -1384,10 +1393,13 @@ def QSASearching(
                     sparse_matrix_feature_info['sparse_matrix_freature_vec']
                 )
                 performance_value_ls.append(predict)
-            performance_values = torch.cat(performance_value_ls)
+            if len(schedules_ls) == 1:
+                performance_values = performance_value_ls[0].unsqueeze(0)
+            else:
+                performance_values = torch.cat(performance_value_ls)
             topk_performance_values, topk_pv_indices = torch.topk(
                 performance_values, 
-                int(population_size/10),
+                min(int(population_size/40), int(len(performance_values)/1.5)),
             )
             new_schedules_ls = [schedules_ls[topk_pv_indices[i]] for i in range(len(topk_pv_indices))]
             schedules_ls = new_schedules_ls
@@ -1452,21 +1464,26 @@ def QSASearching(
         # Train model
         if list(agent_group.agent_group.values())[0].memory_size * len(agent_group.agent_group.keys()) > \
                 list(agent_group.agent_group.values())[0].train_batch_size:
-            test_time2 = time.time()
-            agent_group.Train(save_model=False)
-            # Update target model
-            if (train_cnt + 1) % update_target_gap == 0:
-                # Stable train
-                agent_group.UpdateAgentTargetModel()
-                print(f"[AutoTune] Update DQN target net in {tri} trial.")
-            test_time3 = time.time()
-            GET_TIMES[2] += test_time3 - test_time2
+            upm_flag = True
+            if use_performance_model and tri % 2 != 0:
+                upm_flag = False
+            if upm_flag:
+                test_time2 = time.time()
+                agent_group.Train(save_model=False)
+                # Update target model
+                if (train_cnt + 1) % update_target_gap == 0:
+                    # Stable train
+                    agent_group.UpdateAgentTargetModel()
+                    print(f"[AutoTune] Update DQN target net in {tri} trial.")
+                test_time3 = time.time()
+                GET_TIMES[2] += test_time3 - test_time2
+                train_cnt += 1
         else:
             early_stop_count = 0
-        train_cnt += 1
+        
 
         # Restart search from other random point.
-        if early_stop_count >= 13:
+        if early_stop_count >= 13 or len(schedules_ls) == 0:
             print("[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.")
             agent_group.ClearMemory()
 
@@ -1935,4 +1952,8 @@ def AutoTune(
 
     total_end_time = time.time()
     GET_TIMES[0] = total_end_time - total_start_time
-    return AddSimpleSchedule(sch.compute_tensor, config)
+    try:
+        return AddSimpleSchedule(sch.compute_tensor, config)
+    except:
+        print(f"[AutoTuning][ERROR] return top1 config have error: \n{str(config)} = {value}")
+        return sch

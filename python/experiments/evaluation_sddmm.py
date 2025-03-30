@@ -38,7 +38,7 @@ def EvaluationSpMM(platform):
     use_performance_model = True
     performance_model_path=os.path.join(
         autosparse_prefix, 'python', 'AutoSparse', 'cost_model', 'model_file',
-        "autosparse_net_0_1_xeon_platinum8272cl_spmv_xeon_platinum8272cl_spmm_xeon_platinum8272cl_sddmm_epoch_89_20250226_124838.pth"
+        "autosparse_net_0_1_xeon_platinum8272cl_sddmm_epoch_99_20250228_214910.pth"
     )
     if use_performance_model:
         population_size = 200
@@ -82,7 +82,7 @@ def EvaluationSpMM(platform):
             D.LoadData(mtx_filepath)
             print(CreateSchedule(D).GenConfigCommand())
 
-            sch = AutoTune(C, method = method, population_size=population_size, trial = 100,
+            sch = AutoTune(D, method = method, population_size=population_size, trial = 100,
                             early_stop=100, save_schedule_data=True, save_best_trace=True,
                             use_performance_model=use_performance_model, 
                             performance_model_path=performance_model_path,
@@ -102,4 +102,4 @@ if __name__ == "__main__":
 
 
 
-# nohup python evaluation_spmv.py > ./log/epyc_evaluation_spmv_$(date +%Y%m%d%H%M).log 2>&1 & 
+# nohup python evaluation_sddmm.py > ./log/epyc_evaluation_sddmm_$(date +%Y%m%d%H%M).log 2>&1 & 

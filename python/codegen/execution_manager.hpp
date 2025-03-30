@@ -816,7 +816,11 @@ public:
 #endif
 		compile_success = executeCommand(taco_header_command);
 
-        if (rhs_tensor.size() == 3 && lh_tensor->is_dense == false) {
+        int sddmm_flag = 0;
+        for (auto& item : rhs_tensor) {
+            if (item.second->is_dense == false) sddmm_flag += 1;
+        }
+        if (rhs_tensor.size() == 3 && lh_tensor->is_dense == false && sddmm_flag == 1) {
             char* env_val = getenv("AUTOSPARSE_HOME");
             string waco_prefix = env_val;
             string patch_command = "python " + waco_prefix + "/python/codegen/sddmm_patch.py ./taco_kernel.c";

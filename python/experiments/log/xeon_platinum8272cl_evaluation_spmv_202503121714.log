@@ -1,0 +1,32 @@
+nohup: ignoring input
+WARNING:root:MinkowskiEngine is not installed.
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+No GPU available, using CPU instead.
+bcsstk38 q_sa_searching num_row=8032, num_col=8032, num_nonezero=355460
+3 A 1 2 i 8032 0 j 8032 1 B 0 1 j 8032 0 C 0 1 i 8032 0 float
+[AutoTuing] Space size = 24300000
+[AutoTuing] Origin format run time = 0.14350455
+**************** Start Q Search ****************
+population_size         =100
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 66 data.
+[AutoTuning] Evaluate 7 operators.
+[AutoTune] Warm in 0 trial best: 0.46518561, history best: 0.46518561244010925
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Warm in 1 trial best: 1.32239497, history best: 0.46518561244010925
+[AutoTuning] Evaluate 13 operators.
+[AutoTune] Warm in 2 trial best: 0.25615358, history best: 0.25615358352661133
+[AutoTuning] Evaluate 76 operators.
+TimeoutError -------------------------
+[AutoTune] Q searching Current time: 2025-03-12 17:15:14 in 0 trial best: 0.19566201, history best: 0.25615358352661133

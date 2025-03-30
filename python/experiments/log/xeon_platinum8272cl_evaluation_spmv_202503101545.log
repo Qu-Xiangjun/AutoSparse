@@ -1,0 +1,608 @@
+nohup: ignoring input
+WARNING:root:MinkowskiEngine is not installed.
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+No GPU available, using CPU instead.
+cfd1 q_sa_searching num_row=70656, num_col=70656, num_nonezero=1828364
+3 A 1 2 i 70656 0 j 70656 1 B 0 1 j 70656 0 C 0 1 i 70656 0 float
+[AutoTuing] Space size = 24300000
+[AutoTuing] Origin format run time = 0.16160873
+**************** Start Q Search ****************
+population_size         =200
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =True
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 50 data.
+[AutoTuning] Predict 353 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 0 trial best: 0.29001543, history best: 0.29001542925834656
+[AutoTuning] Predict 349 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 1 trial best: 0.20734759, history best: 0.2073475867509842
+[AutoTuning] Predict 308 programs performance
+[AutoTuning] Evaluate 7 operators.
+[AutoTune] Warm in 2 trial best: 0.30500719, history best: 0.2073475867509842
+[AutoTuing] Predict 84 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:05 in 0 trial best: 0.12642717, history best: 0.2073475867509842
+[AutoTuing] Predict 25 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:11 in 1 trial best: 0.16029993, history best: 0.12642717361450195
+[AutoTuing] Predict 40 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:16 in 2 trial best: 0.13396695, history best: 0.12642717361450195
+[AutoTuing] Predict 27 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:22 in 3 trial best: 0.18421011, history best: 0.12642717361450195
+[AutoTuing] Predict 32 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:27 in 4 trial best: 0.20923826, history best: 0.12642717361450195
+[AutoTuing] Predict 26 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:32 in 5 trial best: 0.18150626, history best: 0.12642717361450195
+[AutoTuing] Predict 25 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:38 in 6 trial best: 0.19182985, history best: 0.12642717361450195
+[AutoTuing] Predict 14 programs performance
+[AutoTuning] Evaluate 9 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:42 in 7 trial best: 0.14129212, history best: 0.12642717361450195
+[AutoTuing] Predict 4 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:43 in 8 trial best: 8.35273743, history best: 0.12642717361450195
+[AutoTuing] Predict 4 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:43 in 9 trial best: 0.87657601, history best: 0.12642717361450195
+[AutoTuing] Predict 5 programs performance
+[AutoTuning] Evaluate 3 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:45 in 10 trial best: 0.33031771, history best: 0.12642717361450195
+[AutoTuing] Predict 7 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:46 in 11 trial best: 0.23568654, history best: 0.12642717361450195
+[AutoTuing] Predict 3 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:47 in 12 trial best: 0.41650164, history best: 0.12642717361450195
+[AutoTuing] Predict 5 programs performance
+[AutoTuning] Evaluate 3 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:48 in 13 trial best: 0.70024621, history best: 0.12642717361450195
+[AutoTuing] Predict 1 programs performance
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:46:48 in 14 trial best: inf, history best: 0.12642717361450195
+[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.
+[AutoTuning] Predict 344 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 0 trial best: 0.11434298, history best: 0.11434298008680344
+[AutoTuning] Predict 332 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 1 trial best: 0.11276800, history best: 0.11276800185441971
+[AutoTuning] Predict 340 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 2 trial best: 0.18015110, history best: 0.11276800185441971
+Try Random Search: Current time: 2025-03-10 15:46:58 in trial 14
+[AutoTuing] Predict 82 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:03 in 15 trial best: 0.08610686, history best: 0.11276800185441971
+[AutoTuing] Predict 36 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:08 in 16 trial best: 0.10890326, history best: 0.08610685914754868
+[AutoTuing] Predict 36 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:14 in 17 trial best: 0.17454928, history best: 0.08610685914754868
+[AutoTuing] Predict 29 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:19 in 18 trial best: 0.19031234, history best: 0.08610685914754868
+[AutoTuing] Predict 32 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:24 in 19 trial best: 0.17891882, history best: 0.08610685914754868
+[AutoTuing] Predict 30 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:29 in 20 trial best: 0.16057049, history best: 0.08610685914754868
+[AutoTuing] Predict 41 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:34 in 21 trial best: 0.14924911, history best: 0.08610685914754868
+[AutoTuing] Predict 25 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:39 in 22 trial best: 0.19840541, history best: 0.08610685914754868
+[AutoTuing] Predict 26 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:44 in 23 trial best: 0.19167338, history best: 0.08610685914754868
+[AutoTuing] Predict 15 programs performance
+[AutoTuning] Evaluate 10 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:48 in 24 trial best: 0.17541789, history best: 0.08610685914754868
+[AutoTuing] Predict 8 programs performance
+[AutoTuning] Evaluate 5 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:50 in 25 trial best: 0.36906919, history best: 0.08610685914754868
+[AutoTuing] Predict 7 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:51 in 26 trial best: 0.83647001, history best: 0.08610685914754868
+[AutoTuing] Predict 9 programs performance
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:53 in 27 trial best: 0.22376284, history best: 0.08610685914754868
+[AutoTuing] Predict 7 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:54 in 28 trial best: 0.35672906, history best: 0.08610685914754868
+[AutoTuing] Predict 7 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:56 in 29 trial best: 0.29027247, history best: 0.08610685914754868
+[AutoTuing] Predict 7 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:57 in 30 trial best: 0.35366449, history best: 0.08610685914754868
+[AutoTuing] Predict 6 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:47:59 in 31 trial best: 0.38083595, history best: 0.08610685914754868
+[AutoTuing] Predict 6 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:00 in 32 trial best: 5.18092394, history best: 0.08610685914754868
+[AutoTuing] Predict 9 programs performance
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:02 in 33 trial best: 0.85843199, history best: 0.08610685914754868
+[AutoTuing] Predict 14 programs performance
+[AutoTuning] Evaluate 9 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:05 in 34 trial best: 0.38532761, history best: 0.08610685914754868
+[AutoTuing] Predict 16 programs performance
+[AutoTuning] Evaluate 10 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:08 in 35 trial best: 0.26389003, history best: 0.08610685914754868
+[AutoTuing] Predict 14 programs performance
+[AutoTuning] Evaluate 9 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:12 in 36 trial best: 0.16591290, history best: 0.08610685914754868
+[AutoTuing] Predict 15 programs performance
+[AutoTuning] Evaluate 10 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:15 in 37 trial best: 0.19518358, history best: 0.08610685914754868
+[AutoTuing] Predict 17 programs performance
+[AutoTuning] Evaluate 11 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:19 in 38 trial best: 0.16965543, history best: 0.08610685914754868
+[AutoTuing] Predict 12 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:21 in 39 trial best: 0.18005265, history best: 0.08610685914754868
+[AutoTuing] Predict 9 programs performance
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:24 in 40 trial best: 0.14960057, history best: 0.08610685914754868
+[AutoTuing] Predict 5 programs performance
+[AutoTuning] Evaluate 3 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:25 in 41 trial best: 0.17942096, history best: 0.08610685914754868
+[AutoTuing] Predict 6 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:26 in 42 trial best: 0.17240028, history best: 0.08610685914754868
+[AutoTuing] Predict 8 programs performance
+[AutoTuning] Evaluate 5 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:28 in 43 trial best: 0.19615616, history best: 0.08610685914754868
+[AutoTuing] Predict 4 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:29 in 44 trial best: 0.15902032, history best: 0.08610685914754868
+[AutoTuing] Predict 2 programs performance
+[AutoTuning] Evaluate 1 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:29 in 45 trial best: 0.16116434, history best: 0.08610685914754868
+[AutoTuing] Predict 3 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:30 in 46 trial best: 0.16870192, history best: 0.08610685914754868
+[AutoTuing] Predict 3 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:31 in 47 trial best: 0.19629499, history best: 0.08610685914754868
+[AutoTuing] Predict 6 programs performance
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:33 in 48 trial best: 0.18375476, history best: 0.08610685914754868
+[AutoTuing] Predict 12 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:35 in 49 trial best: 0.16830906, history best: 0.08610685914754868
+[AutoTuing] Predict 11 programs performance
+[AutoTuning] Evaluate 7 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:38 in 50 trial best: 0.22299439, history best: 0.08610685914754868
+[AutoTuing] Predict 16 programs performance
+[AutoTuning] Evaluate 10 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:41 in 51 trial best: 0.25007185, history best: 0.08610685914754868
+[AutoTuing] Predict 19 programs performance
+[AutoTuning] Evaluate 12 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:46 in 52 trial best: 0.22523290, history best: 0.08610685914754868
+[AutoTuing] Predict 22 programs performance
+[AutoTuning] Evaluate 14 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:50 in 53 trial best: 0.24094664, history best: 0.08610685914754868
+[AutoTuing] Predict 23 programs performance
+[AutoTuning] Evaluate 15 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:55 in 54 trial best: 0.16609132, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 5921.7026
+[cur/total]=[2/5], loss = 5332.7495
+[cur/total]=[3/5], loss = 4776.1577
+[cur/total]=[4/5], loss = 4260.9238
+[cur/total]=[5/5], loss = 3789.2336
+[cur/total]=[1/5], loss = 92889.2656
+[cur/total]=[2/5], loss = 85589.3125
+[cur/total]=[3/5], loss = 78585.2500
+[cur/total]=[4/5], loss = 71984.8828
+[cur/total]=[5/5], loss = 65822.3516
+[cur/total]=[1/5], loss = 32830.4062
+[cur/total]=[2/5], loss = 31066.1348
+[cur/total]=[3/5], loss = 29339.5664
+[cur/total]=[4/5], loss = 27673.8164
+[cur/total]=[5/5], loss = 26077.8535
+[cur/total]=[1/5], loss = 1018694.9375
+[cur/total]=[2/5], loss = 990124.3125
+[cur/total]=[3/5], loss = 961598.0000
+[cur/total]=[4/5], loss = 933430.0625
+[cur/total]=[5/5], loss = 905751.9375
+[cur/total]=[1/5], loss = 447381.0625
+[cur/total]=[2/5], loss = 426141.2188
+[cur/total]=[3/5], loss = 405233.5000
+[cur/total]=[4/5], loss = 384926.3125
+[cur/total]=[5/5], loss = 365327.1875
+[cur/total]=[1/5], loss = 29790.3457
+[cur/total]=[2/5], loss = 25595.9355
+[cur/total]=[3/5], loss = 22638.5898
+[cur/total]=[4/5], loss = 20644.9668
+[cur/total]=[5/5], loss = 19224.6816
+[AutoTuing] Predict 9 programs performance
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:57 in 55 trial best: 0.34131384, history best: 0.08610685914754868
+[AutoTuing] Predict 10 programs performance
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:48:59 in 56 trial best: 0.23155057, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 3479.5010
+[cur/total]=[2/5], loss = 3064.0181
+[cur/total]=[3/5], loss = 2692.5007
+[cur/total]=[4/5], loss = 2361.0664
+[cur/total]=[5/5], loss = 2065.9814
+[cur/total]=[1/5], loss = 60101.1953
+[cur/total]=[2/5], loss = 54810.4688
+[cur/total]=[3/5], loss = 49931.5703
+[cur/total]=[4/5], loss = 45442.2266
+[cur/total]=[5/5], loss = 41318.6016
+[cur/total]=[1/5], loss = 25150.7188
+[cur/total]=[2/5], loss = 23642.9258
+[cur/total]=[3/5], loss = 22211.1094
+[cur/total]=[4/5], loss = 20853.0879
+[cur/total]=[5/5], loss = 19566.1055
+[cur/total]=[1/5], loss = 750350.2500
+[cur/total]=[2/5], loss = 729154.5625
+[cur/total]=[3/5], loss = 708457.9375
+[cur/total]=[4/5], loss = 688271.0625
+[cur/total]=[5/5], loss = 668588.3750
+[cur/total]=[1/5], loss = 327302.7500
+[cur/total]=[2/5], loss = 310985.6562
+[cur/total]=[3/5], loss = 295310.2812
+[cur/total]=[4/5], loss = 280262.2812
+[cur/total]=[5/5], loss = 265824.3750
+[cur/total]=[1/5], loss = 18815.3184
+[cur/total]=[2/5], loss = 17763.1230
+[cur/total]=[3/5], loss = 16879.2168
+[cur/total]=[4/5], loss = 16089.8945
+[cur/total]=[5/5], loss = 15360.9150
+[AutoTuing] Predict 15 programs performance
+[AutoTuning] Evaluate 10 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:03 in 57 trial best: 1.01919794, history best: 0.08610685914754868
+[AutoTuing] Predict 21 programs performance
+[AutoTuning] Evaluate 14 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:07 in 58 trial best: 0.31258905, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 1960.6012
+[cur/total]=[2/5], loss = 1689.0205
+[cur/total]=[3/5], loss = 1455.5327
+[cur/total]=[4/5], loss = 1253.5641
+[cur/total]=[5/5], loss = 1078.1729
+[cur/total]=[1/5], loss = 37536.5117
+[cur/total]=[2/5], loss = 34072.0195
+[cur/total]=[3/5], loss = 30902.1699
+[cur/total]=[4/5], loss = 28004.8730
+[cur/total]=[5/5], loss = 25359.3574
+[cur/total]=[1/5], loss = 17826.0508
+[cur/total]=[2/5], loss = 16733.8457
+[cur/total]=[3/5], loss = 15698.6230
+[cur/total]=[4/5], loss = 14717.6475
+[cur/total]=[5/5], loss = 13788.2988
+[cur/total]=[1/5], loss = 779299.9375
+[cur/total]=[2/5], loss = 754182.3750
+[cur/total]=[3/5], loss = 729757.2500
+[cur/total]=[4/5], loss = 706010.5625
+[cur/total]=[5/5], loss = 682922.2500
+[cur/total]=[1/5], loss = 234665.8438
+[cur/total]=[2/5], loss = 223058.9375
+[cur/total]=[3/5], loss = 211900.3125
+[cur/total]=[4/5], loss = 201174.5625
+[cur/total]=[5/5], loss = 190866.5938
+[cur/total]=[1/5], loss = 13413.6650
+[cur/total]=[2/5], loss = 12808.7178
+[cur/total]=[3/5], loss = 12237.1611
+[cur/total]=[4/5], loss = 11696.9365
+[cur/total]=[5/5], loss = 11186.1377
+[AutoTuing] Predict 17 programs performance
+[AutoTuning] Evaluate 11 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:11 in 59 trial best: 0.21326949, history best: 0.08610685914754868
+[AutoTuing] Predict 21 programs performance
+[AutoTuning] Evaluate 14 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:16 in 60 trial best: 0.22196361, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 925.6877
+[cur/total]=[2/5], loss = 793.2111
+[cur/total]=[3/5], loss = 678.3226
+[cur/total]=[4/5], loss = 578.9173
+[cur/total]=[5/5], loss = 493.1358
+[cur/total]=[1/5], loss = 22945.8906
+[cur/total]=[2/5], loss = 20746.1289
+[cur/total]=[3/5], loss = 18742.8887
+[cur/total]=[4/5], loss = 16920.1270
+[cur/total]=[5/5], loss = 15263.0020
+[cur/total]=[1/5], loss = 12685.2061
+[cur/total]=[2/5], loss = 11878.2422
+[cur/total]=[3/5], loss = 11113.3906
+[cur/total]=[4/5], loss = 10388.6562
+[cur/total]=[5/5], loss = 9702.2666
+[cur/total]=[1/5], loss = 657244.8125
+[cur/total]=[2/5], loss = 635443.1250
+[cur/total]=[3/5], loss = 614231.7500
+[cur/total]=[4/5], loss = 593589.4375
+[cur/total]=[5/5], loss = 573496.0000
+[cur/total]=[1/5], loss = 159136.8906
+[cur/total]=[2/5], loss = 151701.1719
+[cur/total]=[3/5], loss = 144521.4844
+[cur/total]=[4/5], loss = 137589.7500
+[cur/total]=[5/5], loss = 130898.3203
+[cur/total]=[1/5], loss = 10633.1729
+[cur/total]=[2/5], loss = 10264.0088
+[cur/total]=[3/5], loss = 9908.8223
+[cur/total]=[4/5], loss = 9564.9102
+[cur/total]=[5/5], loss = 9230.9102
+[AutoTuing] Predict 16 programs performance
+[AutoTuning] Evaluate 10 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:20 in 61 trial best: 0.20833480, history best: 0.08610685914754868
+[AutoTuing] Predict 13 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:22 in 62 trial best: 0.16995765, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 409.4778
+[cur/total]=[2/5], loss = 347.9272
+[cur/total]=[3/5], loss = 295.2003
+[cur/total]=[4/5], loss = 250.1637
+[cur/total]=[5/5], loss = 211.8111
+[cur/total]=[1/5], loss = 13757.6943
+[cur/total]=[2/5], loss = 12391.4277
+[cur/total]=[3/5], loss = 11152.3672
+[cur/total]=[4/5], loss = 10029.6240
+[cur/total]=[5/5], loss = 9013.1230
+[cur/total]=[1/5], loss = 8425.7969
+[cur/total]=[2/5], loss = 7876.6079
+[cur/total]=[3/5], loss = 7357.3174
+[cur/total]=[4/5], loss = 6866.5684
+[cur/total]=[5/5], loss = 6402.9976
+[cur/total]=[1/5], loss = 283183.0938
+[cur/total]=[2/5], loss = 272202.8438
+[cur/total]=[3/5], loss = 261589.6562
+[cur/total]=[4/5], loss = 251335.2812
+[cur/total]=[5/5], loss = 241429.6562
+[cur/total]=[1/5], loss = 119145.1797
+[cur/total]=[2/5], loss = 113418.1953
+[cur/total]=[3/5], loss = 107883.6719
+[cur/total]=[4/5], loss = 102536.7188
+[cur/total]=[5/5], loss = 97372.5469
+[cur/total]=[1/5], loss = 8661.8418
+[cur/total]=[2/5], loss = 8263.0820
+[cur/total]=[3/5], loss = 7898.0708
+[cur/total]=[4/5], loss = 7557.4526
+[cur/total]=[5/5], loss = 7236.9424
+[AutoTuing] Predict 5 programs performance
+[AutoTuning] Evaluate 3 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:24 in 63 trial best: 0.19588631, history best: 0.08610685914754868
+[AutoTuing] Predict 4 programs performance
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:25 in 64 trial best: 0.99346900, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 174.4935
+[cur/total]=[2/5], loss = 148.0578
+[cur/total]=[3/5], loss = 125.7481
+[cur/total]=[4/5], loss = 106.9405
+[cur/total]=[5/5], loss = 91.1238
+[cur/total]=[1/5], loss = 8093.5688
+[cur/total]=[2/5], loss = 7262.4521
+[cur/total]=[3/5], loss = 6511.8169
+[cur/total]=[4/5], loss = 5833.9609
+[cur/total]=[5/5], loss = 5222.8242
+[cur/total]=[1/5], loss = 5750.9058
+[cur/total]=[2/5], loss = 5360.9849
+[cur/total]=[3/5], loss = 4993.7144
+[cur/total]=[4/5], loss = 4647.7676
+[cur/total]=[5/5], loss = 4321.9062
+[cur/total]=[1/5], loss = 505838.4062
+[cur/total]=[2/5], loss = 488095.8438
+[cur/total]=[3/5], loss = 470807.0000
+[cur/total]=[4/5], loss = 453961.5312
+[cur/total]=[5/5], loss = 437549.6875
+[cur/total]=[1/5], loss = 92386.5625
+[cur/total]=[2/5], loss = 87574.7969
+[cur/total]=[3/5], loss = 82933.2422
+[cur/total]=[4/5], loss = 78458.2578
+[cur/total]=[5/5], loss = 74146.4141
+[cur/total]=[1/5], loss = 4996.5225
+[cur/total]=[2/5], loss = 4799.8945
+[cur/total]=[3/5], loss = 4628.3262
+[cur/total]=[4/5], loss = 4473.0449
+[cur/total]=[5/5], loss = 4329.1704
+[AutoTuing] Predict 5 programs performance
+[AutoTuning] Evaluate 3 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:26 in 65 trial best: 0.35065612, history best: 0.08610685914754868
+[AutoTuing] Predict 10 programs performance
+[AutoTuning] Evaluate 6 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:28 in 66 trial best: 0.62652224, history best: 0.08610685914754868
+[cur/total]=[1/5], loss = 77.8631
+[cur/total]=[2/5], loss = 66.7835
+[cur/total]=[3/5], loss = 57.5605
+[cur/total]=[4/5], loss = 49.9125
+[cur/total]=[5/5], loss = 43.5972
+[cur/total]=[1/5], loss = 4672.3765
+[cur/total]=[2/5], loss = 4177.0630
+[cur/total]=[3/5], loss = 3731.7825
+[cur/total]=[4/5], loss = 3331.9048
+[cur/total]=[5/5], loss = 2973.1626
+[cur/total]=[1/5], loss = 3728.9766
+[cur/total]=[2/5], loss = 3478.4036
+[cur/total]=[3/5], loss = 3241.4146
+[cur/total]=[4/5], loss = 3017.3345
+[cur/total]=[5/5], loss = 2805.5396
+[cur/total]=[1/5], loss = 364091.2812
+[cur/total]=[2/5], loss = 351153.6250
+[cur/total]=[3/5], loss = 338635.1562
+[cur/total]=[4/5], loss = 326521.3750
+[cur/total]=[5/5], loss = 314797.4062
+[cur/total]=[1/5], loss = 68024.2578
+[cur/total]=[2/5], loss = 64243.0273
+[cur/total]=[3/5], loss = 60602.5195
+[cur/total]=[4/5], loss = 57100.1094
+[cur/total]=[5/5], loss = 53733.4453
+[cur/total]=[1/5], loss = 6215.7495
+[cur/total]=[2/5], loss = 5926.4800
+[cur/total]=[3/5], loss = 5664.9214
+[cur/total]=[4/5], loss = 5420.2549
+[cur/total]=[5/5], loss = 5189.0674
+[AutoSparse][AutoTune] No change has been made in 10 rounds, so the search is restarted.
+[AutoTuning] Predict 356 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 0 trial best: 0.14855798, history best: 0.14855797588825226
+[AutoTuning] Predict 348 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 1 trial best: 0.12888107, history best: 0.1288810670375824
+[AutoTuning] Predict 334 programs performance
+[AutoTuning] Evaluate 8 operators.
+[AutoTune] Warm in 2 trial best: 0.23247264, history best: 0.1288810670375824
+Try Random Search: Current time: 2025-03-10 15:49:38 in trial 66
+[AutoTuing] Predict 92 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:43 in 67 trial best: 0.12317788, history best: 0.08610685914754868
+[AutoTuing] Predict 37 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:49 in 68 trial best: 0.10468564, history best: 0.08610685914754868
+[AutoTuing] Predict 33 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:54 in 69 trial best: 0.10157586, history best: 0.08610685914754868
+[AutoTuing] Predict 36 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:49:59 in 70 trial best: 0.10120544, history best: 0.08610685914754868
+[AutoTuing] Predict 39 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:04 in 71 trial best: 0.08220902, history best: 0.08610685914754868
+[AutoTuing] Predict 34 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:10 in 72 trial best: 0.13200513, history best: 0.0822090208530426
+[AutoTuing] Predict 24 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:15 in 73 trial best: 0.15045977, history best: 0.0822090208530426
+[AutoTuing] Predict 31 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:21 in 74 trial best: 0.15282083, history best: 0.0822090208530426
+[AutoTuing] Predict 37 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:27 in 75 trial best: 0.16655104, history best: 0.0822090208530426
+[AutoTuing] Predict 37 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:32 in 76 trial best: 0.09956694, history best: 0.0822090208530426
+[AutoTuing] Predict 35 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:37 in 77 trial best: 0.08012944, history best: 0.0822090208530426
+[AutoTuing] Predict 27 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:43 in 78 trial best: 0.07839398, history best: 0.08012943714857101
+[AutoTuing] Predict 22 programs performance
+[AutoTuning] Evaluate 14 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:47 in 79 trial best: 0.09672626, history best: 0.07839398086071014
+[AutoTuing] Predict 31 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:53 in 80 trial best: 0.24777362, history best: 0.07839398086071014
+[AutoTuing] Predict 31 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:50:59 in 81 trial best: 0.27507171, history best: 0.07839398086071014
+[AutoTuing] Predict 38 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:05 in 82 trial best: 0.22174668, history best: 0.07839398086071014
+[AutoTuing] Predict 38 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:10 in 83 trial best: 0.14001881, history best: 0.07839398086071014
+[AutoTuing] Predict 33 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:16 in 84 trial best: 0.15574782, history best: 0.07839398086071014
+[AutoTuing] Predict 39 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:21 in 85 trial best: 0.10913984, history best: 0.07839398086071014
+[AutoTuing] Predict 39 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:26 in 86 trial best: 0.11198624, history best: 0.07839398086071014
+[AutoTuing] Predict 39 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:31 in 87 trial best: 0.10969092, history best: 0.07839398086071014
+[AutoTuing] Predict 40 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:37 in 88 trial best: 0.07936234, history best: 0.07839398086071014
+[AutoTuing] Predict 38 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:42 in 89 trial best: 0.07255624, history best: 0.07839398086071014
+[AutoTuing] Predict 23 programs performance
+[AutoTuning] Evaluate 15 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:46 in 90 trial best: 0.08498968, history best: 0.07255624234676361
+[AutoTuing] Predict 23 programs performance
+[AutoTuning] Evaluate 15 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:51 in 91 trial best: 0.09347564, history best: 0.07255624234676361
+[AutoTuing] Predict 39 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:51:56 in 92 trial best: 0.08367516, history best: 0.07255624234676361
+[AutoTuing] Predict 28 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:01 in 93 trial best: 0.11649276, history best: 0.07255624234676361
+[AutoTuing] Predict 38 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:06 in 94 trial best: 0.14655647, history best: 0.07255624234676361
+[AutoTuing] Predict 34 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:12 in 95 trial best: 0.15014394, history best: 0.07255624234676361
+[AutoTuing] Predict 36 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:17 in 96 trial best: 0.16719493, history best: 0.07255624234676361
+[AutoTuing] Predict 30 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:22 in 97 trial best: 0.22320905, history best: 0.07255624234676361
+[AutoTuing] Predict 37 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:28 in 98 trial best: 0.16519006, history best: 0.07255624234676361
+[AutoTuing] Predict 26 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:33 in 99 trial best: 0.18425468, history best: 0.07255624234676361
+[AutoSparse][AutoTune] Save explored shcedule history and value.
+0.07350482046604156
+net100 q_sa_searching num_row=29920, num_col=29920, num_nonezero=2033200
+3 A 1 2 i 29920 0 j 29920 1 B 0 1 j 29920 0 C 0 1 i 29920 0 float
+[AutoTuing] Space size = 24300000
+[AutoTuing] Origin format run time = 0.09871636
+**************** Start Q Search ****************
+population_size         =200
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =True
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 50 data.
+[AutoTuning] Predict 360 programs performance
+[AutoTuning] Evaluate 9 operators.
+[AutoTune] Warm in 0 trial best: 0.55500299, history best: 0.5550029873847961
+[AutoTuning] Predict 310 programs performance
+[AutoTuning] Evaluate 7 operators.
+[AutoTune] Warm in 1 trial best: 0.53421700, history best: 0.5342170000076294
+[AutoTuning] Predict 365 programs performance
+[AutoTuning] Evaluate 9 operators.
+[AutoTune] Warm in 2 trial best: 0.73004401, history best: 0.5342170000076294
+[AutoTuing] Predict 92 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:53 in 0 trial best: 0.60895997, history best: 0.5342170000076294
+[AutoTuing] Predict 37 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:52:58 in 1 trial best: 0.59339601, history best: 0.5342170000076294
+[AutoTuing] Predict 42 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:53:04 in 2 trial best: 0.49397999, history best: 0.5342170000076294
+[AutoTuing] Predict 32 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:53:09 in 3 trial best: 0.57225800, history best: 0.4939799904823303
+[AutoTuing] Predict 37 programs performance
+[AutoTuning] Evaluate 16 operators.
+[AutoTune] Q searching Current time: 2025-03-10 15:53:14 in 4 trial best: 0.57401800, history best: 0.4939799904823303

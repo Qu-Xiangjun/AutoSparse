@@ -1,0 +1,88 @@
+nohup: ignoring input
+WARNING:root:MinkowskiEngine is not installed.
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+No GPU available, using CPU instead.
+mhd4800a q_sa_searching num_row=4800, num_col=4800, num_nonezero=102252
+4 A 1 2 i 4800 0 j 4800 1 B 1 2 i 4800 0 j 4800 1 C 1 2 i 4800 0 j 4800 1 D 1 2 i 4800 0 j 4800 1 float
+[AutoTuing] Space size = 9492187500000
+[AutoTuing] Origin format run time = 2.76753378
+**************** Start Q Search ****************
+population_size         =100
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 66 data.
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 0 trial best: inf, history best: inf
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 1 trial best: inf, history best: inf
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 2 trial best: inf, history best: inf
+[AutoTune][Warming] No valid schedule in warm up.
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 0 trial best: inf, history best: inf
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 1 trial best: inf, history best: inf
+[AutoTuning] Evaluate 1 operators.
+[AutoTune] Warm in 2 trial best: inf, history best: inf
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 3 trial best: inf, history best: inf
+[AutoTune][Warming] No valid schedule in warm up.
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Warm in 0 trial best: 1.74059248, history best: 1.7405924797058105
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 1 trial best: inf, history best: 1.7405924797058105
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 2 trial best: inf, history best: 1.7405924797058105
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 3 trial best: inf, history best: 1.7405924797058105
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 4 trial best: inf, history best: 1.7405924797058105
+[AutoTuning] Evaluate 9 operators.
+[AutoTune] Q searching Current time: 2025-03-19 15:11:59 in 0 trial best: 1.22139919, history best: 1.7405924797058105
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1546 in parallelize:
+ Precondition failed: The loop must not merge tensor dimensions, that is, it must be a for loop;
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1546 in parallelize:
+ Precondition failed: The loop must not merge tensor dimensions, that is, it must be a for loop;
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[AutoTuning] Evaluate 25 operators.
+Traceback (most recent call last):
+  File "/home/qxj/AutoSparse/python/experiments/evaluation_plus3.py", line 121, in <module>
+    EvaluationPlus3(platform="xeon_platinum8272cl")
+  File "/home/qxj/AutoSparse/python/experiments/evaluation_plus3.py", line 87, in EvaluationPlus3
+    sch = AutoTune(
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 1903, in AutoTune
+    indices, value = QSASearching(
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 1414, in QSASearching
+    Evaluate(sch, func, eval_warm_times,
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 60, in Evaluate
+    res = _Excute(
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 39, in _Excute
+    result = call_with_timeout(func, timeout, *args, **kwargs)
+  File "/home/qxj/AutoSparse/python/AutoSparse/auto_tune.py", line 31, in call_with_timeout
+    result = func(*args, **kwargs)
+  File "/home/qxj/AutoSparse/python/AutoSparse/build.py", line 65, in Run
+    test_time = self.device.Compute(
+KeyboardInterrupt

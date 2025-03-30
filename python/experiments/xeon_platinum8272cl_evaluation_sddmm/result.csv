@@ -1,0 +1,25 @@
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+name,method,config command,csr_time,best_time
+bcsstk38,q_sa_searching,0 2 A 2 i j D 2 i j A 2 i 0 j 1 D 2 i 0 j 1 0 0 None None None 0 104 64,29.45246696472168,49.8482551574707
+mhd4800a,q_sa_searching,2 j 2 j0 256 j1 16 i 2 i0 32 i1 128 2 A 4 j0 i0 j1 i1 D 4 j0 i0 j1 i1 A 4 i0 2 i1 1 j0 1 j1 1 D 4 i0 2 i1 1 j0 1 j1 1 1 k 2 k0 2 k1 64 6 j0 i0 j1 i1 k0 k1 j0 None None 0 104 4,16.707366943359375,0.20553648471832275
+name,method,config command,csr_time,best_time
+conf5_0-4x4-18,q_sa_searching,2 j 2 j0 256 j1 8 i 2 i0 8 i1 256 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 2 i1 3 j0 0 j1 1 D 4 i0 2 i1 3 j0 0 j1 1 1 k 2 k0 2 k1 64 6 j0 j1 i0 i1 k0 k1 j0 None k1 64 104 4,12.264272689819336,0.2913988530635834
+cca,q_sa_searching,2 j 2 j0 32768 j1 1 i 2 i0 32768 i1 1 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 1 i1 3 j0 1 j1 0 D 4 i0 1 i1 3 j0 1 j1 0 1 k 2 k0 2 k1 64 6 j0 j1 i0 i1 k0 k1 j0 None None 0 104 64,36.97745895385742,0.959989070892334
+Trefethen_20000,q_sa_searching,2 j 2 j0 1024 j1 16 i 2 i0 16384 i1 1 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 1 i1 0 j0 0 j1 2 D 4 i0 1 i1 0 j0 0 j1 2 1 k 2 k0 4 k1 32 6 j0 j1 i0 k0 k1 i1 j0 i1 k1 32 104 8,73.72498321533203,0.8082513809204102
+pf2177,q_sa_searching,2 j 2 j0 8192 j1 1 i 2 i0 8192 i1 1 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 1 i1 3 j0 0 j1 0 D 4 i0 1 i1 3 j0 0 j1 0 1 k 2 k0 16 k1 8 6 j0 j1 i0 i1 k0 k1 j0 None k0 16 104 16,40.216575622558594,1.2413508892059326
+msc10848,q_sa_searching,2 j 2 j0 8192 j1 1 i 2 i0 8192 i1 1 2 A 4 j0 i0 i1 j1 D 4 j0 i0 i1 j1 A 4 i0 1 i1 0 j0 1 j1 0 D 4 i0 1 i1 0 j0 1 j1 0 1 k 2 k0 128 k1 1 6 j0 i0 i1 k0 j1 k1 j0 None None 0 104 4,44.065494537353516,1.718906283378601
+cfd1,q_sa_searching,2 j 2 j0 256 j1 256 i 2 i0 256 i1 256 2 A 4 j0 i0 j1 i1 D 4 j0 i0 j1 i1 A 4 i0 1 i1 3 j0 1 j1 2 D 4 i0 1 i1 3 j0 1 j1 2 1 k 2 k0 2 k1 64 6 j0 i0 j1 i1 k0 k1 j0 None k1 64 104 4,267.9032897949219,6.136604309082031
+net100,q_sa_searching,2 j 2 j0 1024 j1 16 i 2 i0 16384 i1 1 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 2 i1 0 j0 0 j1 1 D 4 i0 2 i1 0 j0 0 j1 1 1 k 2 k0 1 k1 128 6 j0 j1 k0 i0 k1 i1 j0 None k1 128 104 4,98.42529296875,3.6892099380493164
+vanbody,q_sa_searching,2 j 2 j0 4096 j1 8 i 2 i0 32768 i1 1 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 2 i1 0 j0 1 j1 2 D 4 i0 2 i1 0 j0 1 j1 2 1 k 2 k0 4 k1 32 6 j0 j1 i0 k0 k1 i1 j0 i1 None 0 104 8,186.28323364257812,1.9070135354995728
+name,method,config command,csr_time,best_time
+net150,q_sa_searching,2 i 2 i0 32768 i1 1 j 2 j0 256 j1 128 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 2 i1 0 j0 1 j1 1 D 4 i0 2 i1 0 j0 1 j1 1 1 k 2 k0 2 k1 64 6 j0 j1 i0 k0 k1 i1 j0 None k1 64 104 1,126.4837875366211,1.9269368648529053
+Chevron3_4x16_1,q_sa_searching,0 2 A 2 i j D 2 i j A 2 i 0 j 1 D 2 i 0 j 1 0 0 None None None 0 104 64,458.5635986328125,657.1326293945312
+vibrobox_1x1_0,q_sa_searching,2 i 2 i0 256 i1 256 j 2 j0 32 j1 128 2 A 4 i0 j0 j1 i1 D 4 i0 j0 j1 i1 A 4 i0 1 i1 1 j0 0 j1 2 D 4 i0 1 i1 1 j0 0 j1 2 1 k 2 k0 8 k1 16 6 i0 j0 j1 i1 k0 k1 i0 None None 0 104 1,238.3758544921875,5.66765832901001
+NACA0015_16x8_9,q_sa_searching,2 i 2 i0 131072 i1 1 j 2 j0 512 j1 8 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 2 i1 0 j0 0 j1 2 D 4 i0 2 i1 0 j0 0 j1 2 1 k 2 k0 2 k1 64 6 j0 j1 i0 k0 k1 i1 j0 i1 k1 64 104 1,426.5837097167969,1.599562168121338
+nemspmm1_16x4_0,q_sa_searching,0 2 A 2 i j D 2 i j A 2 i 0 j 1 D 2 i 0 j 1 0 0 None None None 0 104 64,17.00145721435547,100.51732635498047
+Trec6_16x16_9,q_sa_searching,2 i 2 i0 256 i1 128 j 2 j0 2048 j1 4 2 A 4 j0 i0 j1 i1 D 4 j0 i0 j1 i1 A 4 i0 1 i1 0 j0 1 j1 1 D 4 i0 1 i1 0 j0 1 j1 1 1 k 2 k0 2 k1 64 6 j0 i0 j1 i1 k0 k1 j0 None None 0 104 1,4.593457221984863,0.07980077713727951
+crystk01_2x16_1,q_sa_searching,0 2 A 2 i j D 2 i j A 2 i 0 j 1 D 2 i 0 j 1 0 0 None None None 0 104 64,10.177009582519531,159.98866271972656
+t2dal_a_8x4_3,q_sa_searching,2 i 2 i0 16384 i1 1 j 2 j0 128 j1 64 2 A 4 j0 j1 i0 i1 D 4 j0 j1 i0 i1 A 4 i0 2 i1 0 j0 1 j1 2 D 4 i0 2 i1 0 j0 1 j1 2 1 k 2 k0 2 k1 64 6 j0 k0 j1 i0 k1 i1 j0 i1 k1 64 104 1,59.090087890625,0.8149981498718262
+EX1_8x8_4,q_sa_searching,2 i 2 i0 2048 i1 2 j 2 j0 1024 j1 4 2 A 4 j0 i0 i1 j1 D 4 j0 i0 i1 j1 A 4 i0 1 i1 0 j0 1 j1 0 D 4 i0 1 i1 0 j0 1 j1 0 1 k 2 k0 8 k1 16 6 j0 i0 i1 j1 k0 k1 j0 None k1 16 104 8,11.040552139282227,0.2630408704280853

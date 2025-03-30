@@ -185,21 +185,21 @@ k = 40
 autosparse_prefix = os.getenv("AUTOSPARSE_HOME")
 
 draw_thermodynamic_diagram(os.path.join(
-    autosparse_prefix, 'python', 'experiments', 'xeon_evaluation_spmm', 
-    'cca', 'q_sa_searchingschedule_data.pth'
+    autosparse_prefix, 'python', 'experiments', 'xeon_platinum8272cl_evaluation_spmm', 
+    'mhd4800a', 'q_sa_searching_False_2025_02_26_15_52_57.pth'
 ), k=k)
-save_data_to_csv(os.path.join(
-    autosparse_prefix, 'python', 'experiments', 'xeon_evaluation_spmm', 
-    'cca', 'q_sa_searchingschedule_data.pth'
-), k=k)
+# save_data_to_csv(os.path.join(
+#     autosparse_prefix, 'python', 'experiments', 'xeon_platinum8272cl_evaluation_spmm', 
+#     'mhd4800a', 'q_sa_searching_True_2025_02_26_16_46_07.pth'
+# ), k=k)
 
 # baseline for waco
 
 draw_thermodynamic_diagram_waco(os.path.join(
-    autosparse_prefix, 'baseline', 'waco', 'SpMM', 'xeon_evaluation',
-    'cca', 'schedule_data_2024_04_30_20_21_05.pth'
+    autosparse_prefix, 'python', 'experiments', 'xeon_platinum8272cl_evaluation_spmm', 
+    'mhd4800a', 'q_sa_searching_True_2025_02_26_16_46_07.pth'
 ), k=k)
-save_data_to_csv_waco(os.path.join(
-    autosparse_prefix, 'baseline', 'waco', 'SpMM', 'xeon_evaluation',
-    'cca', 'schedule_data_2024_04_30_20_21_05.pth'
-), k=k)
+# save_data_to_csv_waco(os.path.join(
+#     autosparse_prefix, 'baseline', 'waco', 'SpMM', 'xeon_evaluation',
+#     'cca', 'schedule_data_2024_04_30_20_21_05.pth'
+# ), k=k)

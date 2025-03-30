@@ -1,0 +1,59 @@
+nohup: ignoring input
+WARNING:root:MinkowskiEngine is not installed.
+/home/qxj/miniconda3/envs/torch/lib/python3.9/site-packages/torch/cuda/__init__.py:619: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+No GPU available, using CPU instead.
+bcsstk38 q_sa_searching num_row=8032, num_col=8032, num_nonezero=355460
+3 A 1 2 i 8032 0 j 8032 1 B 1 2 i 8032 0 j 8032 1 C 1 2 i 8032 0 j 8032 1 float
+[AutoTuing] Space size = 15187500000
+[AutoTuing] Origin format run time = 2.42797470
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1546 in parallelize:
+ Precondition failed: The loop must not merge tensor dimensions, that is, it must be a for loop;
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+[ERROR][executeCommand] terminate called after throwing an instance of 'taco::TacoException'
+  what():  Error at /home/qxj/AutoSparse/taco/src/index_notation/index_notation.cpp:1546 in parallelize:
+ Precondition failed: The loop must not merge tensor dimensions, that is, it must be a for loop;
+Aborted (core dumped)
+
+[ERROR][executeCommand] icc: error #10236: File not found:  'taco_kernel.c'
+icc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance
+icc: command line error: no files specified; for help type "icc -help"
+
+**************** Start Q Search ****************
+population_size         =100
+trial                   =100
+use_sa                  =True
+sa_gamma                =0.05
+update_target_gap       =8
+early_stop              =100
+use_performance_model   =False
+eval_warm_times         =10
+eval_round              =50
+eval_timeout            =1
+eval_policy             =avg
+
+[AutoTune] Warm 3 trial, each run 66 data.
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 0 trial best: inf, history best: inf
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 1 trial best: inf, history best: inf
+[AutoTuning] Evaluate 1 operators.
+[AutoTune] Warm in 2 trial best: inf, history best: inf
+[AutoTune][Warming] No valid schedule in warm up.
+[AutoTuning] Evaluate 4 operators.
+[AutoTune] Warm in 0 trial best: 1.97517991, history best: 1.97517991065979
+[AutoTuning] Evaluate 1 operators.
+[AutoTune] Warm in 1 trial best: inf, history best: 1.97517991065979
+[AutoTuning] Evaluate 0 operators.
+[AutoTune] Warm in 2 trial best: inf, history best: 1.97517991065979
+[AutoTuning] Evaluate 2 operators.
+[AutoTune] Warm in 3 trial best: 1.89914787, history best: 1.899147868156433
+[AutoTuning] Evaluate 14 operators.
+[AutoTune] Q searching Current time: 2025-03-23 15:29:27 in 0 trial best: 1.40986967, history best: 1.899147868156433
+corrupted size vs. prev_size

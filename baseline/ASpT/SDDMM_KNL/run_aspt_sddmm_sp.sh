@@ -33,10 +33,10 @@
 #!/bin/bash
 
 # 循环执行命令 100 次
-for i in {1..100}
-do
-    ./SDDMM_ASpT_SP.x ../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx
-done
+# for i in {1..100}
+# do
+    # ./SDDMM_ASpT_SP.x ../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx
+# done
 # mhd4800a
 # vanbody
 # net100
@@ -56,3 +56,23 @@ done
 # net150
 # Chevron3_4x16_1
 # vibrobox_1x1_0
+
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/mhd4800a.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/conf5_0-4x4-18.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/cca.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/Trec6_16x16_9.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/bcsstk38.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/Trefethen_20000.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/nemspmm1_16x4_0.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/pf2177.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/crystk01_2x16_1.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/EX1_8x8_4.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/msc10848.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/t2dal_a_8x4_3.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/cfd1.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/net100.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/vanbody.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/net150.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/NACA0015_16x8_9.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/vibrobox_1x1_0.mtx
+./SDDMM_ASpT_SP.x  ../../../dataset/mtx_demo_dataset/Chevron3_4x16_1.mtx
